@@ -1,8 +1,9 @@
 package jp.bellware.echo.setting
 
-import android.support.v7.app.AppCompatActivity
+//import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
+import androidx.appcompat.app.AppCompatActivity
 
 import jp.bellware.echo.R
 import jp.bellware.echo.analytics.AnalyticsHandler

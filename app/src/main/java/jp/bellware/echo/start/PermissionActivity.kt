@@ -1,15 +1,20 @@
 package jp.bellware.echo.start
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
-import android.support.v4.app.ActivityCompat
-import android.support.v4.content.ContextCompat
-import android.support.v7.app.AlertDialog
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AlertDialog
+//import android.support.v4.app.ActivityCompat
+//import android.support.v4.content.ContextCompat
+//import android.support.v7.app.AlertDialog
+//import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import jp.bellware.echo.R
 import jp.bellware.echo.main.MainActivity
 import kotlinx.android.synthetic.main.activity_permission.*
@@ -35,6 +40,7 @@ class PermissionActivity : AppCompatActivity() {
     }
 
 
+    @SuppressLint("MissingSuperCall")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == CODE_MAIN) {
             finish()

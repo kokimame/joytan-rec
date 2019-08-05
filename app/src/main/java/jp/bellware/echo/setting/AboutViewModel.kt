@@ -1,8 +1,9 @@
 package jp.bellware.echo.setting
 
-import android.databinding.ObservableField
+//import android.databinding.ObservableField
 import android.content.Context
 import android.content.pm.PackageManager
+import androidx.databinding.ObservableField
 import jp.bellware.echo.R
 
 /**

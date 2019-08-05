@@ -1,6 +1,6 @@
 <resources>
-    <string name="app_name">Echo</string>
-    <string name="app_name_long">Quick Echo</string>
+    <string name="app_name">Joytan Recorder</string>
+    <string name="app_name_long">Joytan Recorder</string>
 
     <!-- 実行時許可 -->
     <string name="title_permission">Information</string>

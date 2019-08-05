@@ -4,14 +4,14 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion 28
 
     defaultConfig {
         applicationId "jp.bellware.echo"
-        minSdkVersion 15
-        targetSdkVersion 27
-        versionCode 8
-        versionName "1.2.1"
+        minSdkVersion 22
+        targetSdkVersion 28
+        versionCode 1
+        versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -33,16 +33,26 @@ android {
 }
 
 dependencies {
+    // For bottom navigation
+    implementation 'com.google.android.material:material:1.1.0-alpha09'
+    def nav_version = '2.0.0'
+    implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
+    implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
+
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
-
-
     //Android
-    implementation 'com.android.support:appcompat-v7:27.1.1'
-    implementation 'com.android.support:support-v4:27.1.1'
-    implementation 'com.android.support:cardview-v7:27.1.1'
-    implementation 'com.android.support:design:27.1.1'
+//    implementation 'com.android.support:appcompat-v7:27.1.1'
+//    implementation 'com.android.support:support-v4:27.1.1'
+//    implementation 'com.android.support:cardview-v7:27.1.1'
+//    implementation 'com.android.support:design:27.1.1'
+
+    implementation 'androidx.appcompat:appcompat:1.0.0'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'androidx.cardview:cardview:1.0.0'
+    implementation 'com.google.android.material:material:1.0.0-rc01'
+
     //ソースコード公開用にFirebase使用部分は削除
     //firebase
     //compile 'com.google.firebase:firebase-core:9.4.0'
@@ -50,8 +60,6 @@ dependencies {
     //compile 'com.google.firebase:firebase-invites:9.4.0'
     //ButterKnife
     implementation project(':material-preference')
-    //kotlinでDataBindingを使えるようにする
-    kapt "com.android.databinding:compiler:$android_plugin_version"
 
     //EspressoでUIテスト
     androidTestImplementation 'androidx.test:runner:1.1.0'
