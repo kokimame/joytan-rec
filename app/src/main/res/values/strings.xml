@@ -1,4 +1,13 @@
 <resources>
+
+    <string-array name="projects_array">
+        <item>Project 1</item>
+        <item>Project 2</item>
+        <item>Project 3</item>
+    </string-array>
+
+    <string name="left_cliecked">Left is clicked</string>
+
     <string name="app_name">Joytan Recorder</string>
     <string name="app_name_long">Joytan Recorder</string>
 
@@ -24,7 +33,7 @@
     <string name="pref_oss">Open source license</string>
     <string name="version" translatable="false">Version</string>
     <string name="version_sample" translatable="false">Version 1.0.0</string>
-    <string name="copyright" translatable="false">&#169; 2015 Bellware</string>
+    <string name="copyright" translatable="false">&#169; Joytan App</string>
     <string name="pref_privacy_policy">Privacy Policy</string>
     <!-- 紹介 -->
 

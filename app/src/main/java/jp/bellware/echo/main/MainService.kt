@@ -29,12 +29,12 @@ class MainService : Service() {
     private val binder = MainServiceBinder()
 
     /**
-     * 効果音担当
+     * Sound effect handler
      */
     private val seh = SoundEffectHandler()
 
     /**
-     * 視覚的ボリューム担当
+     * Visual volume handle
      */
     private val vvh = VisualVolumeHandler()
 
@@ -44,17 +44,17 @@ class MainService : Service() {
     private val storage = QRecStorage()
 
     /**
-     * 録音担当
+     * Handle recording
      */
     private val record = RecordHandler(storage)
 
     /**
-     * 再生担当
+     * Handle Play
      */
     private val play = PlayHandler(storage)
 
     /**
-     * 分析担当
+     * Handle analytics
      */
     private val ah = AnalyticsHandler()
 
@@ -156,7 +156,6 @@ class MainService : Service() {
             cb.onUpdateVolume(0f)
         }
         this.cb = cb
-
     }
 
 
@@ -175,7 +174,7 @@ class MainService : Service() {
     }
 
     /**
-     * 戻るボタンが押された時に呼ばれる
+     * On Back button pressed
      *
      * @return
      */
@@ -197,14 +196,15 @@ class MainService : Service() {
         }
     }
 
-
+    /*
+     * On Setting updated
+     */
     fun onSettingUpdated() {
-        //設定が更新された時に呼ばれる
         seh.isEnabled = SettingFragment.isSoundEffect(this)
     }
 
     /**
-     * 録音要求が発生
+     * When Record is requested
      */
     fun onRecord() {
         if (status == QRecStatus.READY_FIRST || status == QRecStatus.READY ||
@@ -215,7 +215,7 @@ class MainService : Service() {
     }
 
     /**
-     * 再生要求が発生
+     * When Play is requested
      */
     fun onPlay() {
         if (status == QRecStatus.RECORDING) {
@@ -231,7 +231,7 @@ class MainService : Service() {
     }
 
     /**
-     * 再再生要求が発生
+     * When Replay is requested
      */
     fun onReplay() {
         if (status == QRecStatus.PLAYING || status == QRecStatus.STOP) {
@@ -241,7 +241,7 @@ class MainService : Service() {
     }
 
     /**
-     * 停止要求が発生
+     * When Stop is requested
      */
     fun onStop() {
         if (status == QRecStatus.PLAYING) {
@@ -252,7 +252,7 @@ class MainService : Service() {
     }
 
     /**
-     * 削除要求が発生
+     * When Delete is requested
      */
     fun onDelete() {
         if (status == QRecStatus.RECORDING) {
@@ -266,24 +266,40 @@ class MainService : Service() {
         }
     }
 
+    /*
+     * When Left transition is requested
+     */
+    fun onLeft() {
+        if (status == QRecStatus.RECORDING) {
+            seh.delete()
+            status = QRecStatus.DELETE_RECORDING
+            update()
+        } else if (status == QRecStatus.PLAYING || status == QRecStatus.STOP) {
+            seh.delete()
+            status = QRecStatus.DELETE_PLAYING
+            update()
+        }
+        cb?.onShowWarningMessage(R.string.left_cliecked)
+    }
+
     /**
-     * 状態に応じて更新する
+     * Update according with status
      */
     private fun update() {
         if (status == QRecStatus.INIT) {
-            //効果音読み込み
+            // Load sound effects
             seh.onCreate(this) {
-                //初期化完了
+                // Finish initialization
                 status = QRecStatus.READY_FIRST
                 update()
             }
         } else if (status == QRecStatus.DELETE_RECORDING || status == QRecStatus.DELETE_PLAYING) {
-            //録音済生取り消し
+            // Stop audio playing
             play.stop()
             record.stop()
-            //タイムリミットタスク解除
+            // Remove a task with time limit
             handler.removeCallbacks(timeLimitTask)
-            //Analytics
+            // Analytics
             ah.sendAction("delete", (storage.length / 44100).toLong())
             //削除→録音可能
             this.delayTask = Runnable {

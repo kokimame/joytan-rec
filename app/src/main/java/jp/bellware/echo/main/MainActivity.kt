@@ -1,17 +1,20 @@
 package jp.bellware.echo.main
 
 import android.content.ComponentName
-import android.content.Context
-import android.content.Intent
 import android.content.ServiceConnection
-import android.media.AudioManager
 import android.os.Handler
-import android.os.Bundle
 import android.os.IBinder
 //import android.support.v7.app.AppCompatActivity
+//import android.databinding.DataBindingUtil
+import android.media.AudioManager
+import android.content.Context
+import android.content.Intent
+import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.ArrayAdapter
+import android.widget.Spinner
 
 import jp.bellware.echo.R
 
@@ -20,9 +23,10 @@ import jp.bellware.util.BWU
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.main_control.*
 import kotlinx.android.synthetic.main.main_status.*
-//import android.databinding.DataBindingUtil
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.navigation.findNavController
+import androidx.navigation.ui.NavigationUI
 import jp.bellware.echo.databinding.ActivityMainBinding
 
 /**
@@ -98,11 +102,16 @@ class MainActivity : AppCompatActivity() {
         //ツールバー設定
         this.setSupportActionBar(toolbar)
         //広告の設定
-        setUpAd()
+//        setupAd()
+        setupSpinner()
         //ボリューム調整を音楽にする
         volumeControlStream = AudioManager.STREAM_MUSIC
         //AudioManagerを取得
         this.audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
+
+//        val navController = findNavController(R.id.nav_host_fragment)
+//        NavigationUI.setupWithNavController(bottom_navigation, navController)
+
         //警告担当
         wh.onCreate(this)
         viewModel.onCreate()
@@ -177,10 +186,24 @@ class MainActivity : AppCompatActivity() {
         startActivityForResult(intent, CODE_SETTING)
     }
 
+    private fun setupSpinner() {
+        val spinner: Spinner = findViewById(R.id.spinner)
+        ArrayAdapter.createFromResource(
+                this,
+                R.array.projects_array,
+                R.layout.spinner_item
+        ).also { adapter ->
+            // Specify the layout to use when the list of choices appears
+            adapter.setDropDownViewResource(R.layout.spinner_item)
+            // Apply the adapter to the spinner
+            spinner.setAdapter(adapter)
+        }
+    }
+
     /**
      * 広告を設定する
      */
-    private fun setUpAd() {
+    private fun setupAd() {
         //        AdView mAdView = (AdView) findViewById(R.id.ad);
         //        AdRequest adRequest = new AdRequest.Builder().build();
         //        mAdView.loadAd(adRequest);

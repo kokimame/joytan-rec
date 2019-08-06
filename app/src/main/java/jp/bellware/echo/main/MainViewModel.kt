@@ -235,7 +235,7 @@ class MainViewModel(private val context: Context, private val listener: Listener
 
 
     /**
-     * 戻るボタンが押された
+     * On Back button pressed
      */
     fun onBackPressed(): Boolean {
         var result = service?.onBackPressed()
@@ -243,45 +243,52 @@ class MainViewModel(private val context: Context, private val listener: Listener
     }
 
     /**
-     * 設定が更新された時に呼ばれる
+     * On Setting button pressed
      */
     fun onSettingUpdate() {
         service?.onSettingUpdated()
     }
 
     /**
-     * 録音ボタンが押された
+     * On Record button clicked
      */
     fun onRecordClicked(view : View) {
         service?.onRecord()
     }
 
     /**
-     * 再生ボタンが押された
+     * On Play button clicked
      */
     fun onPlayClicked(view : View) {
         service?.onPlay()
     }
 
     /**
-     * 再再生ボタンが押された
+     * On Replay button clicked
      */
     fun onReplayClicked(view : View) {
         service?.onReplay()
     }
 
     /**
-     * 停止ボタンが押された
+     * On Stop button clicked
      */
     fun onStopClicked(view : View) {
         service?.onStop()
     }
 
     /**
-     * 削除ボタンが押された
+     * On Delete button clicked
      */
     fun onDeleteClicked(view : View) {
         service?.onDelete()
+    }
+
+    /*
+     * On Left button clicked
+     */
+    fun onLeftClicked(view : View) {
+        service?.onLeft()
     }
 
 }

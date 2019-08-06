@@ -17,16 +17,17 @@
             android:id="@+id/statusFrame"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
+            android:layout_gravity="bottom|center"
+            android:layout_marginBottom="140dp"
             android:visibility="@{viewModel.statusFrameVisibility}">
-            <!-- ボリューム -->
+            <!-- Volume -->
             <jp.bellware.echo.main.view.VisualVolumeView
                 android:id="@+id/visualVolume"
                 android:layout_width="128dp"
                 android:layout_height="128dp"
                 android:layout_gravity="top|center_horizontal" />
 
-            <!-- 状態アイコン -->
+            <!-- Status icon -->
             <ImageView
                 android:id="@+id/statusImage"
                 android:layout_width="128dp"

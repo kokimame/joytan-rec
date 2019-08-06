@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+    <data>
+        <variable
+            name="viewModel"
+            type="jp.bellware.echo.main.MainViewModel" />
+    </data>
+
+    <LinearLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_marginHorizontal="10dp"
+        android:layout_gravity="center">
+
+        <ImageButton
+            android:id="@+id/button"
+            android:onClick="@{viewModel::onLeftClicked}"
+            android:layout_width="wrap_content"
+            android:layout_height="66dp"
+            android:src="@drawable/left_arrow"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:gravity="center"
+            android:layout_gravity="center_vertical"/>
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:layout_gravity="center_vertical"
+            android:text="三月"
+            android:textSize="40sp" />
+
+        <ImageButton
+            android:id="@+id/button2"
+            android:layout_width="wrap_content"
+            android:layout_height="64dp"
+            android:src="@drawable/right_arrow"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:gravity="center"
+            android:layout_gravity="center_vertical"/>
+    </LinearLayout>
+</layout>
