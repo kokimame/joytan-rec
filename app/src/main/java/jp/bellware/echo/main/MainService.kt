@@ -53,6 +53,11 @@ class MainService : Service() {
      */
     private val play = PlayHandler(storage)
 
+    /*
+     * Handle Share feature
+     */
+    private val share = ShareHandler(storage)
+
     /**
      * Handle analytics
      */
@@ -133,6 +138,7 @@ class MainService : Service() {
         })
         record.onResume()
         play.onResume()
+        share.onResume()
         vvh.onResume()
         //分析
         ah.onCreate(this)
@@ -241,14 +247,13 @@ class MainService : Service() {
     }
 
     /**
-     * When Stop is requested
+     * When Share is requested
      */
-    fun onStop() {
-        if (status == QRecStatus.PLAYING) {
-            status = QRecStatus.STOPPING_PLAYING
-            update()
-            ah.sendAction("stop", (storage.length / 44100).toLong())
-        }
+    fun onShare() {
+//        if (status == QRecStatus.STOP || status == QRecStatus.PLAYING){
+//        }
+        status = QRecStatus.SHARE
+        update()
     }
 
     /**
@@ -266,10 +271,18 @@ class MainService : Service() {
         }
     }
 
-    /*
-     * When Left transition is requested
-     */
     fun onLeft() {
+        onScriptNavigation("left")
+    }
+
+    fun onRight() {
+        onScriptNavigation("right")
+    }
+
+    /*
+     * To navigate script content (left or right)
+     */
+    fun onScriptNavigation(direction: String) {
         if (status == QRecStatus.RECORDING) {
             seh.delete()
             status = QRecStatus.DELETE_RECORDING
@@ -279,7 +292,7 @@ class MainService : Service() {
             status = QRecStatus.DELETE_PLAYING
             update()
         }
-        cb?.onShowWarningMessage(R.string.left_cliecked)
+        cb?.onScriptNavigation(direction)
     }
 
     /**
@@ -364,7 +377,11 @@ class MainService : Service() {
             vvh.play()
             //Analytics
             ah.sendAction("play", (storage.length / 44100).toLong())
-
+        } else if (status == QRecStatus.SHARE) {
+            share.share {}
+            status = QRecStatus.STOPPING_PLAYING
+            update()
+            ah.sendAction("share")
         } else if (status == QRecStatus.STOPPING_PLAYING) {
             vvh.reset()
             play.stop()

@@ -16,24 +16,25 @@
             android:id="@+id/button"
             android:onClick="@{viewModel::onLeftClicked}"
             android:layout_width="wrap_content"
-            android:layout_height="66dp"
+            android:layout_height="64dp"
             android:src="@drawable/left_arrow"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:gravity="center"
             android:layout_gravity="center_vertical"/>
 
         <TextView
-            android:id="@+id/textView"
+            android:id="@+id/main_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
             android:layout_gravity="center_vertical"
-            android:text="三月"
+            android:textColor="@color/text"
             android:textSize="40sp" />
 
         <ImageButton
             android:id="@+id/button2"
+            android:onClick="@{viewModel::onRightClicked}"
             android:layout_width="wrap_content"
             android:layout_height="64dp"
             android:src="@drawable/right_arrow"

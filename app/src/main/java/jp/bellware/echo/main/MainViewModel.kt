@@ -45,6 +45,8 @@ class MainViewModel(private val context: Context, private val listener: Listener
          * 警告メッセージを表示する
          */
         fun onShowWarningMessage(resId: Int)
+
+        fun onScriptNavigation(direction: String)
     }
 
     /**
@@ -73,6 +75,11 @@ class MainViewModel(private val context: Context, private val listener: Listener
     val stopVisibility = ObservableField<Int>()
 
     /**
+     * Display share button
+     */
+    val shareVisibility = ObservableField<Int>()
+
+    /**
      * 削除ボタン表示
      */
     val deleteVisibility = ObservableField<Int>()
@@ -99,6 +106,7 @@ class MainViewModel(private val context: Context, private val listener: Listener
                 playVisibility.set(View.INVISIBLE)
                 replayVisibility.set(View.INVISIBLE)
                 stopVisibility.set(View.INVISIBLE)
+                shareVisibility.set(View.INVISIBLE)
                 deleteVisibility.set(View.INVISIBLE)
             } else if (status == QRecStatus.DELETE_RECORDING || status == QRecStatus.DELETE_PLAYING) {
                 //アニメーション開始
@@ -110,6 +118,7 @@ class MainViewModel(private val context: Context, private val listener: Listener
                     playVisibility.set(View.INVISIBLE)
                     replayVisibility.set(View.INVISIBLE)
                     stopVisibility.set(View.INVISIBLE)
+                    shareVisibility.set(View.INVISIBLE)
                     deleteVisibility.set(View.INVISIBLE)
                 }
             } else if (status == QRecStatus.READY_FIRST || status == QRecStatus.READY) {
@@ -119,6 +128,7 @@ class MainViewModel(private val context: Context, private val listener: Listener
                 playVisibility.set(View.INVISIBLE)
                 replayVisibility.set(View.INVISIBLE)
                 stopVisibility.set(View.INVISIBLE)
+                shareVisibility.set(View.INVISIBLE)
                 deleteVisibility.set(View.INVISIBLE)
             } else if (status == QRecStatus.STOP) {
                 //停止状態
@@ -128,6 +138,7 @@ class MainViewModel(private val context: Context, private val listener: Listener
                 playVisibility.set(View.INVISIBLE)
                 replayVisibility.set(View.VISIBLE)
                 stopVisibility.set(View.VISIBLE)
+                shareVisibility.set(View.VISIBLE)
                 deleteVisibility.set(View.VISIBLE)
             } else if (status == QRecStatus.STARTING_RECORD) {
                 //スピーカーアイコン表示
@@ -138,6 +149,7 @@ class MainViewModel(private val context: Context, private val listener: Listener
                 //サブコントロールは非表示
                 replayVisibility.set(View.INVISIBLE)
                 stopVisibility.set(View.INVISIBLE)
+                shareVisibility.set(View.INVISIBLE)
                 if (animation) {
                     listener.onStartRecord()
                 } else {
@@ -152,6 +164,7 @@ class MainViewModel(private val context: Context, private val listener: Listener
                 playVisibility.set(View.VISIBLE)
                 replayVisibility.set(View.INVISIBLE)
                 stopVisibility.set(View.INVISIBLE)
+                shareVisibility.set(View.INVISIBLE)
                 deleteVisibility.set(View.VISIBLE)
             } else if (status == QRecStatus.STOPPING_RECORD) {
                 //スピーカーを表示
@@ -165,8 +178,9 @@ class MainViewModel(private val context: Context, private val listener: Listener
                     statusFrameVisibility.set(View.VISIBLE)
                     replayVisibility.set(View.VISIBLE)
                     stopVisibility.set(View.VISIBLE)
+                    shareVisibility.set(View.VISIBLE)
                 }
-            } else if (status == QRecStatus.PLAYING) {
+            } else if (status == QRecStatus.PLAYING || status == QRecStatus.SHARE) {
                 //再生中
                 statusFrameVisibility.set(View.VISIBLE)
                 statusImageSrc.set(R.drawable.speaker_48dp)
@@ -174,12 +188,17 @@ class MainViewModel(private val context: Context, private val listener: Listener
                 playVisibility.set(View.INVISIBLE)
                 replayVisibility.set(View.VISIBLE)
                 stopVisibility.set(View.VISIBLE)
+                shareVisibility.set(View.VISIBLE)
                 deleteVisibility.set(View.VISIBLE)
             }
         }
 
         override fun onUpdateVolume(volume: Float) {
             listener.onUpdateVolume(volume)
+        }
+
+        override fun onScriptNavigation(direction: String) {
+            listener.onScriptNavigation(direction)
         }
 
         override fun onShowWarningMessage(resId: Int) {
@@ -270,12 +289,14 @@ class MainViewModel(private val context: Context, private val listener: Listener
         service?.onReplay()
     }
 
+
     /**
-     * On Stop button clicked
+     * On Share button clicked
      */
-    fun onStopClicked(view : View) {
-        service?.onStop()
+    fun onShareClicked(view : View) {
+        service?.onShare()
     }
+
 
     /**
      * On Delete button clicked
@@ -289,6 +310,9 @@ class MainViewModel(private val context: Context, private val listener: Listener
      */
     fun onLeftClicked(view : View) {
         service?.onLeft()
+    }
+    fun onRightClicked(view : View) {
+        service?.onRight()
     }
 
 }

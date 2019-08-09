@@ -1,25 +1,31 @@
 package jp.bellware.echo.main
 
 /**
- * MainServiceからのコールバック
+ * Callback from MainService
  */
 interface MainServiceCallback {
     /**
-     * 状態を更新する
+     * Update animation
      * @param animation アニメーションフラグ。バックグランドからの復帰による状態再現の場合はfalseとなる。
      * @param status 状態
      */
     fun onUpdateStatus(animation: Boolean, status: QRecStatus)
 
     /**
-     * 視覚的ボリュームを更新する
-     * @param volume ボリューム
+     * Update visual volume
+     * @param volume
      */
     fun onUpdateVolume(volume: Float)
 
     /**
-     * 警告メッセージ表示
-     * @param resId メッセージID
+     * Navigate content in main_script (left or right)
+     * @param direction (left or right, otherwise raise exception)
+     */
+    fun onScriptNavigation(direction: String)
+
+    /**
+     * Warning message
+     * @param resId Message Id
      */
     fun onShowWarningMessage(resId: Int)
 

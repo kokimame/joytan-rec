@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
     <data>
         <variable
             name="viewModel"
             type="jp.bellware.echo.main.MainViewModel" />
     </data>
 
-    <FrameLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="80dp"
         android:layout_gravity="bottom">
@@ -59,19 +60,35 @@
             app:myFabColor="@color/play_button"
             app:myFabIcon="@drawable/ic_play_arrow_white_24dp"
             app:myFabSize="mini" />
-        <!-- Stop button -->
+
+        <!-- Share button -->
         <jp.bellware.echo.main.view.MyFAB
-            android:id="@+id/stop"
+            android:id="@+id/share"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginRight="130dp"
             android:layout_marginBottom="44dp"
-            android:onClick="@{viewModel::onStopClicked}"
-            android:visibility="@{viewModel.stopVisibility}"
+            android:onClick="@{viewModel::onShareClicked}"
+            android:visibility="@{viewModel.shareVisibility}"
             app:myFabColor="@color/play_button"
-            app:myFabIcon="@drawable/ic_stop_white_24dp"
+            app:myFabIcon="@drawable/ic_share_white_24dp"
             app:myFabSize="mini" />
+
+        <jp.bellware.echo.main.view.MyFAB
+            android:id="@+id/setting"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginLeft="130dp"
+            android:layout_marginBottom="44dp"
+            android:visibility="visible"
+            app:myFabColor="@android:color/darker_gray"
+            app:myFabIcon="@drawable/ic_setting_white_24dp"
+            app:myFabSize="mini" />
+
+        <!-- Setting button -->
+
 
     </FrameLayout>
 </layout>

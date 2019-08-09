@@ -13,19 +13,19 @@
         android:layout_height="wrap_content"
         android:layout_gravity="right|bottom"
         android:gravity="right|bottom">
-        <!-- 停止ボタン -->
-        <jp.bellware.echo.main.view.MyFAB
-            android:id="@+id/stop"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="44dp"
-            android:layout_marginRight="0dp"
-            android:onClick="@{viewModel::onStopClicked}"
-            android:visibility="@{viewModel.stopVisibility}"
-            app:myFabColor="@color/play_button"
-            app:myFabIcon="@drawable/ic_stop_white_24dp"
-            app:myFabSize="mini" />
-        <!-- 再再生ボタン -->
+        <!--&lt;!&ndash; 停止ボタン &ndash;&gt;-->
+        <!--<jp.bellware.echo.main.view.MyFAB-->
+            <!--android:id="@+id/share"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_marginBottom="44dp"-->
+            <!--android:layout_marginRight="0dp"-->
+            <!--android:onClick="@{viewModel::onStopClicked}"-->
+            <!--android:visibility="@{viewModel.stopVisibility}"-->
+            <!--app:myFabColor="@color/play_button"-->
+            <!--app:myFabIcon="@drawable/ic_stop_white_24dp"-->
+            <!--app:myFabSize="mini" />-->
+        <!--&lt;!&ndash; 再再生ボタン &ndash;&gt;-->
         <jp.bellware.echo.main.view.MyFAB
             android:id="@+id/replay"
             android:layout_width="wrap_content"

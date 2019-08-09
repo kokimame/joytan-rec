@@ -49,5 +49,10 @@ enum class QRecStatus {
     /**
      * 再生停止中
      */
-    STOPPING_PLAYING
+    STOPPING_PLAYING,
+
+    /**
+     * Sharing
+     */
+    SHARE
 }

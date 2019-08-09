@@ -11,7 +11,8 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingBottom="104dp">
+        android:layout_gravity="bottom"
+        android:paddingBottom="0dp">
 
         <FrameLayout
             android:id="@+id/statusFrame"
@@ -32,7 +33,6 @@
                 android:id="@+id/statusImage"
                 android:layout_width="128dp"
                 android:layout_height="128dp"
-                android:layout_gravity="top|center_horizontal"
                 android:scaleType="center"
                 image_src="@{viewModel.statusImageSrc}" />
         </FrameLayout>

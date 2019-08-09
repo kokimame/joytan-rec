@@ -1,8 +1,10 @@
 <resources>
+
+    <color name="bg_dark">#5F5F5F</color>
     <!-- プライマリカラー-->
-    <color name="primary">#ef5350</color>
+    <color name="primary">#DA4B49</color>
     <!-- ステータスバーカラー -->
-    <color name="primary_dark">#c44442</color>
+    <color name="primary_dark">#AA2423</color>
     <!-- ツールバーのタイトル色 -->
     <color name="toolbar_title">#ffffff</color>
     <!-- 選択されていないタブ色 -->
@@ -14,15 +16,24 @@
     <!-- 警告表示 -->
     <color name="warning">#F8BBD0</color>
     <!-- 再生カラー -->
-    <color name="play">#76FF03</color>
-    <color name="play_pressed">#65f10c</color>
-    <color name="play_light">#CCFF90</color>
+    <color name="play">#69EB01</color>
+    <color name="play_pressed">#5FDD0F</color>
+    <color name="play_light">#BDF37E</color>
+
+    <color name="spinner">#443F3F</color>
 
     <!-- 白 -->
     <color name="white">#ffffff</color>
+
     <!-- テキスト色 -->
-    <color name="text">@color/abc_secondary_text_material_light</color>
-    <color name="text_dark">@color/abc_primary_text_material_light</color>
+    <!--<color name="text">@color/abc_secondary_text_material_light</color>-->
+    <!--<color name="text_dark">@color/abc_primary_text_material_light</color>-->
+    <color name="text">#F3F3F3</color>
+    <color name="text_dark">#DFDFDF</color>
+
+    <!-- Left/Right arrows -->
+    <color name="arrow">#C7C7C7</color>
+
     <!-- スクリーンショットの吹き出し色 -->
     <color name="ss_card">#C5CAE9</color>
     <!-- スクリーンショットの矢印色 -->

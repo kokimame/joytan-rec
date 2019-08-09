@@ -1,10 +1,8 @@
 package jp.bellware.echo.data
 
-import android.os.Environment
 import jp.bellware.echo.filter.GainDetector
+import java.io.*
 
-import java.io.FileOutputStream
-import java.io.IOException
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.util.ArrayList
@@ -13,9 +11,8 @@ import java.util.ArrayList
  * 録音音声を保持する
  */
 class QRecStorage {
-
     /**
-     * 最大のパケットの大きさ
+     * Max packet size
      */
     @get:Synchronized
     var packetSize: Int = 0
@@ -84,14 +81,10 @@ class QRecStorage {
         return if (index >= packets.size) null else packets[index]
     }
 
-
-    /**
-     * デバッグ用にwavファイルを保存する
-     */
-    fun save() {
+    fun save(outputFileName: String) {
         var fos: FileOutputStream? = null
         try {
-            fos = FileOutputStream(Environment.getExternalStorageDirectory().absolutePath + "/output.wav")
+            fos = FileOutputStream(outputFileName)
             //ヘッダ書き込み
             val buffer = ByteBuffer.allocate(44)
             buffer.order(ByteOrder.LITTLE_ENDIAN)
@@ -127,8 +120,8 @@ class QRecStorage {
                     fos.close()
                 } catch (e: IOException) {
                 }
-
             }
         }
     }
+
 }

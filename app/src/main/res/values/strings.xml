@@ -6,9 +6,7 @@
         <item>Project 3</item>
     </string-array>
 
-    <string name="left_cliecked">Left is clicked</string>
-
-    <string name="app_name">Joytan Recorder</string>
+    <string name="app_name">Joytan REC</string>
     <string name="app_name_long">Joytan Recorder</string>
 
     <!-- 実行時許可 -->

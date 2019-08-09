@@ -73,10 +73,6 @@ class PlayHandler(private val storage: QRecStorage) {
         thread = Thread(Runnable {
             //これがないと音が途切れる
             android.os.Process.setThreadPriority(Process.THREAD_PRIORITY_URGENT_AUDIO)
-            if (false) {
-                //デバッグ用セーブ
-                storage.save()
-            }
 
             fo = FadeOut(storage.length, RecordHandler.SAMPLE_RATE * 3 / 10)
             fc.reset()
