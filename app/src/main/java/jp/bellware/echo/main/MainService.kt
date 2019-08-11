@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Binder
 import android.os.Handler
 import android.os.IBinder
+import android.widget.ProgressBar
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.idling.CountingIdlingResource
 import jp.bellware.echo.R
@@ -98,6 +99,8 @@ class MainService : Service() {
      * 現在の状態
      */
     private var status = QRecStatus.INIT
+
+    private lateinit var audioPath :String
 
 
     /**
@@ -250,9 +253,15 @@ class MainService : Service() {
      * When Share is requested
      */
     fun onShare() {
-//        if (status == QRecStatus.STOP || status == QRecStatus.PLAYING){
-//        }
+//        currentAudioPath = cb?.get
+        val maybeNullPath = cb?.getAudioOutputPath()
+        if(maybeNullPath == null) {
+            return
+        } else {
+            audioPath = maybeNullPath
+        }
         status = QRecStatus.SHARE
+        cb?.onShowProgress("Sending...")
         update()
     }
 
@@ -329,7 +338,7 @@ class MainService : Service() {
         } else if (status == QRecStatus.STARTING_RECORD) {
             cir.increment()
             //音を鳴らす
-            seh.start()
+//            seh.start()
             //再生終了
             play.stop()
             //視覚的ボリュームをリセット
@@ -378,7 +387,7 @@ class MainService : Service() {
             //Analytics
             ah.sendAction("play", (storage.length / 44100).toLong())
         } else if (status == QRecStatus.SHARE) {
-            share.share {}
+            share.share (fileName = audioPath) {}
             status = QRecStatus.STOPPING_PLAYING
             update()
             ah.sendAction("share")
@@ -390,7 +399,6 @@ class MainService : Service() {
         }
         //状態更新をActivityに通知
         cb?.onUpdateStatus(true, status)
-
     }
 
     companion object {
@@ -401,8 +409,8 @@ class MainService : Service() {
         private val END_TIME = 2000
 
         /**
-         * 録音時間制限は2分
+         * 録音時間制限は 15sec
          */
-        private val TIME_LIMIT = 2 * 60 * 1000
+        private val TIME_LIMIT = 15 * 1000
     }
 }

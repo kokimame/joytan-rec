@@ -89,7 +89,7 @@ class ExplosionView : View {
         val radius = (Math.sqrt((centerY * centerY + centerX * centerX).toDouble()) * 1.2f).toFloat()
         //大きくしつつ透明にする
         val pvhR = PropertyValuesHolder.ofFloat("radius", 0f, radius)
-        val pvhA = PropertyValuesHolder.ofFloat("alpha", 1f, 0f)
+        val pvhA = PropertyValuesHolder.ofFloat("alpha", 0.5f, 0f)
         val animator = ObjectAnimator.ofPropertyValuesHolder(this, pvhA, pvhR)
         animator.duration = 500
         animator.interpolator = LinearInterpolator()

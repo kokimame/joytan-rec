@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="warning_time_limit">録音可能時間は最長2分です。</string>
+    <string name="warning_time_limit">録音可能時間は最長15秒です。</string>
     <string name="warning_volume">音楽ボリュームがミュートになっています。</string>
     <string name="pref_oss">オープンソースライセンス</string>
     <string name="pref_sound">効果音</string>
     <string name="pref_information">アプリについて</string>
     <string name="title_setting">設定</string>
-    <string name="app_name">エコー</string>
-    <string name="app_name_long">クイックエコー</string>
+    <string name="app_name">ジョイ単REC</string>
+    <string name="app_name_long">ジョイ単 Record</string>
     <string name="warning_no_sound">なにも録音されていません。</string>
     <string name="black">白紙</string>
     <string name="script">台本</string>

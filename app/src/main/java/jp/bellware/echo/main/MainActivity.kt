@@ -1,6 +1,7 @@
 package jp.bellware.echo.main
 
 import android.Manifest
+import android.app.ProgressDialog
 //import android.support.v7.app.AppCompatActivity
 //import android.databinding.DataBindingUtil
 import android.media.AudioManager
@@ -8,9 +9,10 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuItem
-import android.view.View
+import android.os.Handler
+import android.util.Log
+import android.view.*
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Spinner
 import android.widget.TextView
@@ -25,29 +27,36 @@ import kotlinx.android.synthetic.main.main_status.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.GestureDetectorCompat
+import androidx.core.view.MotionEventCompat
 import androidx.databinding.DataBindingUtil
 import com.google.firebase.storage.FirebaseStorage
 import jp.bellware.echo.databinding.ActivityMainBinding
+import org.json.JSONArray
 import java.io.File
 import kotlin.math.max
 import kotlin.math.min
 
 import org.json.JSONObject
+import java.lang.Exception
+import kotlin.math.abs
 
 
 /**
  * メイン画面
  */
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
     /**
      * 警告担当
      */
     private val wh = WarningHandler()
-
     /**
      * ボリュームの設定担当
      */
     private lateinit var audioManager: AudioManager
+    private lateinit var mDetector: GestureDetectorCompat
+
+    private lateinit var pd: ProgressDialog
 
 
     /**
@@ -55,13 +64,24 @@ class MainActivity : AppCompatActivity() {
      */
     private val animator = QRecAnimator()
 
-    private val mainScripts = mutableListOf<String>()
+    private lateinit var projectsJson: JSONArray
+    private var mainScripts = mutableListOf<String>()
 
     private val fStorage = FirebaseStorage.getInstance()
     // Create a storage reference from our app
     private val fStorageRef = fStorage.reference
-    private val projectsRef = fStorageRef.child("test_projects.json")
-    private val tempFile = File.createTempFile("projects", "json")
+    private val projectsRef = fStorageRef.child("projects_structure.json")
+    private val tempProjectsFile = File.createTempFile("projects", "json")
+
+    private var currentIndex = 0
+    private var currentTotalIndex = 0
+    private var currentWantedKey = "atop"
+    private lateinit var currentDirname: String
+
+    private val SWIPE_MIN_DISTANCE = 120
+    private val SWIPE_MAX_OFF_PATH = 250
+    private val SWIPE_THRESHOLD_VELOCITY = 200
+    private val INFO_TAG = "joytan"
 
     /**
      * メイン画面のビューモデル
@@ -73,6 +93,7 @@ class MainActivity : AppCompatActivity() {
             animator.startDeleteAnimation(replay)
             animator.startDeleteAnimation(share)
         }
+
 
         override fun onStartRecord() {
             //爆発エフェクト
@@ -98,13 +119,19 @@ class MainActivity : AppCompatActivity() {
             var index = mainScripts.indexOf(mainText.text)
 
             if (direction == "left") {
-                index = max(0, index - 1)
+                index -= 1
+                if (index < 0) index = mainScripts.size - 1
             }
             else if (direction == "right") {
-                index = min(mainScripts.size - 1, index + 1)
+                index += 1
+                if (index > mainScripts.size - 1) index = 0
             }
             mainText.setText(mainScripts.get(index))
+            updateIndex(index)
+        }
 
+        override fun getAudioOutputPath(): String {
+            return "projects/${currentDirname}/${currentIndex}/${currentWantedKey}.wav"
         }
 
         override fun onUpdateVolume(volume: Float) {
@@ -117,8 +144,19 @@ class MainActivity : AppCompatActivity() {
             wh.show(resId)
         }
 
-    });
+        override fun onShowProgress(message: String) {
+            pd.setMessage(message)
+            pd.setCancelable(false)
+            pd.show()
+            Handler().postDelayed({pd.dismiss()}, 500)
+        }
+        override fun onDismissProgress() {
+            if (pd.isShowing) {
+                pd.dismiss()
+            }
+        }
 
+    });
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -134,27 +172,30 @@ class MainActivity : AppCompatActivity() {
         //AudioManagerを取得
         this.audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
 
+        this.pd = ProgressDialog(this, ProgressDialog.THEME_HOLO_LIGHT)
+        pd.setProgressStyle(ProgressDialog.STYLE_SPINNER)
+
+        this.mDetector = GestureDetectorCompat(this, this)
+
         //警告担当
         wh.onCreate(this)
         viewModel.onCreate()
 
-        projectsRef.getFile(tempFile).addOnSuccessListener {
-            val jsonString: String = tempFile.readText(Charsets.UTF_8)
+        projectsRef.getFile(tempProjectsFile).addOnSuccessListener {
+            val jsonString: String = tempProjectsFile.readText(Charsets.UTF_8)
             val jsonObject = JSONObject(jsonString)
-            val projectsJson = jsonObject.getJSONArray("projects")
+
+            projectsJson = jsonObject.getJSONArray("projects")
             val projectsList = mutableListOf<String>()
+            val initialEntries = projectsJson.getJSONObject(0).getJSONArray("entries")
+            val wantedKey = projectsJson.getJSONObject(0).getString("wanted")
 
             for (i in 0 until projectsJson.length()) {
-                projectsList.add(projectsJson.getJSONObject(i).getString("title"))
+                var projectTitle = projectsJson.getJSONObject(i).getString("title")
+                projectsList.add(projectTitle)
             }
-
-            val entriesJson = projectsJson.getJSONObject(0).getJSONArray("entries")
-            for (i in 0 until entriesJson.length()) {
-                mainScripts.add(entriesJson.getJSONObject(i).getString("atop"))
-            }
-
             setupSpinner(projectsList)
-            setupMainScript()
+            updateMainScript(initialEntries, wantedKey)
 
         }.addOnFailureListener {
             val projectsList = listOf("Failed", "to", "load JSON", "from Firebase")
@@ -189,19 +230,31 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Setup the main script
+     * Update the main script
      */
-    private fun setupMainScript() {
+    private fun updateMainScript(entriesJson: JSONArray, wantedKey: String) {
+        val newMainScript = mutableListOf<String>()
+        for (i in 0 until entriesJson.length()) {
+            newMainScript.add(entriesJson.getJSONObject(i).getString(wantedKey))
+        }
+        mainScripts = newMainScript
         val mainText: TextView = findViewById(R.id.main_text)
         mainText.text = mainScripts[0]
+
+        currentTotalIndex = mainScripts.size
+        updateIndex(0)
     }
 
-
+    private fun updateIndex(newIndex: Int) {
+        val indexText = findViewById<TextView>(R.id.index_text)
+        currentIndex = newIndex
+        indexText.setText("${currentIndex + 1}/${currentTotalIndex}")
+    }
     /*
      * Setup the project spinner
      */
     private fun setupSpinner(projectsList: List<String>) {
-        val spinner: Spinner = findViewById(R.id.project_spinner)
+        val spinner: Spinner = findViewById(R.id.projects_spinner)
 
         ArrayAdapter(
                 this,
@@ -214,7 +267,70 @@ class MainActivity : AppCompatActivity() {
             // Apply the adapter to the spinner
             spinner.setAdapter(adapter)
         }
+        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
+                val entriesJson = projectsJson.getJSONObject(position).getJSONArray("entries")
+                currentWantedKey = projectsJson.getJSONObject(position).getString("wanted")
+                currentDirname = projectsJson.getJSONObject(position).getString("dir_name")
+                updateMainScript(entriesJson, currentWantedKey)
+            } // to close the onItemSelected
 
+            override fun onNothingSelected(parent: AdapterView<*>) {
+
+            }
+        }
+    }
+
+    override fun onTouchEvent(event: MotionEvent?): Boolean {
+        return if (mDetector.onTouchEvent(event)) {
+            true
+        } else {
+            super.onTouchEvent(event)
+        }
+    }
+
+    override fun onShowPress(p0: MotionEvent?) {
+//        Log.i(INFO_TAG, "onShowPress $p0")
+    }
+
+    override fun onSingleTapUp(p0: MotionEvent?): Boolean {
+//        Log.i(INFO_TAG, "onSingleTapUp $p0")
+        return true
+    }
+
+    override fun onDown(p0: MotionEvent?): Boolean {
+//        Log.i(INFO_TAG, "onDown $p0")
+        return true
+    }
+
+    override fun onFling(e0: MotionEvent?, e1: MotionEvent?, vx: Float, vy: Float): Boolean {
+        try {
+            if (abs(e0!!.getY() - e1!!.getY()) > SWIPE_MAX_OFF_PATH) {
+                return false
+            } else if (e0!!.getX() - e1!!.getX() > SWIPE_MIN_DISTANCE &&
+                    abs(vx) > SWIPE_THRESHOLD_VELOCITY) {
+                Log.i(INFO_TAG, "swipe left!!")
+                viewModel.onRightClicked()
+                return true
+            } else if (e1!!.getX() - e0!!.getX() > SWIPE_MIN_DISTANCE &&
+                    abs(vx) > SWIPE_THRESHOLD_VELOCITY) {
+                Log.i(INFO_TAG, "swipe right!!")
+                viewModel.onLeftClicked()
+                return true
+            }
+        } catch (e: Exception) {
+
+        }
+        return false
+    }
+
+    override fun onScroll(p0: MotionEvent?, p1: MotionEvent?, p2: Float, p3: Float): Boolean {
+//        Log.i(INFO_TAG, "onScroll $p0, $p1")
+        return true
+    }
+
+    override fun onLongPress(p0: MotionEvent?) {
+//        Log.i(INFO_TAG, "$p0")
     }
 
     override fun onStart() {

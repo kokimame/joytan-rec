@@ -23,10 +23,16 @@ interface MainServiceCallback {
      */
     fun onScriptNavigation(direction: String)
 
+    fun getAudioOutputPath(): String
+
     /**
      * Warning message
      * @param resId Message Id
      */
     fun onShowWarningMessage(resId: Int)
+
+    fun onShowProgress(message: String)
+
+    fun onDismissProgress()
 
 }

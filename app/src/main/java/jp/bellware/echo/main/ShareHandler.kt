@@ -27,7 +27,7 @@ class ShareHandler(private val storage: QRecStorage) {
 
     fun onResume() {}
 
-    fun share(onEndListener: () -> Unit) {
+    fun share(fileName: String, onEndListener: () -> Unit) {
         if (storage.length == 0) {
             // If packet length zero, end immediately
             onEndListener()
@@ -36,7 +36,7 @@ class ShareHandler(private val storage: QRecStorage) {
 
         val outputFileName = Environment.getExternalStorageDirectory().absolutePath + "/output.wav"
         val outputFile = Uri.fromFile(File(outputFileName))
-        val audioRef = fStorageRef.child("output.wav")
+        val audioRef = fStorageRef.child(fileName)
 
         track = AudioTrack(AudioManager.STREAM_MUSIC,
                 RecordHandler.SAMPLE_RATE,

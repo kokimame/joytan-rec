@@ -1,12 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
-    <data>
-        <variable
-            name="viewModel"
-            type="jp.bellware.echo.main.MainViewModel" />
-    </data>
-
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="80dp"
@@ -75,6 +69,7 @@
             app:myFabIcon="@drawable/ic_share_white_24dp"
             app:myFabSize="mini" />
 
+        <!-- Setting button -->
         <jp.bellware.echo.main.view.MyFAB
             android:id="@+id/setting"
             android:layout_width="wrap_content"
@@ -87,8 +82,13 @@
             app:myFabIcon="@drawable/ic_setting_white_24dp"
             app:myFabSize="mini" />
 
-        <!-- Setting button -->
 
 
     </FrameLayout>
+
+    <data>
+        <variable
+            name="viewModel"
+            type="jp.bellware.echo.main.MainViewModel" />
+    </data>
 </layout>

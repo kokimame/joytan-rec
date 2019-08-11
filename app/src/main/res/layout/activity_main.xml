@@ -13,36 +13,14 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/bg_dark"
+        android:background="@drawable/cool_gradient"
 
         tools:context=".main.MainActivity">
-
-
-        <!--<androidx.appcompat.widget.Toolbar-->
-            <!--android:id="@+id/toolbar"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_gravity="top" />-->
 
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1">
-
-            <!--<fragment-->
-                <!--android:id="@+id/nav_host_fragment"-->
-                <!--android:layout_height="match_parent"-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:name="androidx.navigation.fragment.NavHostFragment"-->
-                <!--app:navGraph="@navigation/navigation_graph"-->
-                <!--app:defaultNavHost="true"/>-->
-
-            <!-- Toolbar shadow -->
-            <!--<ImageView-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="6dp"-->
-                <!--android:src="@drawable/shadow"-->
-                <!--android:contentDescription="TODO" />-->
 
             <!-- Contents -->
 
@@ -55,13 +33,35 @@
                 android:layout_marginBottom="-400dp" />
 
             <!-- Spinner for projects -->
-            <Spinner
-                android:id="@+id/project_spinner"
+            <LinearLayout
+                android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:layout_marginHorizontal="10dp"
-                android:backgroundTint="@color/arrow"
-                android:textSize="20sp"/>
+                android:layout_height="wrap_content">
+                <Spinner
+                    android:id="@+id/projects_spinner"
+                    android:layout_width="match_parent"
+                    android:layout_height="?attr/dropdownListPreferredItemHeight"
+                    android:dropDownWidth="match_parent"
+                    android:dropDownVerticalOffset="?attr/dropdownListPreferredItemHeight"
+                    android:popupBackground="@android:color/white"
+                    android:popupElevation="5dp"
+                    android:background="@drawable/spinner_bg"
+                    android:theme="@style/MatchSpinnerTheme"
+                    android:stateListAnimator="@drawable/spinner_sla" />
+
+                <TextView
+                    android:id="@+id/index_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    android:gravity="center"
+                    android:textColor="@color/text_dark"
+                    android:text="TextView" />
+            </LinearLayout>
+
+            <include
+                layout="@layout/background_arrows"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
 
             <include
                 layout="@layout/main_script"
@@ -69,7 +69,6 @@
                 app:viewModel="@{viewModel}" />
 
             <!-- Display recording status -->
-
             <include
                 layout="@layout/main_status"
                 android:layout_width="match_parent"

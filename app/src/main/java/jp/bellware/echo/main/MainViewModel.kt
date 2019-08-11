@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.ServiceConnection
 //import android.databinding.ObservableField
 import android.os.IBinder
+import android.view.GestureDetector
 import android.view.View
 import androidx.databinding.ObservableField
 import jp.bellware.echo.R
@@ -46,7 +47,13 @@ class MainViewModel(private val context: Context, private val listener: Listener
          */
         fun onShowWarningMessage(resId: Int)
 
+        fun onShowProgress(message: String)
+
+        fun onDismissProgress()
+
         fun onScriptNavigation(direction: String)
+
+        fun getAudioOutputPath(): String
     }
 
     /**
@@ -205,6 +212,18 @@ class MainViewModel(private val context: Context, private val listener: Listener
             listener.onShowWarningMessage(resId)
         }
 
+        override fun onShowProgress(message: String) {
+            listener.onShowProgress(message)
+        }
+
+        override fun onDismissProgress() {
+            listener.onDismissProgress()
+        }
+
+        override fun getAudioOutputPath(): String {
+            return listener.getAudioOutputPath()
+        }
+
     }
 
 
@@ -308,6 +327,13 @@ class MainViewModel(private val context: Context, private val listener: Listener
     /*
      * On Left button clicked
      */
+    fun onLeftClicked() {
+        service?.onLeft()
+    }
+    fun onRightClicked() {
+        service?.onRight()
+    }
+
     fun onLeftClicked(view : View) {
         service?.onLeft()
     }
