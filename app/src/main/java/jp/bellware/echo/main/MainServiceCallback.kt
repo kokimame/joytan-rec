@@ -23,7 +23,7 @@ interface MainServiceCallback {
      */
     fun onScriptNavigation(direction: String)
 
-    fun getAudioOutputPath(): String
+    fun onGetAudioPath(): String
 
     /**
      * Warning message
@@ -35,4 +35,7 @@ interface MainServiceCallback {
 
     fun onDismissProgress()
 
+    fun onShowGrid()
+
+    fun onCallSetting()
 }

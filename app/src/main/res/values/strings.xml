@@ -27,12 +27,16 @@
     <string name="title_setting">Settings</string>
     <string name="pref_sound">Sound effect</string>
     <string name="pref_invite">Tell this app</string>
-    <string name="pref_information">Information</string>
+    <string name="pref_information">About this app</string>
     <string name="pref_oss">Open source license</string>
     <string name="version" translatable="false">Version</string>
-    <string name="version_sample" translatable="false">Version 1.0.0</string>
+    <string name="version_name" translatable="false">BETA-1.0</string>
     <string name="copyright" translatable="false">&#169; Joytan App</string>
     <string name="pref_privacy_policy">Privacy Policy</string>
+    <string name="joytan_twitter">See Progress on Twitter</string>
+    <string name="joytan_youtube">Joytan on YouTube</string>
+    <string name="joytan_website">Joytan Website</string>
+    <string name="pref_credit">Edit Your Credit</string>
     <!-- 紹介 -->
 
     <!-- 台本 -->

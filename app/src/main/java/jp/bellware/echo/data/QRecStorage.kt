@@ -1,5 +1,6 @@
 package jp.bellware.echo.data
 
+import android.util.Log
 import jp.bellware.echo.filter.GainDetector
 import java.io.*
 
@@ -114,11 +115,13 @@ class QRecStorage {
             }
         } catch (e: IOException) {
             e.printStackTrace()
+            Log.i("JOYTAN-QStorage", e.toString())
         } finally {
             if (fos != null) {
                 try {
                     fos.close()
                 } catch (e: IOException) {
+                    Log.i("JOYTAN-QStorage", e.toString())
                 }
             }
         }

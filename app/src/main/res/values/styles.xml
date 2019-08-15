@@ -1,11 +1,20 @@
 <resources>
+    <style name="SettingsFragmentStyle">
+        <item name="android:textColorSecondary">@color/text_dark</item>
+        <item name="android:backgroundTint">@color/bg_dark</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:background">@color/bg_dark</item>
+        <item name="android:divider">@color/white</item>
+    </style>
 
     <style name="MatchSpinnerStyle" parent="android:style/Widget.ListView.DropDown">
-        <item name="android:divider">#000000</item>
+        <item name="android:divider">@color/bg_darkest</item>
         <item name="android:dividerHeight">1dp</item>
+        <item name="android:background">@color/bg_dark</item>
     </style>
 
     <style name="MatchSpinnerTheme" parent="AppTheme">
+        <item name="android:overlapAnchor">true</item>
         <item name="android:dropDownListViewStyle">@style/MatchSpinnerStyle</item>
     </style>
 
@@ -25,6 +34,7 @@
         <item name="colorControlNormal">@color/toolbar_title</item>
         <!-- ボタンのスタイル -->
         <item name="android:alertDialogStyle">@style/AlertDialog</item>
+
     </style>
 
     <style name="Toolbar" parent="Widget.AppCompat.Toolbar">

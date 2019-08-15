@@ -22,13 +22,18 @@ class SettingActivity : AppCompatActivity() {
         setContentView(R.layout.activity_setting)
         //ツールバーの設定
         setSupportActionBar(toolbar)
+        setTheme(R.style.SettingsFragmentStyle)
+
         val lsab = supportActionBar
         lsab?.setHomeButtonEnabled(true)
         lsab?.setDisplayHomeAsUpEnabled(true)
         //フラグメントの追加
         val ft = fragmentManager.beginTransaction()
         ft.replace(R.id.preference_frame, SettingFragment())
+
         ft.commit()
+
+
         //Analytics
         ah.onCreate(this)
     }

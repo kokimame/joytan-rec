@@ -27,4 +27,8 @@
     <string name="title_permission">情報</string>
     <string name="cancel">キャンセル</string>
     <string name="pref_privacy_policy">プライバシーポリシー</string>
+    <string name="joytan_twitter">ツイッターで進捗確認</string>
+    <string name="joytan_youtube">ジョイ単 on YouTube</string>
+    <string name="joytan_website">ジョイ単 ウェブサイト</string>
+    <string name="pref_credit">クレジットの編集</string>
 </resources>

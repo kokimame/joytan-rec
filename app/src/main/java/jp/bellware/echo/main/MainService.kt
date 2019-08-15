@@ -5,7 +5,7 @@ import android.content.Intent
 import android.os.Binder
 import android.os.Handler
 import android.os.IBinder
-import android.widget.ProgressBar
+import android.util.Log
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.idling.CountingIdlingResource
 import jp.bellware.echo.R
@@ -253,8 +253,7 @@ class MainService : Service() {
      * When Share is requested
      */
     fun onShare() {
-//        currentAudioPath = cb?.get
-        val maybeNullPath = cb?.getAudioOutputPath()
+        val maybeNullPath = cb?.onGetAudioPath()
         if(maybeNullPath == null) {
             return
         } else {
@@ -286,6 +285,14 @@ class MainService : Service() {
 
     fun onRight() {
         onScriptNavigation("right")
+    }
+
+    fun onGrid() {
+        cb?.onShowGrid()
+    }
+
+    fun onSetting() {
+        cb?.onCallSetting()
     }
 
     /*

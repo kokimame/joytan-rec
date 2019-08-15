@@ -11,6 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
+        android:background="@color/bg_dark"
         tools:context="jp.bellware.echo.setting.AboutActivity">
 
         <androidx.appcompat.widget.Toolbar
@@ -23,7 +24,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/activity_margin"
             android:scaleType="center"
-            android:src="@drawable/about" />
+            android:src="@mipmap/ic_launcher_foreground" />
 
         <TextView
             android:layout_width="match_parent"
@@ -45,6 +46,7 @@
             android:layout_marginTop="@dimen/activity_margin"
             android:text="@{viewModel.versionText}"
             android:textColor="@color/text"
+            android:gravity="center"
             android:textSize="@dimen/body" />
 
         <TextView
@@ -54,7 +56,18 @@
             android:layout_marginRight="@dimen/activity_margin"
             android:text="@string/copyright"
             android:textColor="@color/text"
+            android:gravity="center"
             android:textSize="@dimen/body" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="8dp"
+            android:layout_marginLeft="@dimen/activity_margin"
+            android:layout_marginRight="@dimen/activity_margin"
+            android:text="This section is going to make a detail explaination on permission, term of use etc"
+            android:textColor="@color/text"
+            android:textSize="16dp" />
 
 
     </LinearLayout>

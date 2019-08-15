@@ -5,6 +5,7 @@ import android.media.AudioManager
 import android.media.AudioTrack
 import android.os.*
 import android.os.Process
+import android.util.Log
 
 import java.util.Arrays
 
@@ -72,29 +73,46 @@ class PlayHandler(private val storage: QRecStorage) {
         index = 1
         thread = Thread(Runnable {
             //これがないと音が途切れる
-            android.os.Process.setThreadPriority(Process.THREAD_PRIORITY_URGENT_AUDIO)
+            Process.setThreadPriority(Process.THREAD_PRIORITY_URGENT_AUDIO)
 
             fo = FadeOut(storage.length, RecordHandler.SAMPLE_RATE * 3 / 10)
             fc.reset()
             if (ltrack != null) {
-                ltrack.play()
+                /*
+                TODO: ERROR
+                E/AndroidRuntime: FATAL EXCEPTION: Thread-52
+                Process: jp.bellware.echo, PID: 16106
+                java.lang.IllegalStateException: play() called on uninitialized AudioTrack.
+                    at android.media.AudioTrack.play(AudioTrack.java:1755)
+                    at jp.bellware.echo.main.PlayHandler$play$1.run(PlayHandler.kt:80)
+                    at java.lang.Thread.run(Thread.java:776)
+                 */
                 try {
-                    Thread.sleep((storage.packetSize * 1000 / 44100).toLong())
-                } catch (e: InterruptedException) {
-                }
+                    ltrack.play()
 
-                while (true) {
-                    val packet = pullPacket(onEndListener)
-                    if (packet != null) {
-                        filter(packet)
-                        val sd = converter.convert(packet)
-                        val result = ltrack.write(sd, 0, sd.size)
-                        if (result < 0)
-                            break
-                    } else {
-                        break
+                    try {
+                        Thread.sleep((storage.packetSize * 1000 / 44100).toLong())
+                    } catch (e: InterruptedException) {
                     }
+
+                    while (true) {
+                        val packet = pullPacket(onEndListener)
+                        if (packet != null) {
+                            filter(packet)
+                            val sd = converter.convert(packet)
+
+                            val result = ltrack.write(sd, 0, sd.size)
+
+                            if (result < 0)
+                                break
+                        } else {
+                            break
+                        }
+                    }
+                } catch (e: IllegalStateException) {
+                    Log.i("JOYTAN-PlayHandler", e.toString())
                 }
+                Log.i("JOYTAN-PlayHandler", "play called")
             }
 
         })

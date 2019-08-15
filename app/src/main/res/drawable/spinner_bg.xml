@@ -1,15 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<selector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:exitFadeDuration="@android:integer/config_mediumAnimTime">
-    <!--<item android:state_pressed="true" android:drawable="@android:color/white" />-->
-    <!--<item android:state_selected="true" android:drawable="@android:color/white" />-->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item>
-        <inset android:insetLeft="-1dp" android:insetRight="-1dp">
-            <shape android:shape="rectangle">
-                <stroke android:width="1dp"
-                    android:color="#000000" />
-                <solid android:color="@color/bg_dark" />
-            </shape>
-        </inset>
+        <layer-list>
+
+            <item>
+                <color
+                    android:color="@color/bg_dark"/>
+            </item>
+
+            <item android:right="10dp">
+                <bitmap
+                    android:gravity="center_vertical|right"
+                    android:src="@drawable/ic_projects_24dp" />
+            </item>
+        </layer-list>
     </item>
+
 </selector>

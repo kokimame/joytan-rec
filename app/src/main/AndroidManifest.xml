@@ -20,8 +20,8 @@
         <activity
             android:name="jp.bellware.echo.start.StartActivity"
             android:label="@string/app_name"
-            android:launchMode="singleInstance"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen">
+            android:launchMode="singleInstance">
+            <!--android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen">-->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 

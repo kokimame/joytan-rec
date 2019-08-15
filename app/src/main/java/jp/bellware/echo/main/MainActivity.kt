@@ -1,6 +1,7 @@
 package jp.bellware.echo.main
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.ProgressDialog
 //import android.support.v7.app.AppCompatActivity
 //import android.databinding.DataBindingUtil
@@ -8,14 +9,19 @@ import android.media.AudioManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.drawable.BitmapDrawable
+import android.media.Image
 import android.os.Bundle
 import android.os.Handler
+import android.provider.Settings
 import android.util.Log
 import android.view.*
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.Spinner
-import android.widget.TextView
+import android.widget.*
+import androidx.appcompat.app.AlertDialog
 
 import jp.bellware.echo.R
 
@@ -30,15 +36,21 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.GestureDetectorCompat
 import androidx.core.view.MotionEventCompat
 import androidx.databinding.DataBindingUtil
+import androidx.test.InstrumentationRegistry.getContext
+import com.google.firebase.iid.FirebaseInstanceId
 import com.google.firebase.storage.FirebaseStorage
 import jp.bellware.echo.databinding.ActivityMainBinding
+import net.khirr.android.privacypolicy.PrivacyPolicyDialog
 import org.json.JSONArray
 import java.io.File
 import kotlin.math.max
 import kotlin.math.min
 
 import org.json.JSONObject
+import org.w3c.dom.Text
+import java.io.ObjectOutputStream
 import java.lang.Exception
+import java.util.*
 import kotlin.math.abs
 
 
@@ -47,20 +59,31 @@ import kotlin.math.abs
  */
 class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
     /**
-     * 警告担当
+     * Warning
      */
     private val wh = WarningHandler()
     /**
-     * ボリュームの設定担当
+     * Audio volume
      */
     private lateinit var audioManager: AudioManager
+    /**
+     * Detect swipe gesture etc
+     */
     private lateinit var mDetector: GestureDetectorCompat
-
+    /**
+     * Show progress of data transaction with Firebase server
+     */
     private lateinit var pd: ProgressDialog
 
+    private lateinit var gridl: PopupMenu
+    /**
+     * TODO: More persistent ID demanded
+     * Unique ID of users. Used to manage user contribution, credits etc
+     */
+    private val uniqueID = FirebaseInstanceId.getInstance().getToken()?.substring(0, 11)
 
     /**
-     * アニメ担当
+     * Handling custom animation for buttion, explosion etc
      */
     private val animator = QRecAnimator()
 
@@ -76,7 +99,9 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
     private var currentIndex = 0
     private var currentTotalIndex = 0
     private var currentWantedKey = "atop"
-    private lateinit var currentDirname: String
+    lateinit var currentDirname: String
+    // Map to save user progress record
+    val progressDB = mutableMapOf<String, MutableList<Int>>()
 
     private val SWIPE_MIN_DISTANCE = 120
     private val SWIPE_MAX_OFF_PATH = 250
@@ -130,8 +155,10 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
             updateIndex(index)
         }
 
-        override fun getAudioOutputPath(): String {
-            return "projects/${currentDirname}/${currentIndex}/${currentWantedKey}.wav"
+        override fun onGetAudioPath(): String {
+            return "users/${uniqueID}/${currentDirname}/" +
+                    "${(currentIndex + 1).toString().padStart(5, '0')}" +
+                    "/${currentWantedKey}.wav"
         }
 
         override fun onUpdateVolume(volume: Float) {
@@ -145,6 +172,7 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
         }
 
         override fun onShowProgress(message: String) {
+            updateProgressDB()
             pd.setMessage(message)
             pd.setCancelable(false)
             pd.show()
@@ -154,6 +182,14 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
             if (pd.isShowing) {
                 pd.dismiss()
             }
+        }
+
+        override fun onShowGrid() {
+            showGrid()
+        }
+
+        override fun onCallSetting() {
+            callSettingActivity()
         }
 
     });
@@ -191,9 +227,12 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
             val wantedKey = projectsJson.getJSONObject(0).getString("wanted")
 
             for (i in 0 until projectsJson.length()) {
-                var projectTitle = projectsJson.getJSONObject(i).getString("title")
+                val projectTitle = projectsJson.getJSONObject(i).getString("title")
+                val projectDirname = projectsJson.getJSONObject(i).getString("dirname")
                 projectsList.add(projectTitle)
+                progressDB.put(projectDirname, mutableListOf<Int>())
             }
+
             setupSpinner(projectsList)
             updateMainScript(initialEntries, wantedKey)
 
@@ -202,7 +241,7 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
             setupSpinner(projectsList)
         }
 
-        // Here, thisActivity is the current activity
+        // Runtime permission
         if (ContextCompat.checkSelfPermission(this,
                         Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -219,10 +258,6 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
                 ActivityCompat.requestPermissions(this,
                         arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
                         10)
-
-                // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
-                // app-defined int constant. The callback method gets the
-                // result of the request.
             }
         } else {
             // Permission has already been granted
@@ -238,17 +273,21 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
             newMainScript.add(entriesJson.getJSONObject(i).getString(wantedKey))
         }
         mainScripts = newMainScript
-        val mainText: TextView = findViewById(R.id.main_text)
-        mainText.text = mainScripts[0]
-
-        currentTotalIndex = mainScripts.size
         updateIndex(0)
     }
 
     private fun updateIndex(newIndex: Int) {
         val indexText = findViewById<TextView>(R.id.index_text)
+        val mainText: TextView = findViewById(R.id.main_text)
         currentIndex = newIndex
+        currentTotalIndex = mainScripts.size
+        mainText.text = mainScripts[newIndex]
         indexText.setText("${currentIndex + 1}/${currentTotalIndex}")
+    }
+
+    private fun updateProgressDB(){
+        if (currentIndex !in progressDB[currentDirname]!!)
+            progressDB[currentDirname]?.add(currentIndex)
     }
     /*
      * Setup the project spinner
@@ -271,10 +310,9 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
                 val entriesJson = projectsJson.getJSONObject(position).getJSONArray("entries")
                 currentWantedKey = projectsJson.getJSONObject(position).getString("wanted")
-                currentDirname = projectsJson.getJSONObject(position).getString("dir_name")
+                currentDirname = projectsJson.getJSONObject(position).getString("dirname")
                 updateMainScript(entriesJson, currentWantedKey)
             } // to close the onItemSelected
-
             override fun onNothingSelected(parent: AdapterView<*>) {
 
             }
@@ -309,12 +347,10 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
                 return false
             } else if (e0!!.getX() - e1!!.getX() > SWIPE_MIN_DISTANCE &&
                     abs(vx) > SWIPE_THRESHOLD_VELOCITY) {
-                Log.i(INFO_TAG, "swipe left!!")
                 viewModel.onRightClicked()
                 return true
             } else if (e1!!.getX() - e0!!.getX() > SWIPE_MIN_DISTANCE &&
                     abs(vx) > SWIPE_THRESHOLD_VELOCITY) {
-                Log.i(INFO_TAG, "swipe right!!")
                 viewModel.onLeftClicked()
                 return true
             }
@@ -393,7 +429,38 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
         }
     }
 
-    /**
+    private fun showGrid() {
+        val gridView = GridView(this)
+        val builder = AlertDialog.Builder(this);
+        val mList = mutableListOf<Int>()
+        val titleView = layoutInflater.inflate(R.layout.ad_title, null)
+
+        for (i in 1 until currentTotalIndex + 1){
+            mList.add(i);
+        }
+
+        GridArrayAdapter(this, R.layout.grid_item, mList, progressDB, currentDirname)
+                .also {
+                    adapter ->
+                    gridView.setAdapter(adapter)
+                }
+        gridView.setNumColumns(6)
+        // Set grid view to alertDialog
+
+        builder.setTitle("Jump to")
+        builder.setView(gridView)
+        builder.setCustomTitle(titleView)
+        val ad = builder.show()
+
+        gridView.onItemClickListener = object : AdapterView.OnItemClickListener {
+            override fun onItemClick(parent: AdapterView<*>, view: View, position: Int, id: Long) {
+                updateIndex(position)
+                ad.dismiss()
+            }
+        }
+    }
+
+        /**
      * 設定画面
      */
     private fun callSettingActivity() {

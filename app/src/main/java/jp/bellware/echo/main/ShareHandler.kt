@@ -24,19 +24,22 @@ class ShareHandler(private val storage: QRecStorage) {
     val fStorage = FirebaseStorage.getInstance()
     // Create a storage reference from our app
     val fStorageRef = fStorage.reference
+    val outputFileName = Environment.getExternalStorageDirectory().absolutePath + "/output.wav"
+    val outputFile = Uri.fromFile(File(outputFileName))
 
     fun onResume() {}
 
     fun share(fileName: String, onEndListener: () -> Unit) {
+
+        val audioRef = fStorageRef.child(fileName)
+        stop()
+
         if (storage.length == 0) {
             // If packet length zero, end immediately
             onEndListener()
             return
         }
 
-        val outputFileName = Environment.getExternalStorageDirectory().absolutePath + "/output.wav"
-        val outputFile = Uri.fromFile(File(outputFileName))
-        val audioRef = fStorageRef.child(fileName)
 
         track = AudioTrack(AudioManager.STREAM_MUSIC,
                 RecordHandler.SAMPLE_RATE,
@@ -45,7 +48,8 @@ class ShareHandler(private val storage: QRecStorage) {
 
         thread = Thread(Runnable {
             // Without this, the first few packets is clipped...
-            android.os.Process.setThreadPriority(Process.THREAD_PRIORITY_URGENT_AUDIO)
+            Process.setThreadPriority(Process.THREAD_PRIORITY_URGENT_AUDIO)
+
             try {
                 storage.save(outputFileName)
 
@@ -64,16 +68,34 @@ class ShareHandler(private val storage: QRecStorage) {
                         })
             } catch (e: IOException) {
                 e.printStackTrace()
+                Log.i("JOYTAN-ShareHandler", e.toString())
             }
 
             try {
                 Thread.sleep((storage.packetSize * 1000 / 44100).toLong())
             } catch (e: InterruptedException) {
-
+                Log.i("JOYTAN-ShareHandler", e.toString())
             }
 
         })
         thread?.start()
+    }
+
+    /**
+     * 再生を終了する
+     */
+    fun stop() {
+        val lthread = thread
+        val ltrack = track
+        if (lthread != null && ltrack != null) {
+            try {
+                lthread.join()
+            } catch (e: InterruptedException) {
+            }
+
+            ltrack.release()
+            track = null
+        }
     }
 
 }

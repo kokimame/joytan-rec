@@ -4,16 +4,30 @@
         android:defaultValue="true"
         android:key="soundEffect"
         android:title="@string/pref_sound" />
+    <EditTextPreference
+        android:key="creditText"
+        android:maxLength="32"
+        android:dialogMessage="Your credit which appears on YouTube video etc."
+        android:dialogTitle="Edit your credit"
+        android:inputType="textVisiblePassword"
+        android:title="@string/pref_credit" />
     <com.jenzz.materialpreference.Preference
-            android:key="invite"
-            android:title="@string/pref_invite" />
+        android:key="pp"
+        android:title="@string/pref_privacy_policy" />
+    <com.jenzz.materialpreference.Preference
+        android:key="twitter"
+        android:title="@string/joytan_twitter" />
+    <com.jenzz.materialpreference.Preference
+        android:key="youtube"
+        android:title="@string/joytan_youtube" />
+    <com.jenzz.materialpreference.Preference
+        android:key="website"
+        android:title="@string/joytan_website" />
     <com.jenzz.materialpreference.Preference
         android:key="about"
         android:title="@string/pref_information" />
     <com.jenzz.materialpreference.Preference
-        android:key="oss"
-        android:title="@string/pref_oss" />
-    <com.jenzz.materialpreference.Preference
-            android:key="pp"
-            android:title="@string/pref_privacy_policy" />
+        android:key="invite"
+        android:title="@string/pref_invite" />
+
 </PreferenceScreen>

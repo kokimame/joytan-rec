@@ -41,12 +41,11 @@
                     android:id="@+id/projects_spinner"
                     android:layout_width="match_parent"
                     android:layout_height="?attr/dropdownListPreferredItemHeight"
-                    android:dropDownWidth="match_parent"
-                    android:dropDownVerticalOffset="?attr/dropdownListPreferredItemHeight"
-                    android:popupBackground="@android:color/white"
-                    android:popupElevation="5dp"
                     android:background="@drawable/spinner_bg"
+                    android:dropDownWidth="match_parent"
                     android:theme="@style/MatchSpinnerTheme"
+                    android:dropDownVerticalOffset="?attr/dropdownListPreferredItemHeight"
+                    android:popupElevation="5dp"
                     android:stateListAnimator="@drawable/spinner_sla" />
 
                 <TextView
@@ -54,8 +53,20 @@
                     android:layout_width="match_parent"
                     android:layout_height="30dp"
                     android:gravity="center"
-                    android:textColor="@color/text_dark"
-                    android:text="TextView" />
+                    android:textColor="@color/text_dark" />
+                
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingHorizontal="10dp"
+                    android:paddingVertical="4dp"
+                    android:id="@+id/grid_jump"
+                    android:src="@drawable/ic_grid_24dp"
+                    android:paddingTop="-2dp"
+                    android:background="@null"
+                    android:onClick="@{viewModel::onGridClicked}"
+                    android:layout_gravity="center"/>
+
             </LinearLayout>
 
             <include
@@ -107,6 +118,15 @@
 
 
             </FrameLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/version_name"
+                android:layout_gravity="end|bottom"
+                android:textColor="@color/white"
+                android:layout_marginBottom="5dp"
+                android:layout_marginRight="5dp"/>
 
             <!--
             Disabling Ads

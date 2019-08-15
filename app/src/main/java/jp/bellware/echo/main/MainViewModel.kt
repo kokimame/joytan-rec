@@ -6,7 +6,6 @@ import android.content.Intent
 import android.content.ServiceConnection
 //import android.databinding.ObservableField
 import android.os.IBinder
-import android.view.GestureDetector
 import android.view.View
 import androidx.databinding.ObservableField
 import jp.bellware.echo.R
@@ -53,7 +52,11 @@ class MainViewModel(private val context: Context, private val listener: Listener
 
         fun onScriptNavigation(direction: String)
 
-        fun getAudioOutputPath(): String
+        fun onGetAudioPath(): String
+
+        fun onShowGrid()
+
+        fun onCallSetting()
     }
 
     /**
@@ -102,6 +105,7 @@ class MainViewModel(private val context: Context, private val listener: Listener
     private var service: MainService? = null
 
     private val mainCB = object : MainServiceCallback {
+
         override fun onUpdateStatus(animation: Boolean, status: QRecStatus) {
             BWU.log("MainActivity#onUpdateStatus $status")
             //ステータスビュー
@@ -220,8 +224,16 @@ class MainViewModel(private val context: Context, private val listener: Listener
             listener.onDismissProgress()
         }
 
-        override fun getAudioOutputPath(): String {
-            return listener.getAudioOutputPath()
+        override fun onGetAudioPath(): String {
+            return listener.onGetAudioPath()
+        }
+
+        override fun onShowGrid() {
+            return listener.onShowGrid()
+        }
+
+        override fun onCallSetting() {
+            return listener.onCallSetting()
         }
 
     }
@@ -316,12 +328,20 @@ class MainViewModel(private val context: Context, private val listener: Listener
         service?.onShare()
     }
 
+    fun onGridClicked(view : View) {
+        service?.onGrid()
+    }
+
 
     /**
      * On Delete button clicked
      */
     fun onDeleteClicked(view : View) {
         service?.onDelete()
+    }
+
+    fun onSettingClicked(view : View) {
+        service?.onSetting()
     }
 
     /*
