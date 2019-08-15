@@ -46,7 +46,8 @@
                     android:theme="@style/MatchSpinnerTheme"
                     android:dropDownVerticalOffset="?attr/dropdownListPreferredItemHeight"
                     android:popupElevation="5dp"
-                    android:stateListAnimator="@drawable/spinner_sla" />
+                    android:stateListAnimator="@drawable/spinner_sla"
+                    />
 
                 <TextView
                     android:id="@+id/index_text"

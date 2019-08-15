@@ -20,7 +20,6 @@ class GridArrayAdapter(context: Context,
         val view = super.getView(position, convertView, parent)
         val textView = view as TextView
 
-        Log.i("JOYTAN", progressDB.toString())
         if(textView.text.toString().toInt() - 1 in progressDB[currentDirname]!!)
             textView.setBackgroundColor(ContextCompat.getColor(context, R.color.play))
         else

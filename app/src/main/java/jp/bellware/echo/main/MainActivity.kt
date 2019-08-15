@@ -48,6 +48,7 @@ import kotlin.math.min
 
 import org.json.JSONObject
 import org.w3c.dom.Text
+import java.io.ObjectInputStream
 import java.io.ObjectOutputStream
 import java.lang.Exception
 import java.util.*
@@ -99,9 +100,9 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
     private var currentIndex = 0
     private var currentTotalIndex = 0
     private var currentWantedKey = "atop"
-    lateinit var currentDirname: String
+    private lateinit var currentDirname: String
     // Map to save user progress record
-    val progressDB = mutableMapOf<String, MutableList<Int>>()
+    private var progressDB = mutableMapOf<String, MutableList<Int>>()
 
     private val SWIPE_MIN_DISTANCE = 120
     private val SWIPE_MAX_OFF_PATH = 250
@@ -217,6 +218,19 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
         wh.onCreate(this)
         viewModel.onCreate()
 
+        try {
+            // Load the saved progressDB
+            val fis = this.openFileInput("progressDB")
+            val ois = ObjectInputStream(fis)
+            progressDB = ois.readObject() as MutableMap<String, MutableList<Int>>
+            ois.close()
+            fis.close()
+            Log.i("JOYTAN", "Loaded progressDB ... " + progressDB.toString())
+        } catch (e: Exception) {
+            Log.i("JOYTAN", "Exception while loading progressDB ... " + e.toString())
+        }
+
+
         projectsRef.getFile(tempProjectsFile).addOnSuccessListener {
             val jsonString: String = tempProjectsFile.readText(Charsets.UTF_8)
             val jsonObject = JSONObject(jsonString)
@@ -229,8 +243,10 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
             for (i in 0 until projectsJson.length()) {
                 val projectTitle = projectsJson.getJSONObject(i).getString("title")
                 val projectDirname = projectsJson.getJSONObject(i).getString("dirname")
+
                 projectsList.add(projectTitle)
-                progressDB.put(projectDirname, mutableListOf<Int>())
+                if (!progressDB.containsKey(projectDirname))
+                    progressDB.put(projectDirname, mutableListOf<Int>())
             }
 
             setupSpinner(projectsList)
@@ -314,7 +330,6 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
                 updateMainScript(entriesJson, currentWantedKey)
             } // to close the onItemSelected
             override fun onNothingSelected(parent: AdapterView<*>) {
-
             }
         }
     }
@@ -391,6 +406,17 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
     }
 
     override fun onStop() {
+        try {
+            val fos = this.openFileOutput("progressDB", Context.MODE_PRIVATE)
+            val os = ObjectOutputStream(fos)
+            os.writeObject(progressDB)
+            os.close()
+            fos.close()
+            Log.i("JOYTAN", "Save progressDB ... " + progressDB.toString())
+        } catch (e: Exception) {
+            Log.i("JOYTAN", "Exception at onStop ... " + e.toString())
+        }
+
         super.onStop()
         BWU.log("MainActivity#onStop")
         viewModel.onStop()
