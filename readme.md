@@ -1,3 +1,3 @@
-## Joytan-REC - A Crowdvoicing App for Free Educational Service on YouTube
+## Joytan-REC - Crowdvoicing App for Free Language Learning
 
 This application is developed on the top of [this MIT-licensed app](https://github.com/tfandkusu/quickecho) (in Japanese)
