@@ -6,7 +6,7 @@
 
         <variable
             name="viewModel"
-            type="jp.bellware.echo.main.MainViewModel" />
+            type="com.joytan.rec.main.MainViewModel" />
     </data>
 
     <LinearLayout
@@ -25,7 +25,7 @@
             <!-- Contents -->
 
             <!-- Explosion effect -->
-            <jp.bellware.echo.main.view.ExplosionView
+            <com.joytan.rec.main.view.ExplosionView
                 android:id="@+id/explosion"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -102,7 +102,7 @@
                 android:layout_gravity="center"
                 android:layout_marginBottom="104dp">
 
-                <jp.bellware.echo.main.view.MyCardView
+                <com.joytan.rec.main.view.MyCardView
                     android:layout_width="match_parent"
                     android:layout_height="48dp"
                     app:myCardColor="@color/warning" />

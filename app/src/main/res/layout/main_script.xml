@@ -4,7 +4,7 @@
     <data>
         <variable
             name="viewModel"
-            type="jp.bellware.echo.main.MainViewModel" />
+            type="com.joytan.rec.main.MainViewModel" />
     </data>
 
     <LinearLayout

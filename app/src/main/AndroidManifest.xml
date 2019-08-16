@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="jp.bellware.echo">
+          package="com.joytan.rec">
 
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
@@ -18,7 +18,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
         <activity
-            android:name="jp.bellware.echo.start.StartActivity"
+            android:name="com.joytan.rec.start.StartActivity"
             android:label="@string/app_name"
             android:launchMode="singleInstance">
             <!--android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen">-->
@@ -31,35 +31,35 @@
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT"/>
                 <category android:name="android.intent.category.BROWSABLE"/>
-                <data android:scheme="https" android:host="quickecho.bellware.jp"
+                <data android:scheme="https" android:host="quickecho.joytan.com"
                       android:path="/android"/>
             </intent-filter>
         </activity>
         <!-- 実行時パーミッション画面 -->
         <activity
-            android:name="jp.bellware.echo.start.PermissionActivity"
+            android:name="com.joytan.rec.start.PermissionActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:label="@string/app_name"/>
         <!-- メイン画面 -->
         <activity
             android:screenOrientation="portrait"
-            android:name="jp.bellware.echo.main.MainActivity"
+            android:name="com.joytan.rec.main.MainActivity"
             android:label="@string/app_name"/>
         <!-- 設定画面 -->
         <activity
-            android:name="jp.bellware.echo.setting.SettingActivity"
+            android:name="com.joytan.rec.setting.SettingActivity"
             android:label="@string/title_setting"/>
         <!-- HTML Viewer画面(OSSライセンス) -->
         <activity
-            android:name="jp.bellware.echo.setting.HtmlViewerActivity"
+            android:name="com.joytan.rec.setting.HtmlViewerActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:label="@string/pref_oss"/>
         <!-- アプリについて画面 -->
         <activity
-            android:name="jp.bellware.echo.setting.AboutActivity"
+            android:name="com.joytan.rec.setting.AboutActivity"
             android:label="@string/pref_information"/>
         <!-- メインサービス -->
-        <service android:name="jp.bellware.echo.main.MainService"
+        <service android:name="com.joytan.rec.main.MainService"
              android:exported="false"/>
     </application>
 

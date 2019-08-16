@@ -4,7 +4,7 @@
 
         <variable
             name="viewModel"
-            type="jp.bellware.echo.setting.AboutViewModel" />
+            type="com.joytan.rec.setting.AboutViewModel" />
     </data>
 
     <LinearLayout xmlns:tools="http://schemas.android.com/tools"
@@ -12,7 +12,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:background="@color/bg_dark"
-        tools:context="jp.bellware.echo.setting.AboutActivity">
+        tools:context="com.joytan.rec.setting.AboutActivity">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"

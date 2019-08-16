@@ -5,7 +5,7 @@
 
         <variable
             name="viewModel"
-            type="jp.bellware.echo.main.MainViewModel" />
+            type="com.joytan.rec.main.MainViewModel" />
     </data>
 
     <FrameLayout
@@ -22,7 +22,7 @@
             android:layout_marginBottom="140dp"
             android:visibility="@{viewModel.statusFrameVisibility}">
             <!-- Volume -->
-            <jp.bellware.echo.main.view.VisualVolumeView
+            <com.joytan.rec.main.view.VisualVolumeView
                 android:id="@+id/visualVolume"
                 android:layout_width="128dp"
                 android:layout_height="128dp"

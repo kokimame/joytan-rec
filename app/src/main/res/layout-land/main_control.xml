@@ -5,7 +5,7 @@
 
         <variable
             name="viewModel"
-            type="jp.bellware.echo.main.MainViewModel" />
+            type="com.joytan.rec.main.MainViewModel" />
     </data>
 
     <LinearLayout xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -26,7 +26,7 @@
             <!--app:myFabIcon="@drawable/ic_stop_white_24dp"-->
             <!--app:myFabSize="mini" />-->
         <!--&lt;!&ndash; 再再生ボタン &ndash;&gt;-->
-        <jp.bellware.echo.main.view.MyFAB
+        <com.joytan.rec.main.view.MyFAB
             android:id="@+id/replay"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -45,7 +45,7 @@
             android:layout_marginRight="8dp"
             android:paddingBottom="44dp">
             <!-- 録音ボタン -->
-            <jp.bellware.echo.main.view.MyFAB
+            <com.joytan.rec.main.view.MyFAB
                 android:id="@+id/record"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -55,7 +55,7 @@
                 app:myFabIcon="@drawable/ic_mic_white_24dp"
                 app:myFabSize="normal" />
             <!-- 再生ボタン -->
-            <jp.bellware.echo.main.view.MyFAB
+            <com.joytan.rec.main.view.MyFAB
                 android:id="@+id/play"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -68,7 +68,7 @@
 
 
         <!-- 削除ボタン -->
-        <jp.bellware.echo.main.view.MyFAB
+        <com.joytan.rec.main.view.MyFAB
             android:id="@+id/delete"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
