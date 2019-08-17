@@ -24,7 +24,7 @@ class ShareHandler(private val storage: QRecStorage) {
     val fStorage = FirebaseStorage.getInstance()
     // Create a storage reference from our app
     val fStorageRef = fStorage.reference
-    val outputFileName = Environment.getExternalStorageDirectory().absolutePath + "/output.wav"
+    val outputFileName = Environment.getExternalStorageDirectory().absolutePath + "/joytan_rec_temp.wav"
     val outputFile = Uri.fromFile(File(outputFileName))
 
     fun onResume() {}
@@ -68,13 +68,11 @@ class ShareHandler(private val storage: QRecStorage) {
                         })
             } catch (e: IOException) {
                 e.printStackTrace()
-                Log.i("JOYTAN-ShareHandler", e.toString())
             }
 
             try {
                 Thread.sleep((storage.packetSize * 1000 / 44100).toLong())
             } catch (e: InterruptedException) {
-                Log.i("JOYTAN-ShareHandler", e.toString())
             }
 
         })

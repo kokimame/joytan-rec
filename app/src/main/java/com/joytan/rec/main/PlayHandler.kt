@@ -110,9 +110,7 @@ class PlayHandler(private val storage: QRecStorage) {
                         }
                     }
                 } catch (e: IllegalStateException) {
-                    Log.i("JOYTAN-PlayHandler", e.toString())
                 }
-                Log.i("JOYTAN-PlayHandler", "play called")
             }
 
         })

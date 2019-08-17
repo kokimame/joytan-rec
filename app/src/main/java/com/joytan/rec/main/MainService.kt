@@ -394,7 +394,7 @@ class MainService : Service() {
             ah.sendAction("play", (storage.length / 44100).toLong())
         } else if (status == QRecStatus.SHARE) {
             share.share (fileName = audioPath) {}
-            status = QRecStatus.STOPPING_PLAYING
+            status = QRecStatus.DELETE_PLAYING
             update()
             ah.sendAction("share")
         } else if (status == QRecStatus.STOPPING_PLAYING) {

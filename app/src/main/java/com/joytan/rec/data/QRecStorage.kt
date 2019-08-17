@@ -115,13 +115,11 @@ class QRecStorage {
             }
         } catch (e: IOException) {
             e.printStackTrace()
-            Log.i("JOYTAN-QStorage", e.toString())
         } finally {
             if (fos != null) {
                 try {
                     fos.close()
                 } catch (e: IOException) {
-                    Log.i("JOYTAN-QStorage", e.toString())
                 }
             }
         }

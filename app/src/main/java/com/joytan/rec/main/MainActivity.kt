@@ -8,7 +8,9 @@ import android.media.AudioManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
 import android.os.Handler
 import android.util.Log
 import android.view.*
@@ -30,6 +32,7 @@ import androidx.databinding.DataBindingUtil
 import com.google.firebase.iid.FirebaseInstanceId
 import com.google.firebase.storage.FirebaseStorage
 import com.joytan.rec.databinding.ActivityMainBinding
+import com.joytan.rec.setting.SettingFragment
 import org.json.JSONArray
 import java.io.File
 
@@ -80,6 +83,8 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
     // Create a storage reference from our app
     private val fStorageRef = fStorage.reference
     private val projectsRef = fStorageRef.child("projects_structure.json")
+    // User inFOrmation
+    private val ufoRef = fStorageRef.child("users").child(uniqueID!!).child("ufo.json")
     private val tempProjectsFile = File.createTempFile("projects", "json")
 
     private var currentIndex = 0
@@ -92,7 +97,7 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
     private val SWIPE_MIN_DISTANCE = 120
     private val SWIPE_MAX_OFF_PATH = 250
     private val SWIPE_THRESHOLD_VELOCITY = 200
-    private val INFO_TAG = "joytan"
+    private val INFO_TAG = "kohki"
 
     /**
      * メイン画面のビューモデル
@@ -137,6 +142,7 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
                 index += 1
                 if (index > mainScripts.size - 1) index = 0
             }
+
             mainText.setText(mainScripts.get(index))
             updateIndex(index)
         }
@@ -203,46 +209,7 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
         wh.onCreate(this)
         viewModel.onCreate()
 
-        try {
-            // Load the saved progressDB
-            val fis = this.openFileInput("progressDB")
-            val ois = ObjectInputStream(fis)
-            progressDB = ois.readObject() as MutableMap<String, MutableList<Int>>
-            ois.close()
-            fis.close()
-            Log.i("JOYTAN", "Loaded progressDB ... " + progressDB.toString())
-        } catch (e: Exception) {
-            Log.i("JOYTAN", "Exception while loading progressDB ... " + e.toString())
-        }
-
-
-        projectsRef.getFile(tempProjectsFile).addOnSuccessListener {
-            val jsonString: String = tempProjectsFile.readText(Charsets.UTF_8)
-            val jsonObject = JSONObject(jsonString)
-
-            projectsJson = jsonObject.getJSONArray("projects")
-            val projectsList = mutableListOf<String>()
-            val initialEntries = projectsJson.getJSONObject(0).getJSONArray("entries")
-            val wantedKey = projectsJson.getJSONObject(0).getString("wanted")
-
-            for (i in 0 until projectsJson.length()) {
-                val projectTitle = projectsJson.getJSONObject(i).getString("title")
-                val projectDirname = projectsJson.getJSONObject(i).getString("dirname")
-
-                projectsList.add(projectTitle)
-                if (!progressDB.containsKey(projectDirname))
-                    progressDB.put(projectDirname, mutableListOf<Int>())
-            }
-
-            setupSpinner(projectsList)
-            updateMainScript(initialEntries, wantedKey)
-
-        }.addOnFailureListener {
-            val projectsList = listOf("Failed", "to", "load JSON", "from Firebase")
-            setupSpinner(projectsList)
-        }
-
-        // Runtime permission
+        // Get permission first before making progressDB into the user's storage
         if (ContextCompat.checkSelfPermission(this,
                         Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -263,6 +230,63 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
         } else {
             // Permission has already been granted
         }
+
+        try {
+            // Load the saved progressDB
+            val fis = this.openFileInput("progressDB")
+            val ois = ObjectInputStream(fis)
+            progressDB = ois.readObject() as MutableMap<String, MutableList<Int>>
+            ois.close()
+            fis.close()
+            Log.i(INFO_TAG, "Loaded progressDB ... " + progressDB.toString())
+        } catch (e: Exception) {
+            Log.i(INFO_TAG, "Exception while loading progressDB ... " + e.toString())
+        }
+
+        projectsRef.getFile(tempProjectsFile).addOnSuccessListener {
+            val jsonString: String = tempProjectsFile.readText(Charsets.UTF_8)
+            val jsonObject = JSONObject(jsonString)
+            projectsJson = jsonObject.getJSONArray("projects")
+
+            val projectsList = mutableListOf<String>()
+            val initialEntries = projectsJson.getJSONObject(0).getJSONArray("entries")
+            val wantedKey = projectsJson.getJSONObject(0).getString("wanted")
+            currentDirname = projectsJson.getJSONObject(0).getString("dirname")
+
+            for (i in 0 until projectsJson.length()) {
+                val projectTitle = projectsJson.getJSONObject(i).getString("title")
+                val projectDirname = projectsJson.getJSONObject(i).getString("dirname")
+                val doneJson = projectsJson.getJSONObject(i).getJSONArray("done")
+                val doneList = mutableListOf<Int>()
+
+                projectsList.add(projectTitle)
+
+                // Import entries finished by community
+                for (i in 0 until doneJson.length()) {
+                    doneList.add(doneJson.getInt(i))
+                }
+
+                if (!progressDB.containsKey(projectDirname))
+                    progressDB.put(projectDirname, doneList)
+                else {
+                    val updatedIndices = progressDB.get(projectDirname)!!
+                    for (i in 0 until doneList.size) {
+                        if (doneList[i] !in updatedIndices) {
+                            updatedIndices.add(doneList[i])
+                        }
+                    }
+                    progressDB.put(projectDirname, updatedIndices)
+
+                }
+            }
+            setupSpinner(projectsList)
+            updateMainScript(initialEntries, wantedKey)
+
+        }.addOnFailureListener {
+            val projectsList = listOf("Failed", "to", "load JSON", "from Firebase")
+            setupSpinner(projectsList)
+        }
+
     }
 
     /**
@@ -280,15 +304,24 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
     private fun updateIndex(newIndex: Int) {
         val indexText = findViewById<TextView>(R.id.index_text)
         val mainText: TextView = findViewById(R.id.main_text)
+        val checkBox = findViewById<ImageView>(R.id.checkbox)
         currentIndex = newIndex
         currentTotalIndex = mainScripts.size
         mainText.text = mainScripts[newIndex]
         indexText.setText("${currentIndex + 1}/${currentTotalIndex}")
+
+        if (newIndex in progressDB[currentDirname]!!) {
+            checkBox.visibility = View.VISIBLE
+        } else {
+            checkBox.visibility = View.INVISIBLE
+        }
     }
 
     private fun updateProgressDB(){
         if (currentIndex !in progressDB[currentDirname]!!)
             progressDB[currentDirname]?.add(currentIndex)
+        val checkBox = this.findViewById<ImageView>(R.id.checkbox)
+        checkBox.visibility = View.VISIBLE
     }
     /*
      * Setup the project spinner
@@ -328,11 +361,9 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
     }
 
     override fun onShowPress(p0: MotionEvent?) {
-//        Log.i(INFO_TAG, "onShowPress $p0")
     }
 
     override fun onSingleTapUp(p0: MotionEvent?): Boolean {
-//        Log.i(INFO_TAG, "onSingleTapUp $p0")
         return true
     }
 
@@ -361,12 +392,10 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
     }
 
     override fun onScroll(p0: MotionEvent?, p1: MotionEvent?, p2: Float, p3: Float): Boolean {
-//        Log.i(INFO_TAG, "onScroll $p0, $p1")
         return true
     }
 
     override fun onLongPress(p0: MotionEvent?) {
-//        Log.i(INFO_TAG, "$p0")
     }
 
     override fun onStart() {
@@ -381,6 +410,19 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
         wh.onResume()
         if (this.audioManager?.getStreamVolume(AudioManager.STREAM_MUSIC) == 0) {
             wh.show(R.string.warning_volume)
+        }
+        // Send User inFOrmation (e.g. credit name) to the firebase
+        try {
+            val ufoObj = JSONObject()
+            val creditText = SettingFragment.getCredit(this)
+            val ufoFile = Environment.getExternalStorageDirectory().absolutePath + "/ufo.json"
+            ufoObj.put("credit", creditText)
+            ufoObj.put("uid", uniqueID)
+            File(ufoFile).writeText(ufoObj.toString())
+            ufoRef.putFile(Uri.fromFile(File(ufoFile)))
+            Log.i(INFO_TAG, "Sent UFO file ... " + ufoObj.toString())
+        } catch (e: Exception) {
+            Log.i(INFO_TAG, "Error while writing UFO file ... " + e.toString())
         }
     }
 
@@ -397,9 +439,9 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
             os.writeObject(progressDB)
             os.close()
             fos.close()
-            Log.i("JOYTAN", "Save progressDB ... " + progressDB.toString())
+            Log.i(INFO_TAG, "Save progressDB ... " + progressDB.toString())
         } catch (e: Exception) {
-            Log.i("JOYTAN", "Exception at onStop ... " + e.toString())
+            Log.i(INFO_TAG, "Exception at onStop ... " + e.toString())
         }
 
         super.onStop()
@@ -441,22 +483,20 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
     }
 
     private fun showGrid() {
-        val gridView = GridView(this)
+        val gridView = layoutInflater.inflate(R.layout.grid_view, null) as GridView//GridView(this)
         val builder = AlertDialog.Builder(this);
         val mList = mutableListOf<Int>()
-        val titleView = layoutInflater.inflate(R.layout.ad_title, null)
+        val titleView = layoutInflater.inflate(R.layout.grid_title, null)
 
         for (i in 1 until currentTotalIndex + 1){
             mList.add(i);
         }
 
-        GridArrayAdapter(this, R.layout.grid_item, mList, progressDB, currentDirname)
-                .also {
-                    adapter ->
-                    gridView.setAdapter(adapter)
-                }
-        gridView.setNumColumns(6)
-        // Set grid view to alertDialog
+        GridBaseAdapter(
+                this, mList, mainScripts, progressDB, currentDirname
+        ).also {
+            adapter -> gridView.setAdapter(adapter)
+        }
 
         builder.setTitle("Jump to")
         builder.setView(gridView)

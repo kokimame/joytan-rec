@@ -82,7 +82,23 @@ class PermissionActivity : AppCompatActivity() {
                         arrayOf(Manifest.permission.RECORD_AUDIO),
                         CODE_PERMISSION)
             }
-        } else {
+        }
+        else if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                //拒否した場合は説明を表示
+                showInformation()
+                // Show an expanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+            } else {
+                //許可を求める
+                ActivityCompat.requestPermissions(this,
+                        arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                        CODE_PERMISSION)
+            }
+        }
+        else {
             //すでに許可されている
             callMainActivity()
         }
@@ -108,7 +124,7 @@ class PermissionActivity : AppCompatActivity() {
             callApplicationDetailActivity()
             finish()
         }.setNegativeButton(R.string.cancel) { dialog, which -> finish() }
-        adb.show()
+        val dialog = adb.show()
     }
 
     /**
