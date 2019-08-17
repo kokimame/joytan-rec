@@ -80,6 +80,18 @@
                 android:layout_height="200dp"
                 app:viewModel="@{viewModel}" />
 
+            <include
+                layout="@layout/main_script_dummy"
+                android:layout_height="200dp"
+                app:viewModel="@{viewModel}" />
+            <!--<androidx.recyclerview.widget.RecyclerView-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="match_parent"-->
+                <!--android:id="@+id/script_cycle"-->
+                <!--android:scrollbars="horizontal">-->
+
+            <!--</androidx.recyclerview.widget.RecyclerView>-->
+
             <!-- Display recording status -->
             <include
                 layout="@layout/main_status"

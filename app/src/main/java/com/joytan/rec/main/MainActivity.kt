@@ -37,6 +37,7 @@ import org.json.JSONArray
 import java.io.File
 
 import org.json.JSONObject
+import org.w3c.dom.Text
 import java.io.ObjectInputStream
 import java.io.ObjectOutputStream
 import java.lang.Exception
@@ -79,6 +80,9 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
     private lateinit var projectsJson: JSONArray
     private var mainScripts = mutableListOf<String>()
 
+//    private val cycleViewManager = LinearLayoutManager(this)
+//    private val cycleAdapter = CycleAdapter(mainScripts)
+
     private val fStorage = FirebaseStorage.getInstance()
     // Create a storage reference from our app
     private val fStorageRef = fStorage.reference
@@ -100,7 +104,7 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
     private val INFO_TAG = "kohki"
 
     /**
-     * メイン画面のビューモデル
+     * ViewModel for Main screen
      */
     private val viewModel = MainViewModel(this, object : MainViewModel.Listener {
         override fun onDeleteRecord() {
@@ -112,26 +116,35 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
 
 
         override fun onStartRecord() {
-            //爆発エフェクト
+            // Explostion effect on the start of recording
             explosion.startRecordAnimation()
-            //ステータスはフェードイン
+            // Fade-in status message
             animator.fadeIn(statusFrame)
-            //削除ボタンはフェードイン
+            // Fade-in delete button
             if (delete.visibility == View.INVISIBLE) {
                 animator.fadeIn(delete)
             }
         }
 
         override fun onStopRecord() {
-            //ステータスを表示
+            // Display status
             animator.fadeIn(statusFrame)
-            //サブコントロール表示
+            // Sub-control
             animator.fadeIn(replay)
             animator.fadeIn(share)
         }
 
         override fun onScriptNavigation(direction: String) {
             val mainText = findViewById<TextView>(R.id.main_text)
+            val tickImage = findViewById<ImageView>(R.id.checkbox)
+
+            val deleteLayout = findViewById<LinearLayout>(R.id.script_layout_dummy)
+            val imageView = deleteLayout.getChildAt(0) as ImageView
+            val textView = deleteLayout.getChildAt(1) as TextView
+            imageView.visibility = tickImage.visibility
+            textView.text = mainText.text
+
+
             var index = mainScripts.indexOf(mainText.text)
 
             if (direction == "left") {
@@ -145,6 +158,9 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
 
             mainText.setText(mainScripts.get(index))
             updateIndex(index)
+
+            animator.fadeOut(deleteLayout, direction)
+            animator.fadeIn(findViewById(R.id.script_layout), direction)
         }
 
         override fun onGetAudioPath(): String {
@@ -154,12 +170,11 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
         }
 
         override fun onUpdateVolume(volume: Float) {
-            //視覚的ボリュームを更新する
+            //Update volume in the volume visualizer
             visualVolume.setVolume(volume)
         }
 
         override fun onShowWarningMessage(resId: Int) {
-            //警告を表示する
             wh.show(resId)
         }
 
@@ -186,8 +201,20 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
 
     });
 
+    fun deleteAnimation() {
+        val deleteLayout = LayoutInflater.from(this)
+                .inflate(R.layout.main_script, null) as LinearLayout
+
+
+        val textView = deleteLayout.getChildAt(1) as TextView
+        textView.text = "aaaaa"
+
+        animator.startDeleteAnimation(deleteLayout)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         BWU.log("MainActivity#onCreate")
         val binding = DataBindingUtil.setContentView<ActivityMainBinding>(this, R.layout.activity_main)
         binding.viewModel = viewModel
@@ -201,8 +228,22 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
         this.audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
 
         this.pd = ProgressDialog(this, ProgressDialog.THEME_HOLO_LIGHT)
+        // DO NOT ALLOW USERS TO TOUCH BUTTON BEFORE LOADING CONTENT
+        // TODO Synchronize with the actual internet connection time
         pd.setProgressStyle(ProgressDialog.STYLE_SPINNER)
+        pd.setMessage("Loading data from server ...")
+        pd.setCancelable(false)
+        pd.show()
+        Handler().postDelayed({pd.dismiss()}, 2000)
+        //
 
+//        val scriptView = findViewById<RecyclerView>(R.id.script_cycle).apply {
+//            setHasFixedSize(true)
+//            layoutManager = cycleViewManager
+//            adapter = cycleAdapter
+//        }
+
+        // Detect gestures e.g. swipe
         this.mDetector = GestureDetectorCompat(this, this)
 
         //警告担当
@@ -368,7 +409,6 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
     }
 
     override fun onDown(p0: MotionEvent?): Boolean {
-//        Log.i(INFO_TAG, "onDown $p0")
         return true
     }
 

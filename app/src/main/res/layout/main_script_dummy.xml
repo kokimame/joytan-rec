@@ -14,13 +14,13 @@
         android:gravity="center"
         android:layout_marginHorizontal="15dp"
         android:layout_marginBottom="7dp"
-        android:id="@+id/script_layout"
+        android:id="@+id/script_layout_dummy"
         android:orientation="vertical">
 
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/checkbox"
+            android:id="@+id/checkbox_dummy"
             android:src="@drawable/ic_tick"
             android:visibility="invisible"
             android:contentDescription="Checkbox image" />
