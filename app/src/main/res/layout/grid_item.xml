@@ -1,11 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/grid_text"
-    android:layout_width="match_parent"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:textAppearance="?android:attr/textAppearanceListItemSmall"
-    android:gravity="center"
-    android:background="@color/bg_darkest"
-    android:textSize="15dp"
-    android:minHeight="?android:attr/listPreferredItemHeightSmall" />
+    android:orientation="vertical">
+    <TextView
+        android:id="@+id/grid_id"
+        android:layout_width="match_parent"
+        android:layout_height="14dp"
+        android:textAppearance="?android:attr/textAppearanceListItemSmall"
+        android:gravity="center"
+        android:textColor="@color/white"
+        android:singleLine="true"
+        android:textSize="11dp"
+        android:minHeight="?android:attr/listPreferredItemHeightSmall" />
+    <TextView
+        android:id="@+id/grid_text"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:textAppearance="?android:attr/textAppearanceListItemSmall"
+        android:gravity="center"
+        android:singleLine="true"
+        android:layout_weight="1"
+        android:textSize="15dp"
+        android:minHeight="?android:attr/listPreferredItemHeightSmall" />
+
+</LinearLayout>
+
