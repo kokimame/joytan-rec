@@ -27,7 +27,6 @@ class QRecAnimator {
 
     /**
      * フェードインを行う
-     *
      * @param view
      */
     fun fadeIn(view: View) {
