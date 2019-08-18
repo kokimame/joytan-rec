@@ -2,12 +2,15 @@ package com.joytan.rec.main
 
 import android.Manifest
 import android.app.ProgressDialog
+import android.content.BroadcastReceiver
 //import android.support.v7.app.AppCompatActivity
 //import android.databinding.DataBindingUtil
 import android.media.AudioManager
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
+import android.net.ConnectivityManager
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
@@ -65,24 +68,20 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
      */
     private lateinit var pd: ProgressDialog
 
-    private lateinit var gridl: PopupMenu
-    /**
-     * TODO: More persistent ID demanded
-     * Unique ID of users. Used to manage user contribution, credits etc
-     */
-    private val uniqueID = FirebaseInstanceId.getInstance().getToken()?.substring(0, 11)
-
     /**
      * Handling custom animation for buttion, explosion etc
      */
     private val animator = QRecAnimator()
 
+
     private lateinit var projectsJson: JSONArray
     private var mainScripts = mutableListOf<String>()
 
-//    private val cycleViewManager = LinearLayoutManager(this)
-//    private val cycleAdapter = CycleAdapter(mainScripts)
-
+    /**
+     * TODO: More persistent ID demanded
+     * Unique ID of users. Used to manage user contribution, credits etc
+     */
+    private val uniqueID = FirebaseInstanceId.getInstance().getToken()?.substring(0, 11)
     private val fStorage = FirebaseStorage.getInstance()
     // Create a storage reference from our app
     private val fStorageRef = fStorage.reference
@@ -98,12 +97,16 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
     // Map to save user progress record
     private var progressDB = mutableMapOf<String, MutableList<Int>>()
 
+    // Internet connection receiver/monitor
+    private val connFilter = IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION).apply {
+        addAction(Intent.ACTION_AIRPLANE_MODE_CHANGED)
+    }
+    private val connReceiver = ConnectionReceiver()
+
     private val SWIPE_MIN_DISTANCE = 120
     private val SWIPE_MAX_OFF_PATH = 250
     private val SWIPE_THRESHOLD_VELOCITY = 200
     private val INFO_TAG = "kohki"
-    private val CODE_PERMISSION = 1
-    private val CODE_MAIN = 2
 
     /**
      * ViewModel for Main screen
@@ -137,6 +140,7 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
         }
 
         override fun onScriptNavigation(direction: String) {
+
             val mainText = findViewById<TextView>(R.id.main_text)
             val tickImage = findViewById<ImageView>(R.id.checkbox)
 
@@ -203,19 +207,11 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
 
     });
 
-    fun deleteAnimation() {
-        val deleteLayout = LayoutInflater.from(this)
-                .inflate(R.layout.main_script, null) as LinearLayout
-
-
-        val textView = deleteLayout.getChildAt(1) as TextView
-        textView.text = "aaaaa"
-
-        animator.startDeleteAnimation(deleteLayout)
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        registerReceiver(connReceiver, connFilter)
 
         // Get permission first before making progressDB into the user's storage
         if (ContextCompat.checkSelfPermission(this,
@@ -330,7 +326,6 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
             val projectsList = listOf("Failed", "to", "load JSON", "from Firebase")
             setupSpinner(projectsList)
         }
-
     }
 
     /**
@@ -531,26 +526,30 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
         val mList = mutableListOf<Int>()
         val titleView = layoutInflater.inflate(R.layout.grid_title, null)
 
-        for (i in 1 until currentTotalIndex + 1){
-            mList.add(i);
-        }
-
-        GridBaseAdapter(
-                this, mList, mainScripts, progressDB, currentDirname
-        ).also {
-            adapter -> gridView.setAdapter(adapter)
-        }
-
-        builder.setTitle("Jump to")
-        builder.setView(gridView)
-        builder.setCustomTitle(titleView)
-        val ad = builder.show()
-
-        gridView.onItemClickListener = object : AdapterView.OnItemClickListener {
-            override fun onItemClick(parent: AdapterView<*>, view: View, position: Int, id: Long) {
-                updateIndex(position)
-                ad.dismiss()
+        try {
+            for (i in 1 until currentTotalIndex + 1) {
+                mList.add(i);
             }
+
+            GridBaseAdapter(
+                    this, mList, mainScripts, progressDB, currentDirname
+            ).also { adapter ->
+                gridView.setAdapter(adapter)
+            }
+
+            builder.setTitle("Jump to")
+            builder.setView(gridView)
+            builder.setCustomTitle(titleView)
+            val ad = builder.show()
+
+            gridView.onItemClickListener = object : AdapterView.OnItemClickListener {
+                override fun onItemClick(parent: AdapterView<*>, view: View, position: Int, id: Long) {
+                    updateIndex(position)
+                    ad.dismiss()
+                }
+            }
+        } catch (e: Exception) {
+            Log.i(INFO_TAG, "Grid initialization failed but ignored")
         }
     }
 

@@ -1,14 +1,12 @@
 package com.joytan.rec.main
 
-import android.content.ComponentName
-import android.content.Context
-import android.content.Intent
-import android.content.ServiceConnection
+import android.content.*
 import android.net.ConnectivityManager
 import android.net.NetworkInfo
 //import android.databinding.ObservableField
 import android.os.IBinder
 import android.view.View
+import androidx.appcompat.app.AlertDialog
 import androidx.databinding.ObservableField
 import com.joytan.rec.R
 import com.joytan.util.BWU
@@ -101,9 +99,9 @@ class MainViewModel(private val context: Context, private val listener: Listener
      */
     val statusImageSrc = ObservableField<Int>(R.drawable.microphone_48dp)
 
-    val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-    val activeNetwork: NetworkInfo? = cm.activeNetworkInfo
-    val isConnected: Boolean = activeNetwork?.isConnectedOrConnecting == true
+//    val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+//    val activeNetwork: NetworkInfo? = cm.activeNetworkInfo
+//    val isConnected: Boolean = activeNetwork?.isConnectedOrConnecting == true
 
     /**
      * メインサービス
