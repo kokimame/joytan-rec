@@ -3,7 +3,9 @@ package com.joytan.rec.start
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
+import android.net.ConnectivityManager
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
@@ -17,6 +19,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.joytan.rec.R
+import com.joytan.rec.main.ConnectionReceiver
 import com.joytan.rec.main.MainActivity
 import kotlinx.android.synthetic.main.activity_permission.*
 
@@ -24,13 +27,19 @@ import kotlinx.android.synthetic.main.activity_permission.*
  * 実行時パーミッションActivity
  */
 class PermissionActivity : AppCompatActivity() {
+    private val connFilter = IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION).apply {
+        addAction(Intent.ACTION_AIRPLANE_MODE_CHANGED)
+    }
+    private val connReceiver = ConnectionReceiver()
 
     private val CODE_PERMISSION = 1
-
     private val CODE_MAIN = 2
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        registerReceiver(connReceiver, connFilter)
+
         setContentView(R.layout.activity_permission)
         //ツールバー設定
         this.setSupportActionBar(toolbar)

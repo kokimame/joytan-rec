@@ -248,8 +248,8 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
         //AudioManagerを取得
         this.audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
 
-        this.pd = ProgressDialog(this, ProgressDialog.THEME_HOLO_LIGHT)
         // DO NOT ALLOW USERS TO TOUCH BUTTON BEFORE LOADING CONTENT
+        this.pd = ProgressDialog(this, ProgressDialog.THEME_HOLO_LIGHT)
         // TODO Synchronize with the actual internet connection time
         pd.setProgressStyle(ProgressDialog.STYLE_SPINNER)
         pd.setMessage("Loading data from server ...")
