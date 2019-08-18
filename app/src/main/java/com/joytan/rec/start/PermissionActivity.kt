@@ -7,6 +7,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
+import android.util.Log
 import androidx.appcompat.app.AlertDialog
 //import android.support.v4.app.ActivityCompat
 //import android.support.v4.content.ContextCompat
@@ -51,7 +52,8 @@ class PermissionActivity : AppCompatActivity() {
                                             permissions: Array<String>, grantResults: IntArray) {
         if (CODE_PERMISSION == requestCode) {
             // If request is cancelled, the result arrays are empty.
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED
+                    && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
                 // permission was granted, yay! Do the
                 // contacts-related task you need to do.
                 callMainActivity()
@@ -68,40 +70,52 @@ class PermissionActivity : AppCompatActivity() {
      * 実行時パーミッションをチェックする
      */
     private fun checkPermission() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             // Should we show an explanation?
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.RECORD_AUDIO)) {
                 //拒否した場合は説明を表示
-                showInformation()
+                showInformation(R.string.permission_audio)
                 // Show an expanation to the user *asynchronously* -- don't block
                 // this thread waiting for the user's response! After the user
                 // sees the explanation, try again to request the permission.
-            } else {
+            }
+            else if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.RECORD_AUDIO)){
+                showInformation(R.string.permission_write)
+            }
+            else {
                 //許可を求める
                 ActivityCompat.requestPermissions(this,
-                        arrayOf(Manifest.permission.RECORD_AUDIO),
+                        arrayOf(Manifest.permission.RECORD_AUDIO,
+                                Manifest.permission.WRITE_EXTERNAL_STORAGE),
                         CODE_PERMISSION)
             }
+            Log.i("kohki", "audio not granted")
         }
-        else if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            // Should we show an explanation?
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                //拒否した場合は説明を表示
-                showInformation()
-                // Show an expanation to the user *asynchronously* -- don't block
-                // this thread waiting for the user's response! After the user
-                // sees the explanation, try again to request the permission.
-            } else {
-                //許可を求める
-                ActivityCompat.requestPermissions(this,
-                        arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                        CODE_PERMISSION)
-            }
-        }
+//        else if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+//            // Should we show an explanation?
+//            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+//                //拒否した場合は説明を表示
+//                showInformation(R.string.permission_write)
+//                // Show an expanation to the user *asynchronously* -- don't block
+//                // this thread waiting for the user's response! After the user
+//                // sees the explanation, try again to request the permission.
+//            } else {
+//                //許可を求める
+//                ActivityCompat.requestPermissions(this,
+//                        arrayOf(Manifest.permission.RECORD_AUDIO,
+//                                Manifest.permission.WRITE_EXTERNAL_STORAGE),
+//                        CODE_PERMISSION)
+//            }
+//            Log.i("kohki", "write not granted")
+//        }
         else {
             //すでに許可されている
             callMainActivity()
+            Log.i("kohki", "main called")
+            finish()
         }
+        Log.i("kohki", "request passsed")
     }
 
     /**
@@ -115,10 +129,10 @@ class PermissionActivity : AppCompatActivity() {
     /**
      * 実行時パーミッションの解説
      */
-    private fun showInformation() {
-        val adb = AlertDialog.Builder(this)
+    private fun showInformation(message_id : Int) {
+        val adb = AlertDialog.Builder(this, R.style.AlertDialog)
         adb.setTitle(R.string.title_permission)
-        adb.setMessage(R.string.message_permission)
+        adb.setMessage(message_id)
         adb.setCancelable(false)
         adb.setPositiveButton(R.string.ok) { dialog, which ->
             callApplicationDetailActivity()

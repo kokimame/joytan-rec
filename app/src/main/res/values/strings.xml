@@ -10,8 +10,10 @@
     <string name="app_name_long">Joytan Recorder</string>
 
     <!-- 実行時許可 -->
-    <string name="title_permission">Information</string>
-    <string name="message_permission">This app needs microphone permission.</string>
+    <string name="title_permission">Permission Request</string>
+    <string name="permission_audio">This app needs microphone permission.</string>
+    <string name="permission_write">This app writes a temporary WAV file before sending audio.
+        Please allow this app to write into the external storage.</string>
     <!-- メイン画面 -->
     <string name="black">Black</string>
     <string name="script">Script</string>

@@ -12,6 +12,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.os.Handler
+import android.provider.Settings
 import android.util.Log
 import android.view.*
 import android.widget.*
@@ -37,7 +38,6 @@ import org.json.JSONArray
 import java.io.File
 
 import org.json.JSONObject
-import org.w3c.dom.Text
 import java.io.ObjectInputStream
 import java.io.ObjectOutputStream
 import java.lang.Exception
@@ -102,6 +102,8 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
     private val SWIPE_MAX_OFF_PATH = 250
     private val SWIPE_THRESHOLD_VELOCITY = 200
     private val INFO_TAG = "kohki"
+    private val CODE_PERMISSION = 1
+    private val CODE_MAIN = 2
 
     /**
      * ViewModel for Main screen
@@ -215,6 +217,29 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        // Get permission first before making progressDB into the user's storage
+        if (ContextCompat.checkSelfPermission(this,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            // Permission is not granted
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                // Show an explanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+            } else {
+                // No explanation needed, we can request the permission.
+                ActivityCompat.requestPermissions(this,
+                        arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                        10)
+            }
+        } else {
+            // Permission has already been granted
+        }
+
+
         BWU.log("MainActivity#onCreate")
         val binding = DataBindingUtil.setContentView<ActivityMainBinding>(this, R.layout.activity_main)
         binding.viewModel = viewModel
@@ -249,28 +274,6 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
         //警告担当
         wh.onCreate(this)
         viewModel.onCreate()
-
-        // Get permission first before making progressDB into the user's storage
-        if (ContextCompat.checkSelfPermission(this,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
-
-            // Permission is not granted
-            // Should we show an explanation?
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                            Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                // Show an explanation to the user *asynchronously* -- don't block
-                // this thread waiting for the user's response! After the user
-                // sees the explanation, try again to request the permission.
-            } else {
-                // No explanation needed, we can request the permission.
-                ActivityCompat.requestPermissions(this,
-                        arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                        10)
-            }
-        } else {
-            // Permission has already been granted
-        }
 
         try {
             // Load the saved progressDB
@@ -570,5 +573,30 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
 
     companion object {
         private val CODE_SETTING = 1
+    }
+
+    /**
+     * 実行時パーミッションの解説
+     */
+    private fun showInformation() {
+        val adb = AlertDialog.Builder(this)
+        adb.setTitle(R.string.title_permission)
+        adb.setMessage(R.string.permission_audio)
+        adb.setCancelable(false)
+        adb.setPositiveButton(R.string.ok) { dialog, which ->
+            callApplicationDetailActivity()
+            finish()
+        }.setNegativeButton(R.string.cancel) { dialog, which -> finish() }
+        val dialog = adb.show()
+    }
+
+    /**
+     * アプリ詳細を呼び出す
+     */
+    private fun callApplicationDetailActivity() {
+        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                Uri.parse("package:$packageName"))
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        startActivity(intent)
     }
 }

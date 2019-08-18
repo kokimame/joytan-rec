@@ -14,7 +14,6 @@
     <string name="pr">広告</string>
     <string name="login">ログイン</string>
     <string name="message_login">ログインすると、台本を編集できます。</string>
-    <string name="copyright" translatable="false"></string>
     <string name="error_auth">ユーザ認証に失敗しました。</string>
     <string name="error_internet_connection">インターネット接続がありません。</string>
     <string name="error_unknown_response">未知のレスポンス</string>
@@ -23,12 +22,13 @@
     <string name="ok">OK</string>
     <string name="error_google_auth">Googleアカウント認証が</string>
     <string name="pref_invite">友人にアプリを紹介する</string>
-    <string name="message_permission">このアプリはマイクの権限が必要です。</string>
-    <string name="title_permission">情報</string>
+    <string name="permission_audio">このアプリはマイクへのアクセス許可をお願いいたします．</string>
+    <string name="title_permission">許可のお願い</string>
     <string name="cancel">キャンセル</string>
     <string name="pref_privacy_policy">プライバシーポリシー</string>
     <string name="joytan_twitter">ツイッターで進捗確認</string>
     <string name="joytan_youtube">ジョイ単 on YouTube</string>
     <string name="joytan_website">ジョイ単 ウェブサイト</string>
     <string name="pref_credit">クレジットの編集</string>
+    <string name="permission_write">このアプリは音声送信のためWAVファイルを書き出すため，外部ストレージへのアクセス許可をお願いいたします．</string>
 </resources>

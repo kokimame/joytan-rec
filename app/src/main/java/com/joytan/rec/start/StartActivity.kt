@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.joytan.rec.R
+import com.joytan.rec.main.MainActivity
 
 import net.khirr.android.privacypolicy.PrivacyPolicyDialog
 
@@ -32,9 +33,9 @@ class StartActivity : AppCompatActivity() {
                 finish()
             }
         })
-        ppd.addPoliceLine("Voice you send through this app will be used on Joytan App (YouTube channel)")
+        ppd.addPoliceLine("This is crowdvoicing app for free education. Voice you send through this app will be used on Joytan App (YouTube channel)")
         ppd.addPoliceLine("Your recordings are licensed under Public Domain or Creative Commons 2.0.")
-        ppd.addPoliceLine("We will never sell your recordings to others but make them open to everyone, " +
+        ppd.addPoliceLine("We will never sell your recordings to others but we want to make them open to everyone, " +
                 "including students, educators, and scientists for free.")
 
         ppd.acceptButtonColor = (ContextCompat.getColor(this, R.color.primary))
