@@ -4,6 +4,8 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
+import android.net.ConnectivityManager
+import android.net.NetworkInfo
 //import android.databinding.ObservableField
 import android.os.IBinder
 import android.view.View
@@ -98,6 +100,10 @@ class MainViewModel(private val context: Context, private val listener: Listener
      * ステータス表示
      */
     val statusImageSrc = ObservableField<Int>(R.drawable.microphone_48dp)
+
+    val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    val activeNetwork: NetworkInfo? = cm.activeNetworkInfo
+    val isConnected: Boolean = activeNetwork?.isConnectedOrConnecting == true
 
     /**
      * メインサービス
@@ -252,24 +258,24 @@ class MainViewModel(private val context: Context, private val listener: Listener
     }
 
     /**
-     * ActivityのonCreateから呼ばれる
+     * To be called from onCreate in Activity
      */
     fun onCreate() {
 
     }
 
     /**
-     * ActivityのonStartから呼ばれる
+     * To be called from onStart in Activity
      */
     fun onStart() {
-        //録音サービスを開始
+        //Start recording service
         val intent = Intent(context, MainService::class.java)
         context.startService(intent)
         context.bindService(intent, conn, 0)
     }
 
     /**
-     * ActivityのonStopから呼ばれる
+     * To be called from onStop in Activity
      */
     fun onStop() {
         service?.setCallback(null)
@@ -278,7 +284,7 @@ class MainViewModel(private val context: Context, private val listener: Listener
     }
 
     /**
-     * ActivityのonDestroyから呼ばれる
+     * To be called from onDestroy in Acitivity
      */
     fun onDestroy() {
     }
