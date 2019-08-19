@@ -6,4 +6,5 @@
 /captures
 /.idea/
 *.iml
+app/release/
 google-services.json
