@@ -548,6 +548,7 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
                     ad.dismiss()
                 }
             }
+            gridView.setSelection(currentIndex)
         } catch (e: Exception) {
             Log.i(INFO_TAG, "Grid initialization failed but ignored")
         }

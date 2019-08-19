@@ -2,6 +2,7 @@
 src/main/assets/*.css
 src/main/assets/*.js
 src/main/assets/*.html
+app/release/
 !jquery.min.js
 !bootstrap.min.js
 

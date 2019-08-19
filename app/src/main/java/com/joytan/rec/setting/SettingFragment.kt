@@ -101,7 +101,7 @@ class SettingFragment : PreferenceFragment() {
 
     private fun callPP() {
         val intent = Intent(Intent.ACTION_VIEW)
-        intent.data = Uri.parse("https://quick-echo.firebaseapp.com/")
+        intent.data = Uri.parse("https://kokimame.github.io/joytan/privacy_policy_joytan_rec.html")
         startActivity(intent)
     }
     private fun callTwitter() {
