@@ -7,7 +7,9 @@
     <EditTextPreference
         android:key="creditText"
         android:maxLength="32"
-        android:dialogMessage="Your credit which appears on YouTube video etc."
+        android:dialogMessage="Your credit appears on our YouTube video.
+To associate with social media, use one of the prefix (tw:, yt:, ig:, rd: for Twitter, YouTube, Instagram, Reddit)
+and append your user name."
         android:dialogTitle="Edit your credit"
         android:inputType="textVisiblePassword"
         android:title="@string/pref_credit" />
