@@ -296,10 +296,11 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
             for (i in 0 until projectsJson.length()) {
                 val projectTitle = projectsJson.getJSONObject(i).getString("title")
                 val projectDirname = projectsJson.getJSONObject(i).getString("dirname")
+                val flagEmoji = projectsJson.getJSONObject(i).getString("flags")
                 val doneJson = projectsJson.getJSONObject(i).getJSONArray("done")
                 val doneList = mutableListOf<Int>()
 
-                projectsList.add(projectTitle)
+                projectsList.add(flagEmoji + projectTitle)
 
                 // Import entries finished by community
                 for (i in 0 until doneJson.length()) {
@@ -522,7 +523,7 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
 
     private fun showGrid() {
         val gridView = layoutInflater.inflate(R.layout.grid_view, null) as GridView//GridView(this)
-        val builder = AlertDialog.Builder(this);
+        val builder = AlertDialog.Builder(this, R.style.GridDialog);
         val mList = mutableListOf<Int>()
         val titleView = layoutInflater.inflate(R.layout.grid_title, null)
 
@@ -539,8 +540,11 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
 
             builder.setTitle("Jump to")
             builder.setView(gridView)
+            builder.setCancelable(true)
             builder.setCustomTitle(titleView)
             val ad = builder.show()
+            ad.setCanceledOnTouchOutside(true)
+            ad.setCancelable(true)
 
             gridView.onItemClickListener = object : AdapterView.OnItemClickListener {
                 override fun onItemClick(parent: AdapterView<*>, view: View, position: Int, id: Long) {

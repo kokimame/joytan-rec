@@ -1,4 +1,8 @@
 <resources>
+    <style name="GridDialog" parent="Theme.AppCompat.Dialog">
+        <item name="android:windowCloseOnTouchOutside">true</item>
+    </style>
+
     <style name="SettingsFragmentStyle">
         <item name="android:textColorSecondary">@color/text_dark</item>
         <item name="android:backgroundTint">@color/bg_dark</item>
