@@ -1,5 +1,6 @@
 <resources>
     <style name="GridDialog" parent="Theme.AppCompat.Dialog">
+        <item name="android:windowBackground">@null</item>
         <item name="android:windowCloseOnTouchOutside">true</item>
     </style>
 

@@ -540,11 +540,8 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
 
             builder.setTitle("Jump to")
             builder.setView(gridView)
-            builder.setCancelable(true)
             builder.setCustomTitle(titleView)
             val ad = builder.show()
-            ad.setCanceledOnTouchOutside(true)
-            ad.setCancelable(true)
 
             gridView.onItemClickListener = object : AdapterView.OnItemClickListener {
                 override fun onItemClick(parent: AdapterView<*>, view: View, position: Int, id: Long) {

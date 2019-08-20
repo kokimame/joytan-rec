@@ -133,13 +133,40 @@
             </FrameLayout>
 
             <TextView
+                android:text="Please speak clearly in a quiet place. By sending, your voice recordings will be used on YouTube."
+                android:singleLine="true"
+                android:ellipsize="marquee"
+                android:marqueeRepeatLimit ="marquee_forever"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:scrollHorizontally="true"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/version_name"
+                android:textColor="@color/text_dark"
                 android:layout_gravity="end|bottom"
-                android:textColor="@color/white"
-                android:layout_marginBottom="5dp"
-                android:layout_marginRight="5dp"/>
+                android:layout_marginRight="5dp"
+                android:layout_marginBottom="5dp"/>
+
+            <!--<LinearLayout-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="match_parent"-->
+                <!--android:orientation="horizontal"-->
+                <!--android:layout_marginRight="5dp"-->
+                <!--android:layout_marginBottom="5dp">-->
+
+                <!--<TextView-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_gravity="end|bottom"-->
+                    <!--android:text="Please record in a quiet place."-->
+                    <!--android:textColor="@color/white" />-->
+
+                <!--<Space-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_weight="1" />-->
+
+            <!--</LinearLayout>-->
 
             <!--
             Disabling Ads

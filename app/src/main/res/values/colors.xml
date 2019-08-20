@@ -32,7 +32,7 @@
     <!--<color name="text">@color/abc_secondary_text_material_light</color>-->
     <!--<color name="text_dark">@color/abc_primary_text_material_light</color>-->
     <color name="text">#F3F3F3</color>
-    <color name="text_dark">#DFDFDF</color>
+    <color name="text_dark">#979797</color>
 
     <!-- Left/Right arrows -->
     <color name="arrow">#747474</color>
