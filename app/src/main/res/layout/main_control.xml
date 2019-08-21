@@ -51,7 +51,7 @@
             android:layout_marginBottom="44dp"
             android:onClick="@{viewModel::onReplayClicked}"
             android:visibility="@{viewModel.replayVisibility}"
-            app:myFabColor="@color/play_button"
+            app:myFabColor="@color/check"
             app:myFabIcon="@drawable/ic_play_arrow_white_24dp"
             app:myFabSize="mini" />
 
@@ -65,7 +65,7 @@
             android:layout_marginBottom="44dp"
             android:onClick="@{viewModel::onShareClicked}"
             android:visibility="@{viewModel.shareVisibility}"
-            app:myFabColor="@color/play_button"
+            app:myFabColor="@color/check"
             app:myFabIcon="@drawable/ic_send_white_24dp"
             app:myFabSize="mini" />
 

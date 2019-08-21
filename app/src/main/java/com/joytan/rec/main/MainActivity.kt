@@ -93,7 +93,10 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
     private var currentIndex = 0
     private var currentTotalIndex = 0
     private var currentWantedKey = "atop"
-    private lateinit var currentDirname: String
+    private var currentProjectsIndex = 0
+    private var currentDirname = ""
+    private var projectDirnames = mutableListOf<String>()
+    private lateinit var padapter : ProjectsArrayAdapter
     // Map to save user progress record
     private var progressDB = mutableMapOf<String, MutableList<Int>>()
 
@@ -256,13 +259,6 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
         pd.setCancelable(false)
         pd.show()
         Handler().postDelayed({pd.dismiss()}, 2000)
-        //
-
-//        val scriptView = findViewById<RecyclerView>(R.id.script_cycle).apply {
-//            setHasFixedSize(true)
-//            layoutManager = cycleViewManager
-//            adapter = cycleAdapter
-//        }
 
         // Detect gestures e.g. swipe
         this.mDetector = GestureDetectorCompat(this, this)
@@ -301,6 +297,7 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
                 val doneList = mutableListOf<Int>()
 
                 projectsList.add(flagEmoji + projectTitle)
+                projectDirnames.add(projectDirname)
 
                 // Import entries finished by community
                 for (i in 0 until doneJson.length()) {
@@ -324,7 +321,7 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
             updateMainScript(initialEntries, wantedKey)
 
         }.addOnFailureListener {
-            val projectsList = listOf("Failed", "to", "load JSON", "from Firebase")
+            val projectsList = listOf("Unknown error occurred!", "Please restart the app :(")
             setupSpinner(projectsList)
         }
     }
@@ -369,10 +366,8 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
     private fun setupSpinner(projectsList: List<String>) {
         val spinner: Spinner = findViewById(R.id.projects_spinner)
 
-        ArrayAdapter(
-                this,
-                R.layout.spinner_item,
-                projectsList
+        padapter = ProjectsArrayAdapter(
+                this, R.layout.spinner_item, projectsList, currentProjectsIndex
         ).also {
             adapter ->
             // Specify the layout to use when the list of choices appears
@@ -380,15 +375,52 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
             // Apply the adapter to the spinner
             spinner.setAdapter(adapter)
         }
+
         spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
                 val entriesJson = projectsJson.getJSONObject(position).getJSONArray("entries")
                 currentWantedKey = projectsJson.getJSONObject(position).getString("wanted")
                 currentDirname = projectsJson.getJSONObject(position).getString("dirname")
+                currentProjectsIndex = projectDirnames.indexOf(currentDirname)
+                padapter.setCurrentIndex(currentProjectsIndex)
                 updateMainScript(entriesJson, currentWantedKey)
             } // to close the onItemSelected
             override fun onNothingSelected(parent: AdapterView<*>) {
             }
+        }
+    }
+
+    private fun showGrid() {
+        val gridView = layoutInflater.inflate(R.layout.grid_view, null) as GridView//GridView(this)
+        val builder = AlertDialog.Builder(this, R.style.GridDialog);
+        val mList = mutableListOf<Int>()
+        val titleView = layoutInflater.inflate(R.layout.grid_title, null)
+
+        try {
+            for (i in 1 until currentTotalIndex + 1) {
+                mList.add(i);
+            }
+
+            GridBaseAdapter(
+                    this, mList, mainScripts, progressDB, currentDirname
+            ).also { adapter ->
+                gridView.setAdapter(adapter)
+            }
+
+            builder.setTitle("Jump to")
+            builder.setView(gridView)
+            builder.setCustomTitle(titleView)
+            val ad = builder.show()
+
+            gridView.onItemClickListener = object : AdapterView.OnItemClickListener {
+                override fun onItemClick(parent: AdapterView<*>, view: View, position: Int, id: Long) {
+                    updateIndex(position)
+                    ad.dismiss()
+                }
+            }
+            gridView.setSelection(currentIndex)
+        } catch (e: Exception) {
+            Log.i(INFO_TAG, "Grid initialization failed but ignored")
         }
     }
 
@@ -521,42 +553,8 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
         }
     }
 
-    private fun showGrid() {
-        val gridView = layoutInflater.inflate(R.layout.grid_view, null) as GridView//GridView(this)
-        val builder = AlertDialog.Builder(this, R.style.GridDialog);
-        val mList = mutableListOf<Int>()
-        val titleView = layoutInflater.inflate(R.layout.grid_title, null)
-
-        try {
-            for (i in 1 until currentTotalIndex + 1) {
-                mList.add(i);
-            }
-
-            GridBaseAdapter(
-                    this, mList, mainScripts, progressDB, currentDirname
-            ).also { adapter ->
-                gridView.setAdapter(adapter)
-            }
-
-            builder.setTitle("Jump to")
-            builder.setView(gridView)
-            builder.setCustomTitle(titleView)
-            val ad = builder.show()
-
-            gridView.onItemClickListener = object : AdapterView.OnItemClickListener {
-                override fun onItemClick(parent: AdapterView<*>, view: View, position: Int, id: Long) {
-                    updateIndex(position)
-                    ad.dismiss()
-                }
-            }
-            gridView.setSelection(currentIndex)
-        } catch (e: Exception) {
-            Log.i(INFO_TAG, "Grid initialization failed but ignored")
-        }
-    }
-
-        /**
-     * 設定画面
+    /**
+     * Setting menu
      */
     private fun callSettingActivity() {
         val intent = Intent(this, SettingActivity::class.java)
