@@ -69,8 +69,11 @@ class PlayHandler(private val storage: QRecStorage) {
                 storage.packetSize * 2, AudioTrack.MODE_STREAM)
         val ltrack = track
         playing = true
+
         //最初のパケットは効果音が入っていることがあるので捨てる
-        index = 1
+        // index = 1
+        index = 0
+
         thread = Thread(Runnable {
             //これがないと音が途切れる
             Process.setThreadPriority(Process.THREAD_PRIORITY_URGENT_AUDIO)

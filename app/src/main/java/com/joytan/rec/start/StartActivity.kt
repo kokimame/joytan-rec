@@ -45,7 +45,7 @@ class StartActivity : AppCompatActivity() {
                 finish()
             }
         })
-        ppd.addPoliceLine("This is crowdvoicing app for free education. Voice you send through this app will be used on Joytan App (YouTube channel)")
+        ppd.addPoliceLine("This is a crowdvoicing app for free education. By sending, your voice recording will be used on Joytan App (YouTube channel) for educational purposes.")
         ppd.addPoliceLine("Your recordings are licensed under Public Domain or Creative Commons 2.0.")
         ppd.addPoliceLine("We will never sell your recordings to others but we want to make them open to everyone, " +
                 "including students, educators, and scientists for free.")

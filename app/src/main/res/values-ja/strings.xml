@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="warning_time_limit">録音可能時間は最長15秒です。</string>
+    <string name="warning_time_limit">録音可能時間は最長10秒です。</string>
     <string name="warning_volume">音楽ボリュームがミュートになっています。</string>
     <string name="pref_oss">オープンソースライセンス</string>
     <string name="pref_sound">効果音</string>

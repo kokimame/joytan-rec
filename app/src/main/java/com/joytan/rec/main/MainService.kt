@@ -415,8 +415,8 @@ class MainService : Service() {
         private val END_TIME = 2000
 
         /**
-         * 録音時間制限は 15sec
+         * 録音時間制限は 10sec
          */
-        private val TIME_LIMIT = 15 * 1000
+        private val TIME_LIMIT = 10 * 1000
     }
 }

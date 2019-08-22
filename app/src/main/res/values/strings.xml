@@ -20,7 +20,7 @@
     <string name="pr">PR</string>
 
     <!-- 警告表示 -->
-    <string name="warning_time_limit">The max recording length is 15 sec.</string>
+    <string name="warning_time_limit">The max recording length is 10 sec.</string>
     <string name="warning_volume">The music volume is mute.</string>
     <string name="warning_no_sound">No sound is recorded.</string>
     <string name="warning_tongue_twister" translatable="false">It has only in Japanese</string>
