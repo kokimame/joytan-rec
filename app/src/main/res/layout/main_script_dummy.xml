@@ -14,14 +14,16 @@
         android:gravity="center"
         android:layout_marginHorizontal="15dp"
         android:layout_marginBottom="7dp"
+        android:paddingBottom="35dp"
         android:id="@+id/script_layout_dummy"
         android:orientation="vertical">
 
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/checkbox_dummy"
-            android:src="@drawable/ic_tick"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:id="@+id/checkbox"
+            android:src="@drawable/ic_done_24dp"
+            android:scaleType="fitXY"
             android:visibility="invisible"
             android:contentDescription="Checkbox image" />
 
@@ -33,6 +35,7 @@
             android:gravity="center"
             android:textColor="@color/text"
             android:textSize="32dp"
+            android:layout_marginBottom="15dp"
             android:paddingBottom="10dp"/>
 
 

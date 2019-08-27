@@ -2,7 +2,6 @@ package com.joytan.rec.main
 
 import android.Manifest
 import android.app.ProgressDialog
-import android.content.BroadcastReceiver
 //import android.support.v7.app.AppCompatActivity
 //import android.databinding.DataBindingUtil
 import android.media.AudioManager
@@ -74,7 +73,7 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
     private val animator = QRecAnimator()
 
 
-    private lateinit var projectsJson: JSONArray
+    private var projectsJson = JSONArray()
     private var mainScripts = mutableListOf<String>()
 
     /**
@@ -85,7 +84,7 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
     private val fStorage = FirebaseStorage.getInstance()
     // Create a storage reference from our app
     private val fStorageRef = fStorage.reference
-    private val projectsRef = fStorageRef.child("projects_structure.json")
+    private val projectsRef = fStorageRef.child("projects_structure_2.json")
     // User inFOrmation
     private val ufoRef = fStorageRef.child("users").child(uniqueID!!).child("ufo.json")
     private val tempProjectsFile = File.createTempFile("projects", "json")
@@ -173,9 +172,9 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
         }
 
         override fun onGetAudioPath(): String {
-            return "users/${uniqueID}/${currentDirname}/" +
-                    "${(currentIndex + 1).toString().padStart(5, '0')}" +
-                    "/${currentWantedKey}.wav"
+            return "projects/${currentDirname}/" +
+                    (currentIndex + 1).toString().padStart(5, '0') +
+                    "/${currentWantedKey}/${uniqueID}/${currentWantedKey}.wav"
         }
 
         override fun onUpdateVolume(volume: Float) {
@@ -281,8 +280,11 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
 
         projectsRef.getFile(tempProjectsFile).addOnSuccessListener {
             val jsonString: String = tempProjectsFile.readText(Charsets.UTF_8)
-            val jsonObject = JSONObject(jsonString)
-            projectsJson = jsonObject.getJSONArray("projects")
+            val tempProjectsJson = JSONObject(jsonString)
+
+            for (projectName in tempProjectsJson.keys()) {
+                projectsJson.put(tempProjectsJson.getJSONObject(projectName))
+            }
 
             val projectsList = mutableListOf<String>()
             val initialEntries = projectsJson.getJSONObject(0).getJSONArray("entries")
