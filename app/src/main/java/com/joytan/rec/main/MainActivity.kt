@@ -84,7 +84,7 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
     private val fStorage = FirebaseStorage.getInstance()
     // Create a storage reference from our app
     private val fStorageRef = fStorage.reference
-    private val projectsRef = fStorageRef.child("projects_structure_2.json")
+    private val projectsRef = fStorageRef.child("projects_structure.json")
     // User inFOrmation
     private val ufoRef = fStorageRef.child("users").child(uniqueID!!).child("ufo.json")
     private val tempProjectsFile = File.createTempFile("projects", "json")
