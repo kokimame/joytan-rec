@@ -333,11 +333,22 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
      */
     private fun updateMainScript(entriesJson: JSONArray, wantedKey: String) {
         val newMainScript = mutableListOf<String>()
+        var nextIndex: Int
+
         for (i in 0 until entriesJson.length()) {
             newMainScript.add(entriesJson.getJSONObject(i).getString(wantedKey))
         }
         mainScripts = newMainScript
-        updateIndex(0)
+
+        try {
+            val unfinishedIndices =
+                    (0..newMainScript.size - 1).filter { it !in progressDB[currentDirname]!! }
+            nextIndex = unfinishedIndices.shuffled().take(1)[0]
+        } catch (e: Exception) {
+            nextIndex = 0
+        }
+
+        updateIndex(nextIndex)
     }
 
     private fun updateIndex(newIndex: Int) {
