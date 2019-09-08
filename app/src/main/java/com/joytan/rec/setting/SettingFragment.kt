@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.preference.Preference
 import android.preference.PreferenceFragment
 import android.preference.PreferenceManager
+import android.util.Log
 import com.google.android.gms.appinvite.AppInviteInvitation
 
 import com.joytan.rec.R
@@ -21,7 +22,15 @@ class SettingFragment : PreferenceFragment() {
         super.onCreate(savedInstanceState)
         addPreferencesFromResource(R.xml.setting)
         run {
-            //紹介
+            val pref = findPreference(PREF_SIGNUP)
+            pref.onPreferenceClickListener = Preference.OnPreferenceClickListener {
+                Log.i("kohki", "auth clicked")
+                callAuthActivity()
+                true
+            }
+        }
+        run {
+            //Invitation
             val pref = findPreference(PREF_INVITE)
             pref.onPreferenceClickListener = Preference.OnPreferenceClickListener {
                 callInviteActivity()
@@ -29,7 +38,7 @@ class SettingFragment : PreferenceFragment() {
             }
         }
         run {
-            //商品情報
+            //About this app
             val pref = findPreference(PREF_ABOUT)
             pref.onPreferenceClickListener = Preference.OnPreferenceClickListener {
                 callAboutActivity()
@@ -37,7 +46,7 @@ class SettingFragment : PreferenceFragment() {
             }
         }
         run {
-            //プライバシーポリシー
+            //Privacy Policy
             val pref = findPreference(PREF_PP)
             pref.onPreferenceClickListener = Preference.OnPreferenceClickListener {
                 callPP()
@@ -45,6 +54,7 @@ class SettingFragment : PreferenceFragment() {
             }
         }
         run {
+            // Twitter link
             val pref = findPreference(PREF_TW)
             pref.onPreferenceClickListener = Preference.OnPreferenceClickListener {
                 callTwitter()
@@ -52,6 +62,7 @@ class SettingFragment : PreferenceFragment() {
             }
         }
         run {
+            // YouTube link
             val pref = findPreference(PREF_YT)
             pref.onPreferenceClickListener = Preference.OnPreferenceClickListener {
                 callYouTube()
@@ -59,6 +70,7 @@ class SettingFragment : PreferenceFragment() {
             }
         }
         run {
+            // Website link
             val pref = findPreference(PREF_WEB)
             pref.onPreferenceClickListener = Preference.OnPreferenceClickListener {
                 callWebsite()
@@ -67,7 +79,6 @@ class SettingFragment : PreferenceFragment() {
         }
         run {
             val pref = findPreference(PREF_CRED)
-
             // Initialize summary text
             val manager = PreferenceManager.getDefaultSharedPreferences(pref.context)
             pref.summary = manager.getString(PREF_CRED, null)
@@ -78,6 +89,11 @@ class SettingFragment : PreferenceFragment() {
                 true
             }
         }
+    }
+
+    private fun callAuthActivity() {
+        val intent = Intent(activity, SignupActivity::class.java)
+        startActivity(intent)
     }
 
     private fun callInviteActivity() {
@@ -122,6 +138,9 @@ class SettingFragment : PreferenceFragment() {
     }
 
     companion object {
+        private val CODE_SIGNUP = 2
+
+        private val PREF_SIGNUP = "signup"
 
         private val PREF_SOUND_EFFECT = "soundEffect"
 

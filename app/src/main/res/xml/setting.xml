@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <com.jenzz.materialpreference.Preference
+        android:key="signup"
+        android:title="Log in・Sign up" />
     <com.jenzz.materialpreference.SwitchPreference
         android:defaultValue="true"
         android:key="soundEffect"
@@ -14,14 +17,11 @@ and append your user name."
         android:inputType="textVisiblePassword"
         android:title="@string/pref_credit" />
     <com.jenzz.materialpreference.Preference
-        android:key="pp"
-        android:title="@string/pref_privacy_policy" />
+        android:key="youtube"
+        android:title="@string/joytan_youtube" />
     <com.jenzz.materialpreference.Preference
         android:key="twitter"
         android:title="@string/joytan_twitter" />
-    <com.jenzz.materialpreference.Preference
-        android:key="youtube"
-        android:title="@string/joytan_youtube" />
     <com.jenzz.materialpreference.Preference
         android:key="website"
         android:title="@string/joytan_website" />
@@ -31,5 +31,8 @@ and append your user name."
     <com.jenzz.materialpreference.Preference
         android:key="invite"
         android:title="@string/pref_invite" />
+    <com.jenzz.materialpreference.Preference
+        android:key="pp"
+        android:title="@string/pref_privacy_policy" />
 
 </PreferenceScreen>
