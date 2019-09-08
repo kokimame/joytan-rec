@@ -8,6 +8,7 @@ import android.preference.Preference
 import android.preference.PreferenceFragment
 import android.preference.PreferenceManager
 import android.util.Log
+import android.widget.Button
 import com.google.android.gms.appinvite.AppInviteInvitation
 
 import com.joytan.rec.R
@@ -50,22 +51,6 @@ class SettingFragment : PreferenceFragment() {
             val pref = findPreference(PREF_PP)
             pref.onPreferenceClickListener = Preference.OnPreferenceClickListener {
                 callPP()
-                true
-            }
-        }
-        run {
-            // Twitter link
-            val pref = findPreference(PREF_TW)
-            pref.onPreferenceClickListener = Preference.OnPreferenceClickListener {
-                callTwitter()
-                true
-            }
-        }
-        run {
-            // YouTube link
-            val pref = findPreference(PREF_YT)
-            pref.onPreferenceClickListener = Preference.OnPreferenceClickListener {
-                callYouTube()
                 true
             }
         }
@@ -120,20 +105,10 @@ class SettingFragment : PreferenceFragment() {
         intent.data = Uri.parse("https://kokimame.github.io/joytan/privacy_policy_joytan_rec.html")
         startActivity(intent)
     }
-    private fun callTwitter() {
-        val intent = Intent(Intent.ACTION_VIEW)
-        intent.data = Uri.parse("https://twitter.com/JoytanApp")
-        startActivity(intent)
-    }
-    private fun callYouTube() {
-        val intent = Intent(Intent.ACTION_VIEW)
-        intent.data = Uri.parse("https://www.youtube.com/c/JoytanApp")
-        startActivity(intent)
-    }
 
     private fun callWebsite() {
         val intent = Intent(Intent.ACTION_VIEW)
-        intent.data = Uri.parse("https://kokimame.github.io/joytan/")
+        intent.data = Uri.parse("https://joytan-rec-16ba2.web.app/")
         startActivity(intent)
     }
 

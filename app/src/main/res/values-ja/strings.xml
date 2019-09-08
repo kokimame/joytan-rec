@@ -38,9 +38,7 @@
     <string name="title_permission">許可のお願い</string>
     <string name="cancel">キャンセル</string>
     <string name="pref_privacy_policy">プライバシーポリシー</string>
-    <string name="joytan_twitter">ツイッターで進捗確認</string>
-    <string name="joytan_youtube">ジョイ単 on YouTube</string>
-    <string name="joytan_website">ジョイ単 ウェブサイト</string>
+    <string name="joytan_public">進捗と評価・ジョイ単パブリック</string>
     <string name="pref_credit">クレジットの編集</string>
     <string name="permission_write">このアプリは音声送信のためWAVファイルを書き出すため，外部ストレージへのアクセス許可をお願いいたします．</string>
     <string name="email">メールアドレス</string>

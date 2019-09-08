@@ -1,8 +1,12 @@
 package com.joytan.rec.setting
 
 //import android.support.v7.app.AppCompatActivity
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.MenuItem
+import android.widget.Button
+import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
 
 import com.joytan.rec.R
@@ -32,7 +36,18 @@ class SettingActivity : AppCompatActivity() {
         ft.replace(R.id.preference_frame, SettingFragment())
 
         ft.commit()
-
+        val youtubeBtn = findViewById<ImageButton>(R.id.yt_link)
+        youtubeBtn.setOnClickListener{
+            val intent = Intent(Intent.ACTION_VIEW)
+            intent.data = Uri.parse("https://www.youtube.com/c/JoytanApp")
+            startActivity(intent)
+        }
+        val twitterBtn = findViewById<ImageButton>(R.id.tw_link)
+        twitterBtn.setOnClickListener{
+            val intent = Intent(Intent.ACTION_VIEW)
+            intent.data = Uri.parse("https://twitter.com/JoytanApp")
+            startActivity(intent)
+        }
 
         //Analytics
         ah.onCreate(this)
