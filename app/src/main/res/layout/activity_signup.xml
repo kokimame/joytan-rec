@@ -22,15 +22,14 @@
         android:textStyle="bold" />
 
     <EditText
-        android:id="@+id/signup_uname"
+        android:id="@+id/signup_email"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
         android:background="@android:color/white"
-        android:hint="@string/username"
-        android:inputType="textPersonName"
+        android:hint="@string/email"
+        android:inputType="textEmailAddress"
         android:padding="10dp" />
-
 
     <EditText
         android:id="@+id/signup_psw"
@@ -50,6 +49,16 @@
         android:background="@android:color/white"
         android:hint="@string/confirm_password"
         android:inputType="textPassword"
+        android:padding="10dp" />
+
+    <EditText
+        android:id="@+id/signup_uname"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:background="@android:color/white"
+        android:hint="@string/username"
+        android:inputType="textPersonName"
         android:padding="10dp" />
 
     <Button

@@ -17,13 +17,13 @@
         android:src="@mipmap/ic_launcher_foreground" />
 
     <EditText
-        android:id="@+id/login_uname"
+        android:id="@+id/login_email"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
         android:background="@android:color/white"
-        android:hint="@string/username"
-        android:inputType="textPersonName"
+        android:hint="@string/email"
+        android:inputType="textEmailAddress"
         android:padding="10dp" />
 
 
@@ -61,6 +61,4 @@
         android:background="#aaa"
         android:text="@string/sign_up"
         android:textColor="@android:color/white" />
-
-
 </LinearLayout>
