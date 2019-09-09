@@ -3,9 +3,6 @@
     <com.jenzz.materialpreference.Preference
         android:key="signup"
         android:title="Log in・Sign up" />
-    <com.jenzz.materialpreference.Preference
-        android:key="website"
-        android:title="@string/joytan_public" />
     <com.jenzz.materialpreference.SwitchPreference
         android:defaultValue="true"
         android:key="soundEffect"
@@ -19,6 +16,9 @@ and append your user name."
         android:dialogTitle="Edit your credit"
         android:inputType="textVisiblePassword"
         android:title="@string/pref_credit" />
+    <com.jenzz.materialpreference.Preference
+        android:key="website"
+        android:title="@string/joytan_public" />
     <com.jenzz.materialpreference.Preference
         android:key="about"
         android:title="@string/pref_information" />
