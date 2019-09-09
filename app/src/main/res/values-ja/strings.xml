@@ -2,15 +2,12 @@
 <resources>
     <string name="username">ユーザー名</string>
     <string name="password">パスワード</string>
-    <string name="sign_in">サインイン</string>
     <string name="register">登録</string>
     <string name="full_name">姓名</string>
     <string name="confirm_password">パスワードの確認</string>
     <string name="already_having_account">すでにアカウントをお持ちですか？</string>
     <string name="log_in">ログイン</string>
     <string name="not_having_account">アカウントの登録はこちらから</string>
-    <string name="sign_up">サインアップ</string>
-    <string name="logout">ログアウト</string>
 
     <string name="warning_time_limit">録音可能時間は最長10秒です。</string>
     <string name="warning_volume">音楽ボリュームがミュートになっています。</string>
@@ -42,4 +39,9 @@
     <string name="pref_credit">クレジットの編集</string>
     <string name="permission_write">このアプリは音声送信のためWAVファイルを書き出すため，外部ストレージへのアクセス許可をお願いいたします．</string>
     <string name="email">メールアドレス</string>
+    <string name="your_account">アカウント情報</string>
+    <string name="title_auth">ログイン・登録手続き</string>
+    <string name="sign_up">登録手続き</string>
+    <string name="sign_in">サインイン</string>
+    <string name="sign_out">ログアウト</string>
 </resources>

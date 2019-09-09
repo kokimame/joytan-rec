@@ -8,8 +8,8 @@ import android.preference.Preference
 import android.preference.PreferenceFragment
 import android.preference.PreferenceManager
 import android.util.Log
-import android.widget.Button
 import com.google.android.gms.appinvite.AppInviteInvitation
+import com.google.firebase.auth.FirebaseAuth
 
 import com.joytan.rec.R
 
@@ -19,15 +19,30 @@ import com.joytan.rec.R
  */
 class SettingFragment : PreferenceFragment() {
 
+    private val mAuth = FirebaseAuth.getInstance()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         addPreferencesFromResource(R.xml.setting)
-        run {
-            val pref = findPreference(PREF_SIGNUP)
-            pref.onPreferenceClickListener = Preference.OnPreferenceClickListener {
-                Log.i("kohki", "auth clicked")
-                callAuthActivity()
-                true
+        Log.i("kohki", "Current User: " + mAuth.currentUser.toString())
+
+        if (mAuth.currentUser == null) {
+            run {
+                val pref = findPreference(PREF_AUTH)
+                pref.title = getString(R.string.title_auth)
+                pref.onPreferenceClickListener = Preference.OnPreferenceClickListener {
+                    callSignupActivity()
+                    true
+                }
+            }
+        } else {
+            run {
+                val pref = findPreference(PREF_AUTH)
+                pref.title = getString(R.string.your_account)
+                pref.onPreferenceClickListener = Preference.OnPreferenceClickListener {
+                    callAccountActivity()
+                    true
+                }
             }
         }
         run {
@@ -76,9 +91,18 @@ class SettingFragment : PreferenceFragment() {
         }
     }
 
-    private fun callAuthActivity() {
+    private fun callSignupActivity() {
         val intent = Intent(activity, SignupActivity::class.java)
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         startActivity(intent)
+        this.activity.finish()
+    }
+
+    private fun callAccountActivity() {
+        val intent = Intent(activity, AccountActivity::class.java)
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        startActivity(intent)
+        this.activity.finish()
     }
 
     private fun callInviteActivity() {
@@ -86,6 +110,7 @@ class SettingFragment : PreferenceFragment() {
         val intent = AppInviteInvitation.IntentBuilder(getString(R.string.pref_invite))
                 .setDeepLink(Uri.parse("https://cp999.app.goo.gl/cffF"))
                 .build();
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         startActivityForResult(intent,1);
     }
 
@@ -115,7 +140,7 @@ class SettingFragment : PreferenceFragment() {
     companion object {
         private val CODE_SIGNUP = 2
 
-        private val PREF_SIGNUP = "signup"
+        private val PREF_AUTH = "auth"
 
         private val PREF_SOUND_EFFECT = "soundEffect"
 

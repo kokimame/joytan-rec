@@ -9,8 +9,10 @@
     <string name="already_having_account">Already Having an Account?</string>
     <string name="log_in">Log In</string>
     <string name="not_having_account">Not Having an Account?</string>
+    <string name="your_account">Your Account</string>
     <string name="sign_up">Sign Up</string>
-    <string name="logout">Logout</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="title_auth">Log in・Sign up</string>
 
     <string-array name="projects_array">
         <item>Project 1</item>
@@ -37,7 +39,7 @@
     <string name="warning_no_sound">No sound is recorded.</string>
     <string name="warning_tongue_twister" translatable="false">It has only in Japanese</string>
 
-    <!-- 設定画面 -->
+    <!-- Setting menu -->
     <string name="title_setting">Settings</string>
     <string name="pref_sound">Sound effect</string>
     <string name="pref_invite">Tell this app</string>
