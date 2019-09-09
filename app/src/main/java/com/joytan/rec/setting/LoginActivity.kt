@@ -64,7 +64,8 @@ class LoginActivity : AppCompatActivity() {
                     if (task.isSuccessful) {
                         val user = mAuth.currentUser
                         val uid = user!!.uid
-                        showSnackBarMessage(view, "Successfully logged in.")
+                        Toast.makeText(this, "Successfully logged in :)",
+                                Toast.LENGTH_LONG).show()
                         finish()
                     } else {
                         showSnackBarMessage(view, "Log in failed.")
