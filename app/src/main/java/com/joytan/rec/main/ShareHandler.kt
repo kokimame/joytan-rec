@@ -9,9 +9,10 @@ import android.os.Process
 import android.util.Log
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.UploadTask
-
 import com.joytan.rec.data.QRecStorage
 import java.io.File
 import java.io.IOException
@@ -22,8 +23,13 @@ class ShareHandler(private val storage: QRecStorage) {
     private var thread: Thread? = null
 
     val fStorage = FirebaseStorage.getInstance()
-    // Create a storage reference from our app
     val fStorageRef = fStorage.reference
+
+    val fDatabase = FirebaseDatabase.getInstance()
+    val fDatabaseRef = fDatabase.reference
+
+    val mAuth = FirebaseAuth.getInstance()
+
     val outputFileName = Environment.getExternalStorageDirectory().absolutePath + "/joytan_rec_temp.wav"
     val outputFile = Uri.fromFile(File(outputFileName))
 
@@ -56,14 +62,27 @@ class ShareHandler(private val storage: QRecStorage) {
                 audioRef.putFile(outputFile)
                         .addOnSuccessListener(object : OnSuccessListener<UploadTask.TaskSnapshot> {
                             override fun onSuccess(taskSnapshot: UploadTask.TaskSnapshot) {
-                                // Get a URL to the uploaded content
-                                Log.println(1, "ERR", "Upload Succeeded!!")
+                                if (mAuth.currentUser != null) {
+                                    Log.i("kohki", "user upload audio")
+                                    val result = mapOf("file" to fileName)
+                                    val userId = mAuth.uid!!
+                                    val newKey = fDatabaseRef.child("users").
+                                            child(userId).child("audio").push().key
+
+                                    val childUpdates = HashMap<String, Any>()
+                                    childUpdates["users/$userId/audio/$newKey"] = result
+                                    fDatabaseRef.updateChildren(childUpdates)
+                                            .addOnCompleteListener{
+                                                Log.i("kohki", "database job on upload records completed")
+                                            }
+                                            .addOnFailureListener {
+                                                Log.i("kohki", "database job on upload records failed!")
+                                            }
+                                }
                             }
                         })
                         .addOnFailureListener(object : OnFailureListener {
                             override fun onFailure(exception: Exception) {
-                                // Handle unsuccessful uploads
-                                Log.println(1, "ERR", "Upload Failed!!")
                             }
                         })
             } catch (e: IOException) {
