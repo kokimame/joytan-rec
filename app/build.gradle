@@ -35,7 +35,7 @@ android {
 
 allprojects {
     repositories {
-        maven { url 'https://jitpack.io'}
+        maven { url 'https://jitpack.io' }
     }
 }
 
@@ -50,9 +50,12 @@ dependencies {
     implementation 'com.google.firebase:firebase-invites:17.0.0'
     implementation 'com.google.firebase:firebase-storage:18.1.1'
     implementation 'com.google.firebase:firebase-auth:18.1.0'
+    implementation 'com.google.firebase:firebase-firestore:21.1.0'
+    implementation 'com.google.firebase:firebase-database:19.0.0'
+
 
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
     implementation 'androidx.appcompat:appcompat:1.0.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
@@ -75,3 +78,4 @@ kapt {
 
 //ソースコード公開用にFirebase使用部分は削除
 //apply plugin: 'com.google.gms.google-services'
+
