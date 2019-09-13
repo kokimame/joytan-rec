@@ -32,6 +32,8 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.GestureDetectorCompat
 import androidx.databinding.DataBindingUtil
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.iid.FirebaseInstanceId
 import com.google.firebase.storage.FirebaseStorage
 import com.joytan.rec.databinding.ActivityMainBinding
@@ -80,13 +82,15 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
      * TODO: More persistent ID demanded
      * Unique ID of users. Used to manage user contribution, credits etc
      */
-    private val uniqueID = FirebaseInstanceId.getInstance().getToken()?.substring(0, 11)
+    val defaultUid = FirebaseInstanceId.getInstance().getToken()?.substring(0, 22)
+    lateinit var clientUid: String
+    private val mAuth = FirebaseAuth.getInstance()
+
     private val fStorage = FirebaseStorage.getInstance()
     // Create a storage reference from our app
     private val fStorageRef = fStorage.reference
     private val projectsRef = fStorageRef.child("projects_structure.json")
     // User inFOrmation
-    private val ufoRef = fStorageRef.child("users").child(uniqueID!!).child("ufo.json")
     private val tempProjectsFile = File.createTempFile("projects", "json")
 
     private var currentIndex = 0
@@ -109,6 +113,12 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
     private val SWIPE_MAX_OFF_PATH = 250
     private val SWIPE_THRESHOLD_VELOCITY = 200
     private val INFO_TAG = "kohki"
+
+    companion object {
+        private val CODE_SETTING = 1
+        var defaultUid = ""
+        var clientUid = ""
+    }
 
     /**
      * ViewModel for Main screen
@@ -174,7 +184,7 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
         override fun onGetAudioPath(): String {
             return "projects/${currentDirname}/" +
                     (currentIndex + 1).toString().padStart(5, '0') +
-                    "/${currentWantedKey}/${uniqueID}/${currentWantedKey}.wav"
+                    "/${currentWantedKey}/${MainActivity.clientUid}/${currentWantedKey}.wav"
         }
 
         override fun onUpdateVolume(volume: Float) {
@@ -258,6 +268,15 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
         pd.setCancelable(false)
         pd.show()
         Handler().postDelayed({pd.dismiss()}, 2000)
+
+        // If authorized, use the auth UID.
+        if (mAuth.currentUser != null) {
+            clientUid = mAuth.currentUser!!.uid
+        } else {
+            clientUid = defaultUid!!
+        }
+        MainActivity.clientUid = clientUid
+        MainActivity.defaultUid = defaultUid!!
 
         // Detect gestures e.g. swipe
         this.mDetector = GestureDetectorCompat(this, this)
@@ -495,19 +514,6 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
         if (this.audioManager?.getStreamVolume(AudioManager.STREAM_MUSIC) == 0) {
             wh.show(R.string.warning_volume)
         }
-        // Send User inFOrmation (e.g. credit name) to the firebase
-        try {
-            val ufoObj = JSONObject()
-            val creditText = SettingFragment.getCredit(this)
-            val ufoFile = Environment.getExternalStorageDirectory().absolutePath + "/ufo.json"
-            ufoObj.put("credit", creditText)
-            ufoObj.put("uid", uniqueID)
-            File(ufoFile).writeText(ufoObj.toString())
-            ufoRef.putFile(Uri.fromFile(File(ufoFile)))
-            Log.i(INFO_TAG, "Sent UFO file ... " + ufoObj.toString())
-        } catch (e: Exception) {
-            Log.i(INFO_TAG, "Error while writing UFO file ... " + e.toString())
-        }
     }
 
     override fun onPause() {
@@ -581,10 +587,6 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
         //        AdView mAdView = (AdView) findViewById(R.id.ad);
         //        AdRequest adRequest = new AdRequest.Builder().build();
         //        mAdView.loadAd(adRequest);
-    }
-
-    companion object {
-        private val CODE_SETTING = 1
     }
 
     /**

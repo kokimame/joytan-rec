@@ -12,6 +12,7 @@ import com.google.firebase.auth.FirebaseAuth
 
 import com.joytan.rec.R
 import com.joytan.rec.analytics.AnalyticsHandler
+import com.joytan.rec.main.MainActivity
 
 import kotlinx.android.synthetic.main.activity_signup.*
 
@@ -69,6 +70,8 @@ class SignupActivity : AppCompatActivity() {
                         val uid = user!!.uid
                         Toast.makeText(this, "Successfully registered :)",
                                 Toast.LENGTH_LONG).show()
+                        // Set new UID as the client UID
+                        MainActivity.clientUid = uid
                         finish()
                     } else {
                         Toast.makeText(this, "Error registering, try again later :(",

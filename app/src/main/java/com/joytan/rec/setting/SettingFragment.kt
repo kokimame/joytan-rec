@@ -10,8 +10,13 @@ import android.preference.PreferenceManager
 import android.util.Log
 import com.google.android.gms.appinvite.AppInviteInvitation
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 
 import com.joytan.rec.R
+import com.joytan.rec.main.MainActivity
 
 
 /**
@@ -20,6 +25,8 @@ import com.joytan.rec.R
 class SettingFragment : PreferenceFragment() {
 
     private val mAuth = FirebaseAuth.getInstance()
+    private val fDatabase = FirebaseDatabase.getInstance()
+    private val fDatabaseRef = fDatabase.reference
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -86,6 +93,26 @@ class SettingFragment : PreferenceFragment() {
             pref.onPreferenceChangeListener = Preference.OnPreferenceChangeListener {
                 preference: Preference, value: Any ->
                 pref.summary = value.toString()
+
+                val clientUid = MainActivity.clientUid
+
+                val data = mapOf("cred" to value.toString())
+                val prefix: String
+                if (mAuth.currentUser != null) {
+                    prefix = "users"
+                } else {
+                    prefix = "anony"
+                }
+                val childUpdates = HashMap<String, Any>()
+                childUpdates["$prefix/$clientUid/credit"] = data
+                fDatabaseRef.updateChildren(childUpdates)
+                        .addOnCompleteListener{
+                            Log.i("kohki", "database job on upload records completed")
+                        }
+                        .addOnFailureListener {
+                            Log.i("kohki", "database job on upload records failed!")
+                        }
+
                 true
             }
         }
@@ -162,6 +189,9 @@ class SettingFragment : PreferenceFragment() {
 
         private val PREF_CRED = "creditText"
 
+        private val fDatabase = FirebaseDatabase.getInstance()
+        private val fDatabaseRef = fDatabase.reference
+
 
         /**
          * 効果音設定を取得する
@@ -175,6 +205,23 @@ class SettingFragment : PreferenceFragment() {
         fun getCredit(context: Context): String? {
             val pref = PreferenceManager.getDefaultSharedPreferences(context)
             return pref.getString(PREF_CRED, null)
+        }
+        fun setCredit(context: Context, newUid: String) {
+            val ref = fDatabaseRef.child("users").
+                    child(newUid).child("credit")
+            ref.addListenerForSingleValueEvent(object: ValueEventListener {
+                override fun onCancelled(p0: DatabaseError) {
+                }
+
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val value = snapshot.value as Map<String, String>
+                    val pref = PreferenceManager.getDefaultSharedPreferences(context)
+                    val editor = pref.edit()
+                    editor.putString(PREF_CRED, value["cred"])
+                    editor.apply()
+                }
+            })
+
         }
     }
 }

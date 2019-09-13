@@ -13,6 +13,7 @@ import com.google.firebase.database.*
 
 import com.joytan.rec.R
 import com.joytan.rec.analytics.AnalyticsHandler
+import com.joytan.rec.main.MainActivity
 import kotlinx.android.synthetic.main.activity_account.*
 
 import java.lang.Exception
@@ -55,8 +56,20 @@ class AccountActivity : AppCompatActivity() {
 
                 override fun onDataChange(p0: DataSnapshot) {
                     val contribs = p0.value as Map<String, Map<String, String>>
-                    vote_count.text = contribs.get("votes")!!.keys.size.toString()
-                    upload_count.text = contribs.get("audio")!!.keys.size.toString()
+                    val audioCount = contribs.get("audio")
+                    val voteCount = contribs.get("votes")
+
+                    if (audioCount == null) {
+                        upload_count.text = "0"
+                    } else {
+                        upload_count.text = audioCount.keys.size.toString()
+                    }
+
+                    if (voteCount == null) {
+                        vote_count.text = "0"
+                    } else {
+                        vote_count.text = voteCount.keys.size.toString()
+                    }
                 }
             })
         } catch (e: Exception) {
@@ -67,6 +80,9 @@ class AccountActivity : AppCompatActivity() {
     fun trySignOut(view: View) {
         showSnackBarMessage(view, "Signing Out...")
         mAuth.signOut()
+        // Use defaultUid when the user not signed in
+        MainActivity.clientUid = MainActivity.defaultUid
+
         Toast.makeText(this, "Successfully signed out", Toast.LENGTH_LONG).show()
     }
 

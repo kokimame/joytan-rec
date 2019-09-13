@@ -16,6 +16,7 @@ import com.google.firebase.auth.FirebaseAuth
 
 import com.joytan.rec.R
 import com.joytan.rec.analytics.AnalyticsHandler
+import com.joytan.rec.main.MainActivity
 import kotlinx.android.synthetic.main.activity_login.*
 
 /**
@@ -66,6 +67,9 @@ class LoginActivity : AppCompatActivity() {
                         val uid = user!!.uid
                         Toast.makeText(this, "Successfully logged in :)",
                                 Toast.LENGTH_LONG).show()
+                        // Set the new UID as the client UID
+                        MainActivity.clientUid = uid
+                        SettingFragment.setCredit(this, uid)
                         finish()
                     } else {
                         showSnackBarMessage(view, "Log in failed.")
