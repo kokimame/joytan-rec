@@ -38,6 +38,8 @@ import com.google.firebase.iid.FirebaseInstanceId
 import com.google.firebase.storage.FirebaseStorage
 import com.joytan.rec.databinding.ActivityMainBinding
 import com.joytan.rec.setting.SettingFragment
+import kotlinx.android.synthetic.main.main_script.*
+import kotlinx.android.synthetic.main.main_script_dummy.*
 import org.json.JSONArray
 import java.io.File
 
@@ -77,6 +79,10 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
 
     private var projectsJson = JSONArray()
     private var mainScripts = mutableListOf<String>()
+    // List of upper note (e.g. transliteration, roma-ji)
+    private var upnScripts = mutableListOf<String>()
+    // List of lower note (e.g. English translation)
+    private var lonScripts = mutableListOf<String>()
 
     /**
      * TODO: More persistent ID demanded
@@ -95,7 +101,12 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
 
     private var currentIndex = 0
     private var currentTotalIndex = 0
+    // Key for main script
     private var currentWantedKey = "atop"
+    // Key for upper note
+    private var currentUpn = ""
+    // Key for lower note
+    private var currentLon = ""
     private var currentProjectsIndex = 0
     private var currentDirname = ""
     private var projectDirnames = mutableListOf<String>()
@@ -152,18 +163,14 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
         }
 
         override fun onScriptNavigation(direction: String) {
-
-            val mainText = findViewById<TextView>(R.id.main_text)
-            val tickImage = findViewById<ImageView>(R.id.checkbox)
-
             val deleteLayout = findViewById<LinearLayout>(R.id.script_layout_dummy)
-            val imageView = deleteLayout.getChildAt(0) as ImageView
-            val textView = deleteLayout.getChildAt(1) as TextView
-            imageView.visibility = tickImage.visibility
-            textView.text = mainText.text
+            checkbox_dummy.visibility = checkbox.visibility
+            main_text_dummy.text = main_text.text
+            upper_note_dummy.text = upper_note.text
+            lower_note_dummy.text = lower_note.text
 
-
-            var index = mainScripts.indexOf(mainText.text)
+            // FIXME: Error will happen on duplicate entries
+            var index = mainScripts.indexOf(main_text.text)
 
             if (direction == "left") {
                 index -= 1
@@ -174,11 +181,17 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
                 if (index > mainScripts.size - 1) index = 0
             }
 
-            mainText.setText(mainScripts.get(index))
+            main_text.text = mainScripts.get(index)
+            if (currentUpn != "") {
+                upper_note.text = upnScripts[index]
+            }
+            if (currentLon != "") {
+                lower_note.text = lonScripts[index]
+            }
             updateIndex(index)
 
-            animator.fadeOut(deleteLayout, direction)
-            animator.fadeIn(findViewById(R.id.script_layout), direction)
+            animator.fadeOut(script_layout_dummy, direction)
+            animator.fadeIn(script_layout, direction)
         }
 
         override fun onGetAudioPath(): String {
@@ -308,6 +321,9 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
             val projectsList = mutableListOf<String>()
             val initialEntries = projectsJson.getJSONObject(0).getJSONArray("entries")
             val wantedKey = projectsJson.getJSONObject(0).getString("wanted")
+            val upnKey = projectsJson.getJSONObject(0).getString("upn")
+            val lonKey = projectsJson.getJSONObject(0).getString("lon")
+
             currentDirname = projectsJson.getJSONObject(0).getString("dirname")
 
             for (i in 0 until projectsJson.length()) {
@@ -339,7 +355,7 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
                 }
             }
             setupSpinner(projectsList)
-            updateMainScript(initialEntries, wantedKey)
+            updateMainScript(initialEntries, wantedKey, upnKey, lonKey)
 
         }.addOnFailureListener {
             val projectsList = listOf("Unknown error occurred!", "Please restart the app :(")
@@ -350,18 +366,34 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
     /**
      * Update the main script
      */
-    private fun updateMainScript(entriesJson: JSONArray, wantedKey: String) {
-        val newMainScript = mutableListOf<String>()
+    private fun updateMainScript(entriesJson: JSONArray,
+                                 wantedKey: String, upnKey: String, lonKey: String) {
+        val newMainScripts = mutableListOf<String>()
+        val newUpnScripts = mutableListOf<String>()
+        val newLonScripts = mutableListOf<String>()
+
         var nextIndex: Int
 
         for (i in 0 until entriesJson.length()) {
-            newMainScript.add(entriesJson.getJSONObject(i).getString(wantedKey))
+            newMainScripts.add(entriesJson.getJSONObject(i).getString(wantedKey))
         }
-        mainScripts = newMainScript
+        if (currentUpn != "") {
+            for (i in 0 until entriesJson.length()) {
+                newUpnScripts.add(entriesJson.getJSONObject(i).getString(upnKey))
+            }
+        }
+        if (currentLon != "") {
+            for (i in 0 until entriesJson.length()) {
+                newLonScripts.add(entriesJson.getJSONObject(i).getString(lonKey))
+            }
+        }
+        mainScripts = newMainScripts
+        upnScripts = newUpnScripts
+        lonScripts = newLonScripts
 
         try {
             val unfinishedIndices =
-                    (0..newMainScript.size - 1).filter { it !in progressDB[currentDirname]!! }
+                    (0 .. newMainScripts.size - 1).filter { it !in progressDB[currentDirname]!! }
             nextIndex = unfinishedIndices.shuffled().take(1)[0]
         } catch (e: Exception) {
             nextIndex = 0
@@ -372,11 +404,17 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
 
     private fun updateIndex(newIndex: Int) {
         val indexText = findViewById<TextView>(R.id.index_text)
-        val mainText: TextView = findViewById(R.id.main_text)
         val checkBox = findViewById<ImageView>(R.id.checkbox)
         currentIndex = newIndex
         currentTotalIndex = mainScripts.size
-        mainText.text = mainScripts[newIndex]
+
+        main_text.text = mainScripts[newIndex]
+        if (currentUpn != "") {
+            upper_note.text = upnScripts[newIndex]
+        }
+        if (currentLon != "") {
+            lower_note.text = lonScripts[newIndex]
+        }
         indexText.setText("${currentIndex + 1}/${currentTotalIndex}")
 
         if (newIndex in progressDB[currentDirname]!!) {
@@ -414,8 +452,10 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
                 currentWantedKey = projectsJson.getJSONObject(position).getString("wanted")
                 currentDirname = projectsJson.getJSONObject(position).getString("dirname")
                 currentProjectsIndex = projectDirnames.indexOf(currentDirname)
+                currentUpn = projectsJson.getJSONObject(position).getString("upn")
+                currentLon = projectsJson.getJSONObject(position).getString("lon")
                 padapter.setCurrentIndex(currentProjectsIndex)
-                updateMainScript(entriesJson, currentWantedKey)
+                updateMainScript(entriesJson, currentWantedKey, currentUpn, currentLon)
             } // to close the onItemSelected
             override fun onNothingSelected(parent: AdapterView<*>) {
             }

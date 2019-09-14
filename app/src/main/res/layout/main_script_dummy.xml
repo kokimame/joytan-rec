@@ -21,14 +21,24 @@
         <ImageView
             android:layout_width="64dp"
             android:layout_height="64dp"
-            android:id="@+id/checkbox"
+            android:id="@+id/checkbox_dummy"
             android:src="@drawable/ic_done_24dp"
             android:scaleType="fitXY"
             android:visibility="invisible"
             android:contentDescription="Checkbox image" />
 
         <TextView
-            android:id="@+id/main_text"
+            android:id="@+id/upper_note_dummy"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:textColor="@color/text_dark"
+            android:textSize="12dp"
+            android:layout_marginBottom="15dp" />
+
+        <TextView
+            android:id="@+id/main_text_dummy"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -38,6 +48,15 @@
             android:layout_marginBottom="15dp"
             android:paddingBottom="10dp"/>
 
+        <TextView
+            android:id="@+id/lower_note_dummy"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:textColor="@color/text"
+            android:textSize="15dp"
+            android:layout_marginBottom="15dp" />
 
     </LinearLayout>
 </layout>
