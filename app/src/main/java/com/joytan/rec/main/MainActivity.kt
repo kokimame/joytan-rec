@@ -33,7 +33,10 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.GestureDetectorCompat
 import androidx.databinding.DataBindingUtil
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.iid.FirebaseInstanceId
 import com.google.firebase.storage.FirebaseStorage
 import com.joytan.rec.databinding.ActivityMainBinding
@@ -92,9 +95,11 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
     lateinit var clientUid: String
     private val mAuth = FirebaseAuth.getInstance()
 
-    private val fStorage = FirebaseStorage.getInstance()
     // Create a storage reference from our app
-    private val fStorageRef = fStorage.reference
+    private val fStorageRef = FirebaseStorage.getInstance().reference
+    // Create a RealTime database reference from our app
+    private val fDatabaseRef = FirebaseDatabase.getInstance().reference
+
     private val projectsRef = fStorageRef.child("projects_structure.json")
     // User inFOrmation
     private val tempProjectsFile = File.createTempFile("projects", "json")
@@ -299,13 +304,26 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
         viewModel.onCreate()
 
         try {
-            // Load the saved progressDB
-            val fis = this.openFileInput("progressDB")
-            val ois = ObjectInputStream(fis)
-            progressDB = ois.readObject() as MutableMap<String, MutableList<Int>>
-            ois.close()
-            fis.close()
-            Log.i(INFO_TAG, "Loaded progressDB ... " + progressDB.toString())
+            // New way to load progress from Real Time DB
+            val entryRef = fDatabaseRef.child("users/$clientUid/audio/projects/")
+            Log.i(INFO_TAG, "Try loading progress from ... users/$clientUid/audio/projects/")
+            entryRef.addListenerForSingleValueEvent((object: ValueEventListener {
+                override fun onCancelled(p0: DatabaseError) {
+                }
+
+                override fun onDataChange(p0: DataSnapshot) {
+                    // Progress data
+                    val pData = p0.value as Map<String, Map<String, Map<String, String>>>
+                    for (projectName in pData.keys) {
+                        var myDoneList = pData[projectName]!!.map { it.key.toInt() }
+                        Log.i(INFO_TAG, "myDone $myDoneList")
+                        myDoneList = myDoneList.map { it - 1 }.toMutableList()
+                        Log.i(INFO_TAG, "myDone $myDoneList")
+                        progressDB[projectName] = myDoneList
+                    }
+                }
+
+            }))
         } catch (e: Exception) {
             Log.i(INFO_TAG, "Exception while loading progressDB ... " + e.toString())
         }
@@ -341,6 +359,7 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
                     doneList.add(doneJson.getInt(i))
                 }
 
+                // If progress of a project not found, intialize with empty or a list
                 if (!progressDB.containsKey(projectDirname))
                     progressDB.put(projectDirname, doneList)
                 else {
@@ -351,9 +370,10 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
                         }
                     }
                     progressDB.put(projectDirname, updatedIndices)
-
                 }
             }
+
+
             setupSpinner(projectsList)
             updateMainScript(initialEntries, wantedKey, upnKey, lonKey)
 
@@ -563,16 +583,16 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
     }
 
     override fun onStop() {
-        try {
-            val fos = this.openFileOutput("progressDB", Context.MODE_PRIVATE)
-            val os = ObjectOutputStream(fos)
-            os.writeObject(progressDB)
-            os.close()
-            fos.close()
-            Log.i(INFO_TAG, "Save progressDB ... " + progressDB.toString())
-        } catch (e: Exception) {
-            Log.i(INFO_TAG, "Exception at onStop ... " + e.toString())
-        }
+//        try {
+//            val fos = this.openFileOutput("progressDB", Context.MODE_PRIVATE)
+//            val os = ObjectOutputStream(fos)
+//            os.writeObject(progressDB)
+//            os.close()
+//            fos.close()
+//            Log.i(INFO_TAG, "Save progressDB ... " + progressDB.toString())
+//        } catch (e: Exception) {
+//            Log.i(INFO_TAG, "Exception at onStop ... " + e.toString())
+//        }
 
         super.onStop()
         BWU.log("MainActivity#onStop")

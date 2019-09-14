@@ -124,7 +124,6 @@ class PermissionActivity : AppCompatActivity() {
             Log.i("kohki", "main called")
             finish()
         }
-        Log.i("kohki", "request passsed")
     }
 
     /**

@@ -62,23 +62,34 @@ class ShareHandler(private val storage: QRecStorage) {
                 audioRef.putFile(outputFile)
                         .addOnSuccessListener(object : OnSuccessListener<UploadTask.TaskSnapshot> {
                             override fun onSuccess(taskSnapshot: UploadTask.TaskSnapshot) {
-                                if (mAuth.currentUser != null) {
-                                    Log.i("kohki", "user upload audio")
-                                    val result = mapOf("file" to fileName)
-                                    val userId = mAuth.uid!!
-                                    val newKey = fDatabaseRef.child("users").
-                                            child(userId).child("audio").push().key
+                                Log.i("kohki", "user upload audio")
+                                val result = mapOf("file" to fileName)
 
-                                    val childUpdates = HashMap<String, Any>()
-                                    childUpdates["users/$userId/audio/$newKey"] = result
-                                    fDatabaseRef.updateChildren(childUpdates)
-                                            .addOnCompleteListener{
-                                                Log.i("kohki", "database job on upload records completed")
-                                            }
-                                            .addOnFailureListener {
-                                                Log.i("kohki", "database job on upload records failed!")
-                                            }
-                                }
+                                val clientUid = MainActivity.clientUid
+
+                                val newKey = fDatabaseRef.child("users").
+                                        child(clientUid).child("audio").push().key
+                                // First write this will probably be removed
+                                val childUpdates = HashMap<String, Any>()
+                                childUpdates["users/$clientUid/audio/all/$newKey"] = result
+                                fDatabaseRef.updateChildren(childUpdates)
+                                        .addOnCompleteListener{
+                                            Log.i("kohki", "DB: Wrote at users/$clientUid/audio/$newKey")
+                                        }
+                                        .addOnFailureListener {
+                                            Log.i("kohki", "DB: Failed to write users/$clientUid/audio/$newKey")
+                                        }
+                                // Second write
+                                val projectToEntry = fileName.split('/').
+                                        subList(0, 3).joinToString (separator = "/")
+                                childUpdates["users/$clientUid/audio/$projectToEntry"] = result
+                                fDatabaseRef.updateChildren(childUpdates)
+                                        .addOnCompleteListener{
+                                            Log.i("kohki", "DB: Write at users/$clientUid/audio/$projectToEntry")
+                                        }
+                                        .addOnFailureListener {
+                                            Log.i("kohki", "DB: Failed to write at users/$clientUid/audio/$projectToEntry")
+                                        }
                             }
                         })
                         .addOnFailureListener(object : OnFailureListener {
