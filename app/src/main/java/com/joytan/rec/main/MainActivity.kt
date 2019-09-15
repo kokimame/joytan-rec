@@ -312,14 +312,13 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
                 }
 
                 override fun onDataChange(p0: DataSnapshot) {
-                    // Progress data
-                    val pData = p0.value as Map<String, Map<String, Map<String, String>>>
-                    for (projectName in pData.keys) {
-                        var myDoneList = pData[projectName]!!.map { it.key.toInt() }
-                        Log.i(INFO_TAG, "myDone $myDoneList")
-                        myDoneList = myDoneList.map { it - 1 }.toMutableList()
-                        Log.i(INFO_TAG, "myDone $myDoneList")
-                        progressDB[projectName] = myDoneList
+                    if (p0.value is Map<*, *>) {
+                        val pData = p0.value as Map<String, Map<String, Map<String, String>>>
+                        for (projectName in pData.keys) {
+                            var myDoneList = pData[projectName]!!.map { it.key.toInt() }
+                            myDoneList = myDoneList.map { it - 1 }.toMutableList()
+                            progressDB[projectName] = myDoneList
+                        }
                     }
                 }
 
@@ -583,17 +582,6 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
     }
 
     override fun onStop() {
-//        try {
-//            val fos = this.openFileOutput("progressDB", Context.MODE_PRIVATE)
-//            val os = ObjectOutputStream(fos)
-//            os.writeObject(progressDB)
-//            os.close()
-//            fos.close()
-//            Log.i(INFO_TAG, "Save progressDB ... " + progressDB.toString())
-//        } catch (e: Exception) {
-//            Log.i(INFO_TAG, "Exception at onStop ... " + e.toString())
-//        }
-
         super.onStop()
         BWU.log("MainActivity#onStop")
         viewModel.onStop()
