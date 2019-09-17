@@ -175,22 +175,23 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
             // FIXME: Error will happen on duplicate entries
             var index = mainScripts.indexOf(main_text.text)
 
-            if (direction == "left") {
-                index -= 1
-                if (index < 0) index = mainScripts.size - 1
-            }
-            else if (direction == "right") {
-                index += 1
-                if (index > mainScripts.size - 1) index = 0
+            while (true) {
+                if (direction == "left") {
+                    index -= 1
+                    if (index < 0) index = mainScripts.size - 1
+                }
+                else if (direction == "right") {
+                    index += 1
+                    if (index > mainScripts.size - 1) index = 0
+                }
+                // Skip the finalized entries while swipe navigation
+                // TODO: Change bahavior when all completed
+                //  (Likely to not happen because such projects will be archived by admin)
+                if (adminDones[currentDirname]!!.indexOf(index) == -1) {
+                    break
+                }
             }
 
-            main_text.text = mainScripts.get(index)
-            if (currentUpn != "") {
-                upper_note.text = upnScripts[index]
-            }
-            if (currentLon != "") {
-                lower_note.text = lonScripts[index]
-            }
             updateIndex(index)
 
             animator.fadeOut(script_layout_dummy, direction)
