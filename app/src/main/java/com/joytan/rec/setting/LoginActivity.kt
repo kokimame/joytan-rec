@@ -63,13 +63,11 @@ class LoginActivity : AppCompatActivity() {
         mAuth.signInWithEmailAndPassword(emailText, pswText)
                 .addOnCompleteListener(this, OnCompleteListener { task ->
                     if (task.isSuccessful) {
-                        val user = mAuth.currentUser
-                        val uid = user!!.uid
+                        val user = mAuth.currentUser!!
                         Toast.makeText(this, "Successfully logged in :)",
                                 Toast.LENGTH_LONG).show()
                         // Set the new UID as the client UID
-                        MainActivity.clientUid = uid
-                        SettingFragment.setCredit(this, uid)
+                        SettingFragment.setCredit(this, user.uid)
                         finish()
                     } else {
                         showSnackBarMessage(view, "Log in failed.")

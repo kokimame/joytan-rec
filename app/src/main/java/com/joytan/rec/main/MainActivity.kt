@@ -285,16 +285,19 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
         pd.show()
         Handler().postDelayed({pd.dismiss()}, 2000)
 
-        // If authorized, use the auth UID.
-        if (mAuth.currentUser != null) {
-            clientUid = mAuth.currentUser!!.uid
-            fab_setting.updateImage(R.drawable.ic_user_24dp)
-        } else {
-            clientUid = defaultUid!!
-            fab_setting.updateImage(R.drawable.ic_no_user_24dp)
+        mAuth.addAuthStateListener { auth ->
+            Log.i(INFO_TAG, "Called state listener")
+            val user = auth.currentUser
+            if (user != null) {
+                clientUid = mAuth.currentUser!!.uid
+                fab_setting!!.updateImage(R.drawable.ic_user_24dp)
+            } else {
+                clientUid = defaultUid!!
+                fab_setting!!.updateImage(R.drawable.ic_no_user_24dp)
+            }
+            MainActivity.clientUid = clientUid
+            MainActivity.defaultUid = defaultUid!!
         }
-        MainActivity.clientUid = clientUid
-        MainActivity.defaultUid = defaultUid!!
 
         // Detect gestures e.g. swipe
         this.mDetector = GestureDetectorCompat(this, this)
@@ -351,6 +354,7 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
         } catch (e: Exception) {
             Log.i(INFO_TAG, "Exception while loading myDones ... " + e.toString())
         }
+
 
         projectsRef.getFile(tempProjectsFile).addOnSuccessListener {
             val jsonString: String = tempProjectsFile.readText(Charsets.UTF_8)
@@ -443,7 +447,7 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
         if (currentLon != "") {
             lower_note.text = lonScripts[newIndex]
         }
-        index_text!!git .text = "${currentIndex + 1}/${currentTotalIndex}"
+        index_text!!.text = "${currentIndex + 1}/${currentTotalIndex}"
 
         if (newIndex in adminDones[currentDirname]!!) {
             checkbox.visibility = View.VISIBLE
@@ -588,11 +592,6 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
         wh.onResume()
         if (this.audioManager?.getStreamVolume(AudioManager.STREAM_MUSIC) == 0) {
             wh.show(R.string.warning_volume)
-        }
-        if (mAuth.currentUser == null) {
-            fab_setting!!.updateImage(R.drawable.ic_no_user_24dp)
-        } else {
-            fab_setting!!.updateImage(R.drawable.ic_user_24dp)
         }
     }
 

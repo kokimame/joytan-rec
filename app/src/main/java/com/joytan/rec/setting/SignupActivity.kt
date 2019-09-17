@@ -67,12 +67,10 @@ class SignupActivity : AppCompatActivity() {
         mAuth.createUserWithEmailAndPassword(emailText, pswText)
                 .addOnCompleteListener(this, OnCompleteListener { task ->
                     if (task.isSuccessful) {
-                        val user = mAuth.currentUser
-                        val uid = user!!.uid
+                        val user = mAuth.currentUser!!
+
                         Toast.makeText(this, "Successfully registered :)",
                                 Toast.LENGTH_LONG).show()
-                        // Set new UID as the client UID
-                        MainActivity.clientUid = uid
 
                         val profUpdates = UserProfileChangeRequest.Builder().
                                 setDisplayName(unameText).build()
