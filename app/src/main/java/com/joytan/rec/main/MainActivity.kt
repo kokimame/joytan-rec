@@ -166,7 +166,6 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
         }
 
         override fun onScriptNavigation(direction: String) {
-            val deleteLayout = findViewById<LinearLayout>(R.id.script_layout_dummy)
             checkbox_dummy.visibility = checkbox.visibility
             main_text_dummy.text = main_text.text
             upper_note_dummy.text = upper_note.text
@@ -446,10 +445,15 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
 
         if (newIndex in adminDones[currentDirname]!!) {
             checkbox.visibility = View.VISIBLE
+            checkbox.setImageResource(R.drawable.ic_done_24dp)
+            checkbox_dummy.setImageResource(R.drawable.ic_done_24dp)
         }
         else if (newIndex in myDones[currentDirname]!!) {
             checkbox.visibility = View.VISIBLE
-        } else {
+            checkbox.setImageResource(R.drawable.ic_thanks_24dp)
+            checkbox_dummy.setImageResource(R.drawable.ic_thanks_24dp)
+        }
+        else {
             checkbox.visibility = View.INVISIBLE
         }
     }

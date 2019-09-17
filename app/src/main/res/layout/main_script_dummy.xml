@@ -22,7 +22,6 @@
             android:layout_width="64dp"
             android:layout_height="64dp"
             android:id="@+id/checkbox_dummy"
-            android:src="@drawable/ic_done_24dp"
             android:scaleType="fitXY"
             android:visibility="invisible"
             android:contentDescription="Checkbox image" />
