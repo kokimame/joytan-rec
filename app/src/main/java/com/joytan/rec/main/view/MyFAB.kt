@@ -102,6 +102,10 @@ class MyFAB : View {
         this.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
     }
 
+    fun updateImage(resId: Int) {
+        bitmap = BitmapFactory.decodeResource(resources, resId)
+    }
+
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         setMeasuredDimension(viewWidth, viewHeight)
     }

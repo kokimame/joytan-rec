@@ -140,9 +140,9 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
     private val viewModel = MainViewModel(this, object : MainViewModel.Listener {
         override fun onDeleteRecord() {
             animator.startDeleteAnimation(statusFrame)
-            animator.startDeleteAnimation(delete)
-            animator.startDeleteAnimation(replay)
-            animator.startDeleteAnimation(share)
+            animator.startDeleteAnimation(fab_delete)
+            animator.startDeleteAnimation(fab_replay)
+            animator.startDeleteAnimation(fab_share)
         }
 
 
@@ -152,8 +152,8 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
             // Fade-in status message
             animator.fadeIn(statusFrame)
             // Fade-in delete button
-            if (delete.visibility == View.INVISIBLE) {
-                animator.fadeIn(delete)
+            if (fab_delete.visibility == View.INVISIBLE) {
+                animator.fadeIn(fab_delete)
             }
         }
 
@@ -161,8 +161,8 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
             // Display status
             animator.fadeIn(statusFrame)
             // Sub-control
-            animator.fadeIn(replay)
-            animator.fadeIn(share)
+            animator.fadeIn(fab_replay)
+            animator.fadeIn(fab_share)
         }
 
         override fun onScriptNavigation(direction: String) {
@@ -288,8 +288,10 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
         // If authorized, use the auth UID.
         if (mAuth.currentUser != null) {
             clientUid = mAuth.currentUser!!.uid
+            fab_setting.updateImage(R.drawable.ic_user_24dp)
         } else {
             clientUid = defaultUid!!
+            fab_setting.updateImage(R.drawable.ic_no_user_24dp)
         }
         MainActivity.clientUid = clientUid
         MainActivity.defaultUid = defaultUid!!
@@ -441,7 +443,7 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
         if (currentLon != "") {
             lower_note.text = lonScripts[newIndex]
         }
-        index_text.text = "${currentIndex + 1}/${currentTotalIndex}"
+        index_text!!git .text = "${currentIndex + 1}/${currentTotalIndex}"
 
         if (newIndex in adminDones[currentDirname]!!) {
             checkbox.visibility = View.VISIBLE
@@ -587,6 +589,11 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
         if (this.audioManager?.getStreamVolume(AudioManager.STREAM_MUSIC) == 0) {
             wh.show(R.string.warning_volume)
         }
+        if (mAuth.currentUser == null) {
+            fab_setting!!.updateImage(R.drawable.ic_no_user_24dp)
+        } else {
+            fab_setting!!.updateImage(R.drawable.ic_user_24dp)
+        }
     }
 
     override fun onPause() {
@@ -621,7 +628,7 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val id = item.itemId
-        if (id == R.id.setting) {
+        if (id == R.id.fab_setting) {
             callSettingActivity()
             return true
         }
@@ -641,16 +648,6 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
         val intent = Intent(this, SettingActivity::class.java)
         startActivityForResult(intent, CODE_SETTING)
     }
-
-    /**
-     * 広告を設定する
-     */
-    private fun setupAd() {
-        //        AdView mAdView = (AdView) findViewById(R.id.ad);
-        //        AdRequest adRequest = new AdRequest.Builder().build();
-        //        mAdView.loadAd(adRequest);
-    }
-
     /**
      * 実行時パーミッションの解説
      */

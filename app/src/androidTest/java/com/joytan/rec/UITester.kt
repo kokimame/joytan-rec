@@ -24,13 +24,13 @@ class UITester {
 
     @Test
     fun test() {
-        onView(withId(R.id.record)).perform(click())
-        onView(withId(R.id.play)).check(matches(isDisplayed()))
-        onView(withId(R.id.delete)).perform(click())
-        onView(withId(R.id.record)).perform(click())
-        onView(withId(R.id.play)).check(matches(isDisplayed()))
-        onView(withId(R.id.delete)).perform(click())
-        onView(withId(R.id.setting)).perform(click())
+        onView(withId(R.id.fab_record)).perform(click())
+        onView(withId(R.id.fab_play)).check(matches(isDisplayed()))
+        onView(withId(R.id.fab_delete)).perform(click())
+        onView(withId(R.id.fab_record)).perform(click())
+        onView(withId(R.id.fab_play)).check(matches(isDisplayed()))
+        onView(withId(R.id.fab_delete)).perform(click())
+        onView(withId(R.id.fab_setting)).perform(click())
         onView(withText("アプリについて")).perform(click())
         pressBack()
         pressBack()

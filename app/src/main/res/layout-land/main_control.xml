@@ -27,7 +27,7 @@
             <!--app:myFabSize="mini" />-->
         <!--&lt;!&ndash; 再再生ボタン &ndash;&gt;-->
         <com.joytan.rec.main.view.MyFAB
-            android:id="@+id/replay"
+            android:id="@+id/fab_replay"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="44dp"
@@ -46,7 +46,7 @@
             android:paddingBottom="44dp">
             <!-- 録音ボタン -->
             <com.joytan.rec.main.view.MyFAB
-                android:id="@+id/record"
+                android:id="@+id/fab_record"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:onClick="@{viewModel::onRecordClicked}"
@@ -56,7 +56,7 @@
                 app:myFabSize="normal" />
             <!-- 再生ボタン -->
             <com.joytan.rec.main.view.MyFAB
-                android:id="@+id/play"
+                android:id="@+id/fab_play"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:onClick="@{viewModel::onPlayClicked}"
@@ -69,7 +69,7 @@
 
         <!-- 削除ボタン -->
         <com.joytan.rec.main.view.MyFAB
-            android:id="@+id/delete"
+            android:id="@+id/fab_delete"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="44dp"
