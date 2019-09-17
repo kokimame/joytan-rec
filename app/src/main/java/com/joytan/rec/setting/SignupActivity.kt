@@ -9,10 +9,12 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.UserProfileChangeRequest
 
 import com.joytan.rec.R
 import com.joytan.rec.analytics.AnalyticsHandler
 import com.joytan.rec.main.MainActivity
+import kotlinx.android.synthetic.main.activity_account.*
 
 import kotlinx.android.synthetic.main.activity_signup.*
 
@@ -58,10 +60,9 @@ class SignupActivity : AppCompatActivity() {
         val confirmPswText = confirm_password.text.toString()
         val unameText = signup_uname.text.toString()
 
-        if (!validateTextInput(emailText, pswText, confirmPswText)) {
+        if (!validateTextInput(emailText, pswText, confirmPswText, unameText)) {
             return
         }
-
 
         mAuth.createUserWithEmailAndPassword(emailText, pswText)
                 .addOnCompleteListener(this, OnCompleteListener { task ->
@@ -72,6 +73,16 @@ class SignupActivity : AppCompatActivity() {
                                 Toast.LENGTH_LONG).show()
                         // Set new UID as the client UID
                         MainActivity.clientUid = uid
+
+                        val profUpdates = UserProfileChangeRequest.Builder().
+                                setDisplayName(unameText).build()
+                        user.updateProfile(profUpdates).addOnCompleteListener(OnCompleteListener { task ->
+                            if (task.isSuccessful) {
+                                Log.i(MainActivity.INFO_TAG, "User profile successfully updated.")
+                            }
+                        })
+
+
                         finish()
                     } else {
                         Toast.makeText(this, "Error registering, try again later :(",
@@ -80,12 +91,16 @@ class SignupActivity : AppCompatActivity() {
                 })
     }
 
-    fun validateTextInput(emailText: String, pswText: String, confirmPswText: String) : Boolean{
+    fun validateTextInput(emailText: String, pswText: String,
+                          confirmPswText: String, unameText: String) : Boolean{
         if (emailText.isEmpty()) {
             Toast.makeText(this, "Please enter your email address.", Toast.LENGTH_LONG).show()
             return false
         } else if (pswText.isEmpty()) {
             Toast.makeText(this, "Please enter your password.", Toast.LENGTH_LONG).show()
+            return false
+        } else if (unameText.isEmpty()) {
+            Toast.makeText(this, "Please enter your username.", Toast.LENGTH_LONG).show()
             return false
         } else if (confirmPswText.isEmpty()) {
             Toast.makeText(this, "Please confirm your password.", Toast.LENGTH_LONG).show()
@@ -99,12 +114,15 @@ class SignupActivity : AppCompatActivity() {
                     Toast.LENGTH_LONG).show()
             return false
         }
+        if (unameText.length < 3) {
+            Toast.makeText(this, "Please make your username longer than 3 characters.",
+                    Toast.LENGTH_LONG).show()
+            return false
+        }
         if (!android.util.Patterns.EMAIL_ADDRESS.matcher(emailText).matches()) {
             Toast.makeText(this, "Please enter an valid email address.", Toast.LENGTH_LONG).show()
             return false
         }
-
-
         if (pswText != confirmPswText) {
             Toast.makeText(this, "Confirmation password does not match.", Toast.LENGTH_LONG).show()
             return false

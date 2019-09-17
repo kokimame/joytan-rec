@@ -12,7 +12,8 @@ import com.joytan.rec.R
 class GridBaseAdapter(private val context: Context,
                       private val mList: List<Int>,
                       private val mainScripts: MutableList<String>,
-                      private val progressDB: MutableMap<String, MutableList<Int>>,
+                      private val myDones: MutableMap<String, MutableList<Int>>,
+                      private val adminDones: MutableMap<String, MutableList<Int>>,
                       private val currentDirname: String) : BaseAdapter() {
 
 
@@ -28,9 +29,13 @@ class GridBaseAdapter(private val context: Context,
 
         val currentIndex = mList[position] - 1
 
-        if (currentIndex in progressDB[currentDirname]!!) {
+        if (currentIndex in adminDones[currentDirname]!!) {
+            gridItem.setBackgroundColor(ContextCompat.getColor(context, R.color.primary))
+        }
+        else if (currentIndex in myDones[currentDirname]!!) {
             gridItem.setBackgroundColor(ContextCompat.getColor(context, R.color.check))
-        } else {
+        }
+        else {
             gridItem.setBackgroundColor(ContextCompat.getColor(context, R.color.bg_dark))
         }
         textView.setText(mainScripts[currentIndex])

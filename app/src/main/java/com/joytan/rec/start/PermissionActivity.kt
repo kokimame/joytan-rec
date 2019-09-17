@@ -121,7 +121,6 @@ class PermissionActivity : AppCompatActivity() {
         else {
             //すでに許可されている
             callMainActivity()
-            Log.i(MainActivity.INFO_TAG, "main called")
             finish()
         }
     }

@@ -12,7 +12,6 @@ import android.content.pm.PackageManager
 import android.net.ConnectivityManager
 import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
 import android.os.Handler
 import android.provider.Settings
 import android.util.Log
@@ -40,15 +39,12 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.iid.FirebaseInstanceId
 import com.google.firebase.storage.FirebaseStorage
 import com.joytan.rec.databinding.ActivityMainBinding
-import com.joytan.rec.setting.SettingFragment
 import kotlinx.android.synthetic.main.main_script.*
 import kotlinx.android.synthetic.main.main_script_dummy.*
 import org.json.JSONArray
 import java.io.File
 
 import org.json.JSONObject
-import java.io.ObjectInputStream
-import java.io.ObjectOutputStream
 import java.lang.Exception
 import kotlin.math.abs
 
@@ -117,13 +113,15 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
     private var projectDirnames = mutableListOf<String>()
     private lateinit var padapter : ProjectsArrayAdapter
     // Map to save user progress record
-    private var progressDB = mutableMapOf<String, MutableList<Int>>()
+    private var myDones = mutableMapOf<String, MutableList<Int>>()
+    private var adminDones = mutableMapOf<String, MutableList<Int>>()
 
     // Internet connection receiver/monitor
     private val connFilter = IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION).apply {
         addAction(Intent.ACTION_AIRPLANE_MODE_CHANGED)
     }
     private val connReceiver = ConnectionReceiver()
+    private val adminUid = "3fG1zIUGn1hAf8JkDGd500uNuIi1"
 
     private val SWIPE_MIN_DISTANCE = 120
     private val SWIPE_MAX_OFF_PATH = 250
@@ -215,7 +213,7 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
         }
 
         override fun onShowProgress(message: String) {
-            updateProgressDB()
+            updateMyDones()
             pd.setMessage(message)
             pd.setCancelable(false)
             pd.show()
@@ -243,7 +241,7 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
 
         registerReceiver(connReceiver, connFilter)
 
-        // Get permission first before making progressDB into the user's storage
+        // Get permission first before making myDones into the user's storage
         if (ContextCompat.checkSelfPermission(this,
                         Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -303,10 +301,11 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
         wh.onCreate(this)
         viewModel.onCreate()
 
+        // Load personal progress history based on the DB
         try {
             // New way to load progress from Real Time DB
             val entryRef = fDatabaseRef.child("users/$clientUid/audio/projects/")
-            Log.i(MainActivity.INFO_TAG, "Try loading progress from ... users/$clientUid/audio/projects/")
+            Log.i(INFO_TAG, "Try loading progress from ... users/$clientUid/audio/projects/")
             entryRef.addListenerForSingleValueEvent((object: ValueEventListener {
                 override fun onCancelled(p0: DatabaseError) {
                 }
@@ -317,14 +316,38 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
                         for (projectName in pData.keys) {
                             var myDoneList = pData[projectName]!!.map { it.key.toInt() }
                             myDoneList = myDoneList.map { it - 1 }.toMutableList()
-                            progressDB[projectName] = myDoneList
+                            myDones[projectName] = myDoneList
                         }
                     }
                 }
 
             }))
         } catch (e: Exception) {
-            Log.i(MainActivity.INFO_TAG, "Exception while loading progressDB ... " + e.toString())
+            Log.i(INFO_TAG, "Exception while loading myDones ... " + e.toString())
+        }
+        // Load the admin progress history based on the specific DB records
+        try {
+            // New way to load progress from Real Time DB
+            val adminRef = fDatabaseRef.child("users/$adminUid/done/projects/")
+            Log.i(INFO_TAG, "Try loading progress from ... users/$adminUid/done/projects/")
+            adminRef.addListenerForSingleValueEvent((object: ValueEventListener {
+                override fun onCancelled(p0: DatabaseError) {
+                }
+
+                override fun onDataChange(p0: DataSnapshot) {
+                    if (p0.value is Map<*, *>) {
+                        val pData = p0.value as Map<String, Map<String, Map<String, String>>>
+                        for (projectName in pData.keys) {
+                            var adminDoneList = pData[projectName]!!.map { it.key.toInt() }
+                            adminDoneList = adminDoneList.map { it - 1 }.toMutableList()
+                            adminDones[projectName] = adminDoneList
+                        }
+                    }
+                }
+
+            }))
+        } catch (e: Exception) {
+            Log.i(INFO_TAG, "Exception while loading myDones ... " + e.toString())
         }
 
         projectsRef.getFile(tempProjectsFile).addOnSuccessListener {
@@ -347,29 +370,15 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
                 val projectTitle = projectsJson.getJSONObject(i).getString("title")
                 val projectDirname = projectsJson.getJSONObject(i).getString("dirname")
                 val flagEmoji = projectsJson.getJSONObject(i).getString("flags")
-                val doneJson = projectsJson.getJSONObject(i).getJSONArray("done")
-                val doneList = mutableListOf<Int>()
 
                 projectsList.add(flagEmoji + projectTitle)
                 projectDirnames.add(projectDirname)
 
-                // Import entries finished by community
-                for (i in 0 until doneJson.length()) {
-                    doneList.add(doneJson.getInt(i))
-                }
-
                 // If progress of a project not found, intialize with empty or a list
-                if (!progressDB.containsKey(projectDirname))
-                    progressDB.put(projectDirname, doneList)
-                else {
-                    val updatedIndices = progressDB.get(projectDirname)!!
-                    for (i in 0 until doneList.size) {
-                        if (doneList[i] !in updatedIndices) {
-                            updatedIndices.add(doneList[i])
-                        }
-                    }
-                    progressDB.put(projectDirname, updatedIndices)
-                }
+                if (!myDones.containsKey(projectDirname))
+                    myDones.put(projectDirname, mutableListOf<Int>())
+                if (!adminDones.containsKey(projectDirname))
+                    adminDones.put(projectDirname, mutableListOf<Int>())
             }
 
 
@@ -412,7 +421,7 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
 
         try {
             val unfinishedIndices =
-                    (0 .. newMainScripts.size - 1).filter { it !in progressDB[currentDirname]!! }
+                    (0 .. newMainScripts.size - 1).filter { it !in myDones[currentDirname]!! }
             nextIndex = unfinishedIndices.shuffled().take(1)[0]
         } catch (e: Exception) {
             nextIndex = 0
@@ -422,8 +431,6 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
     }
 
     private fun updateIndex(newIndex: Int) {
-        val indexText = findViewById<TextView>(R.id.index_text)
-        val checkBox = findViewById<ImageView>(R.id.checkbox)
         currentIndex = newIndex
         currentTotalIndex = mainScripts.size
 
@@ -434,20 +441,22 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
         if (currentLon != "") {
             lower_note.text = lonScripts[newIndex]
         }
-        indexText.setText("${currentIndex + 1}/${currentTotalIndex}")
+        index_text.text = "${currentIndex + 1}/${currentTotalIndex}"
 
-        if (newIndex in progressDB[currentDirname]!!) {
-            checkBox.visibility = View.VISIBLE
+        if (newIndex in adminDones[currentDirname]!!) {
+            checkbox.visibility = View.VISIBLE
+        }
+        else if (newIndex in myDones[currentDirname]!!) {
+            checkbox.visibility = View.VISIBLE
         } else {
-            checkBox.visibility = View.INVISIBLE
+            checkbox.visibility = View.INVISIBLE
         }
     }
 
-    private fun updateProgressDB(){
-        if (currentIndex !in progressDB[currentDirname]!!)
-            progressDB[currentDirname]?.add(currentIndex)
-        val checkBox = this.findViewById<ImageView>(R.id.checkbox)
-        checkBox.visibility = View.VISIBLE
+    private fun updateMyDones(){
+        if (currentIndex !in myDones[currentDirname]!!)
+            myDones[currentDirname]?.add(currentIndex)
+        checkbox.visibility = View.VISIBLE
     }
     /*
      * Setup the project spinner
@@ -493,7 +502,7 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
             }
 
             GridBaseAdapter(
-                    this, mList, mainScripts, progressDB, currentDirname
+                    this, mList, mainScripts, myDones, adminDones, currentDirname
             ).also { adapter ->
                 gridView.setAdapter(adapter)
             }
@@ -511,7 +520,7 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
             }
             gridView.setSelection(currentIndex)
         } catch (e: Exception) {
-            Log.i(MainActivity.INFO_TAG, "Grid initialization failed but ignored")
+            Log.i(INFO_TAG, "Grid initialization failed but ignored")
         }
     }
 
