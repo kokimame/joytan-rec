@@ -31,7 +31,7 @@ class SettingFragment : PreferenceFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         addPreferencesFromResource(R.xml.setting)
-        Log.i("kohki", "Current User: " + mAuth.currentUser.toString())
+        Log.i(MainActivity.INFO_TAG, "Current User: " + mAuth.currentUser.toString())
 
         if (mAuth.currentUser == null) {
             run {
@@ -107,10 +107,10 @@ class SettingFragment : PreferenceFragment() {
                 childUpdates["$prefix/$clientUid/credit"] = data
                 fDatabaseRef.updateChildren(childUpdates)
                         .addOnCompleteListener{
-                            Log.i("kohki", "database job on upload records completed")
+                            Log.i(MainActivity.INFO_TAG, "database job on upload records completed")
                         }
                         .addOnFailureListener {
-                            Log.i("kohki", "database job on upload records failed!")
+                            Log.i(MainActivity.INFO_TAG, "database job on upload records failed!")
                         }
 
                 true

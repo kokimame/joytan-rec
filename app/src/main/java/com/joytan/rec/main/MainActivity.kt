@@ -128,12 +128,12 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
     private val SWIPE_MIN_DISTANCE = 120
     private val SWIPE_MAX_OFF_PATH = 250
     private val SWIPE_THRESHOLD_VELOCITY = 200
-    private val INFO_TAG = "kohki"
 
     companion object {
         private val CODE_SETTING = 1
         var defaultUid = ""
         var clientUid = ""
+        val INFO_TAG = "kohki"
     }
 
     /**
@@ -306,7 +306,7 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
         try {
             // New way to load progress from Real Time DB
             val entryRef = fDatabaseRef.child("users/$clientUid/audio/projects/")
-            Log.i(INFO_TAG, "Try loading progress from ... users/$clientUid/audio/projects/")
+            Log.i(MainActivity.INFO_TAG, "Try loading progress from ... users/$clientUid/audio/projects/")
             entryRef.addListenerForSingleValueEvent((object: ValueEventListener {
                 override fun onCancelled(p0: DatabaseError) {
                 }
@@ -324,7 +324,7 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
 
             }))
         } catch (e: Exception) {
-            Log.i(INFO_TAG, "Exception while loading progressDB ... " + e.toString())
+            Log.i(MainActivity.INFO_TAG, "Exception while loading progressDB ... " + e.toString())
         }
 
         projectsRef.getFile(tempProjectsFile).addOnSuccessListener {
@@ -511,7 +511,7 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
             }
             gridView.setSelection(currentIndex)
         } catch (e: Exception) {
-            Log.i(INFO_TAG, "Grid initialization failed but ignored")
+            Log.i(MainActivity.INFO_TAG, "Grid initialization failed but ignored")
         }
     }
 

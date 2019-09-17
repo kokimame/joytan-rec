@@ -99,7 +99,7 @@ class PermissionActivity : AppCompatActivity() {
                                 Manifest.permission.WRITE_EXTERNAL_STORAGE),
                         CODE_PERMISSION)
             }
-            Log.i("kohki", "audio not granted")
+            Log.i(MainActivity.INFO_TAG, "audio not granted")
         }
 //        else if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
 //            // Should we show an explanation?
@@ -116,12 +116,12 @@ class PermissionActivity : AppCompatActivity() {
 //                                Manifest.permission.WRITE_EXTERNAL_STORAGE),
 //                        CODE_PERMISSION)
 //            }
-//            Log.i("kohki", "write not granted")
+//            Log.i(MainActivity.INFO_TAG, "write not granted")
 //        }
         else {
             //すでに許可されている
             callMainActivity()
-            Log.i("kohki", "main called")
+            Log.i(MainActivity.INFO_TAG, "main called")
             finish()
         }
     }

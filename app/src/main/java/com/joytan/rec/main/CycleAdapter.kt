@@ -26,7 +26,7 @@ class CycleAdapter(private val mainScripts: MutableList<String>) :
                 .inflate(R.layout.main_script, parent, false) as LinearLayout
         // set the view's size, margins, paddings and layout parameters
 
-        Log.i("kohki", "onCreateViewHolder")
+        Log.i(MainActivity.INFO_TAG, "onCreateViewHolder")
         return MyViewHolder(scriptLayout)
     }
 
@@ -38,7 +38,7 @@ class CycleAdapter(private val mainScripts: MutableList<String>) :
         val mainText = holder.scriptLayout.getChildAt(1) as TextView
 
         mainText.text = mainScripts[position]
-        Log.i("kohki", "onBindViewHolder" + position.toString())
+        Log.i(MainActivity.INFO_TAG, "onBindViewHolder" + position.toString())
     }
 
     // Return the size of your dataset (invoked by the layout manager)

@@ -62,7 +62,7 @@ class ShareHandler(private val storage: QRecStorage) {
                 audioRef.putFile(outputFile)
                         .addOnSuccessListener(object : OnSuccessListener<UploadTask.TaskSnapshot> {
                             override fun onSuccess(taskSnapshot: UploadTask.TaskSnapshot) {
-                                Log.i("kohki", "user upload audio")
+                                Log.i(MainActivity.INFO_TAG, "user upload audio")
                                 val result = mapOf("file" to fileName)
 
                                 val clientUid = MainActivity.clientUid
@@ -74,10 +74,10 @@ class ShareHandler(private val storage: QRecStorage) {
                                 childUpdates["users/$clientUid/audio/all/$newKey"] = result
                                 fDatabaseRef.updateChildren(childUpdates)
                                         .addOnCompleteListener{
-                                            Log.i("kohki", "DB: Wrote at users/$clientUid/audio/$newKey")
+                                            Log.i(MainActivity.INFO_TAG, "DB: Wrote at users/$clientUid/audio/$newKey")
                                         }
                                         .addOnFailureListener {
-                                            Log.i("kohki", "DB: Failed to write users/$clientUid/audio/$newKey")
+                                            Log.i(MainActivity.INFO_TAG, "DB: Failed to write users/$clientUid/audio/$newKey")
                                         }
                                 // Second write
                                 val projectToEntry = fileName.split('/').
@@ -85,10 +85,10 @@ class ShareHandler(private val storage: QRecStorage) {
                                 childUpdates["users/$clientUid/audio/$projectToEntry"] = result
                                 fDatabaseRef.updateChildren(childUpdates)
                                         .addOnCompleteListener{
-                                            Log.i("kohki", "DB: Write at users/$clientUid/audio/$projectToEntry")
+                                            Log.i(MainActivity.INFO_TAG, "DB: Write at users/$clientUid/audio/$projectToEntry")
                                         }
                                         .addOnFailureListener {
-                                            Log.i("kohki", "DB: Failed to write at users/$clientUid/audio/$projectToEntry")
+                                            Log.i(MainActivity.INFO_TAG, "DB: Failed to write at users/$clientUid/audio/$projectToEntry")
                                         }
                             }
                         })

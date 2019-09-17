@@ -80,7 +80,7 @@
             android:visibility="visible"
             android:onClick="@{viewModel::onSettingClicked}"
             app:myFabColor="@android:color/darker_gray"
-            app:myFabIcon="@drawable/ic_setting_white_24dp"
+            app:myFabIcon="@drawable/ic_user_24dp"
             app:myFabSize="mini" />
 
 

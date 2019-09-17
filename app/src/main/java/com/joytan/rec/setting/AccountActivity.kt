@@ -46,6 +46,7 @@ class AccountActivity : AppCompatActivity() {
             finish()
         }
         uname_text.text = mAuth.currentUser!!.displayName
+        Log.i(MainActivity.INFO_TAG, "Show account info of " + mAuth.currentUser!!.displayName)
 
         try {
             val ref = fDatabaseRef.child("users").
@@ -55,25 +56,31 @@ class AccountActivity : AppCompatActivity() {
                 }
 
                 override fun onDataChange(p0: DataSnapshot) {
-                    val contribs = p0.value as Map<String, Map<String, String>>
-                    val audioCount = contribs.get("audio")
-                    val voteCount = contribs.get("votes")
+                    if (p0.value is Map<*, *>) {
+                        val contribs = p0.value as Map<String, Map<String, String>>
+                        val audioCount = contribs.get("audio")
+                        val voteCount = contribs.get("votes")
 
-                    if (audioCount == null) {
+                        if (audioCount == null) {
+                            upload_count.text = "0"
+                        } else {
+                            upload_count.text = audioCount.keys.size.toString()
+                        }
+
+                        if (voteCount == null) {
+                            vote_count.text = "0"
+                        } else {
+                            vote_count.text = voteCount.keys.size.toString()
+                        }
+                    } else {
+                        // If user does not have any record in the database
                         upload_count.text = "0"
-                    } else {
-                        upload_count.text = audioCount.keys.size.toString()
-                    }
-
-                    if (voteCount == null) {
                         vote_count.text = "0"
-                    } else {
-                        vote_count.text = voteCount.keys.size.toString()
                     }
                 }
             })
         } catch (e: Exception) {
-            Log.i("kohki", "Exception: " + e.toString())
+            Log.i(MainActivity.INFO_TAG, "Exception: " + e.toString())
         }
 
     }

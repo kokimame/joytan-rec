@@ -50,8 +50,8 @@ class SignupActivity : AppCompatActivity() {
     }
 
     fun trySignUp() {
-        Log.i("kohki", "Do registering")
-        Log.i("kohki", mAuth.currentUser.toString())
+        Log.i(MainActivity.INFO_TAG, "Do registering")
+        Log.i(MainActivity.INFO_TAG, mAuth.currentUser.toString())
 
         val emailText = signup_email.text.toString()
         val pswText = signup_psw.text.toString()
@@ -115,7 +115,7 @@ class SignupActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        Log.i("kohki", mAuth.currentUser.toString())
+        Log.i(MainActivity.INFO_TAG, mAuth.currentUser.toString())
     }
 
     override fun onResume() {
