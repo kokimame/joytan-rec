@@ -25,6 +25,11 @@
 
     <color name="spinner">#443F3F</color>
 
+    <!-- Bootstrap colors (little bit darker than the original) -->
+    <color name="bs_blue">#239CAA</color>
+    <color name="bs_yellow">#E4B63E</color>
+    <color name="bs_green">#3F9B54</color>
+
     <!-- 白 -->
     <color name="white">#ffffff</color>
 

@@ -30,10 +30,10 @@ class GridBaseAdapter(private val context: Context,
         val currentIndex = mList[position] - 1
 
         if (currentIndex in adminDones[currentDirname]!!) {
-            gridItem.setBackgroundColor(ContextCompat.getColor(context, R.color.primary))
+            gridItem.setBackgroundColor(ContextCompat.getColor(context, R.color.bs_green))
         }
         else if (currentIndex in myDones[currentDirname]!!) {
-            gridItem.setBackgroundColor(ContextCompat.getColor(context, R.color.check))
+            gridItem.setBackgroundColor(ContextCompat.getColor(context, R.color.bs_blue))
         }
         else {
             gridItem.setBackgroundColor(ContextCompat.getColor(context, R.color.bg_dark))
