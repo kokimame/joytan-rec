@@ -468,6 +468,9 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
         if (currentIndex !in myDones[currentDirname]!!)
             myDones[currentDirname]?.add(currentIndex)
         checkbox.visibility = View.VISIBLE
+        // Explictly set bitmap source because initially not specified
+        checkbox.setImageResource(R.drawable.ic_thanks_24dp)
+        checkbox_dummy.setImageResource(R.drawable.ic_thanks_24dp)
     }
     /*
      * Setup the project spinner
