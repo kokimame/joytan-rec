@@ -200,7 +200,7 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
         override fun onGetAudioPath(): String {
             return "projects/${currentDirname}/" +
                     (currentIndex + 1).toString().padStart(5, '0') +
-                    "/${currentWantedKey}/${MainActivity.clientUid}/${currentWantedKey}.wav"
+                    "/${MainActivity.clientUid}/${currentWantedKey}.wav"
         }
 
         override fun onUpdateVolume(volume: Float) {
