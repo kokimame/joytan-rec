@@ -441,11 +441,17 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
         currentTotalIndex = mainScripts.size
 
         main_text.text = mainScripts[newIndex]
+
+        // FIXME: Maybe there is a better way to update upper/lower note
         if (currentUpn != "") {
             upper_note.text = upnScripts[newIndex]
+        } else {
+            upper_note.text = ""
         }
         if (currentLon != "") {
             lower_note.text = lonScripts[newIndex]
+        } else {
+            lower_note.text = ""
         }
         index_text!!.text = "${currentIndex + 1}/${currentTotalIndex}"
 
