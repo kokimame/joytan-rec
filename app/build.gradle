@@ -11,7 +11,7 @@ android {
         applicationId "com.joytan.rec"
         minSdkVersion 22
         targetSdkVersion 28
-        versionCode 14
+        versionCode 15
         versionName "BETA-1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
