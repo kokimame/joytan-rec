@@ -57,8 +57,8 @@ class AccountActivity : AppCompatActivity() {
 
                 override fun onDataChange(p0: DataSnapshot) {
                     if (p0.value is Map<*, *>) {
-                        val contribs = p0.value as Map<String, Map<String, String>>
-                        val audioCount = contribs.get("audio")
+                        val contribs = p0.value as Map<String, Map<String, Map<*, *>>>
+                        val audioCount = contribs.get("audio")!!.get("all")
                         val voteCount = contribs.get("votes")
 
                         if (audioCount == null) {
