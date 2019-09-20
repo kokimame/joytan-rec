@@ -160,7 +160,7 @@ class SettingFragment : PreferenceFragment() {
 
     private fun callWebsite() {
         val intent = Intent(Intent.ACTION_VIEW)
-        intent.data = Uri.parse("https://joytan-rec-16ba2.web.app/")
+        intent.data = Uri.parse("https://joytan.pub")
         startActivity(intent)
     }
 
