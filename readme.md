@@ -3,8 +3,7 @@
 _Link_ 👇
 
 <img href="https://play.google.com/store/apps/details?id=com.joytan.rec" 
-    src="./assets/get_it_on_google_play.png" 
-    align="right" width="200" height="80" title="get_it">
+    src="./assets/get_it_on_google_play.png" width="200" height="80" title="get_it">
 
 ### Keywords
 Android, audio recoding, audio processing, SoX,
