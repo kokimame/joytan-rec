@@ -66,11 +66,6 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
      */
     private lateinit var mDetector: GestureDetectorCompat
     /**
-     * Show progress of data transaction with Firebase server
-     */
-    private lateinit var pd: ProgressDialog
-
-    /**
      * Handling custom animation for buttion, explosion etc
      */
     private val animator = QRecAnimator()
@@ -132,6 +127,10 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
         var defaultUid = ""
         var clientUid = ""
         val INFO_TAG = "kohki"
+        /**
+         * Show progress of data transaction with Firebase server
+         */
+        lateinit var pd: ProgressDialog
     }
 
     /**
@@ -217,7 +216,6 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
             pd.setMessage(message)
             pd.setCancelable(false)
             pd.show()
-            Handler().postDelayed({pd.dismiss()}, 500)
         }
         override fun onDismissProgress() {
             if (pd.isShowing) {
@@ -277,13 +275,12 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
         this.audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
 
         // DO NOT ALLOW USERS TO TOUCH BUTTON BEFORE LOADING CONTENT
-        this.pd = ProgressDialog(this, ProgressDialog.THEME_HOLO_LIGHT)
+        pd = ProgressDialog(this, ProgressDialog.THEME_HOLO_LIGHT)
         // TODO Synchronize with the actual internet connection time
         pd.setProgressStyle(ProgressDialog.STYLE_SPINNER)
         pd.setMessage("Loading data from server ...")
         pd.setCancelable(false)
         pd.show()
-//        Handler().postDelayed({pd.dismiss()}, 2000)
 
         mAuth.addAuthStateListener { auth ->
             Log.i(INFO_TAG, "Called state listener")

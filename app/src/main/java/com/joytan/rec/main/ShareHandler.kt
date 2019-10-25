@@ -90,10 +90,16 @@ class ShareHandler(private val storage: QRecStorage) {
                                         .addOnFailureListener {
                                             Log.i(MainActivity.INFO_TAG, "DB: Failed to write at users/$clientUid/audio/$projectToEntry")
                                         }
+                                if(MainActivity.pd.isShowing) {
+                                    MainActivity.pd.dismiss()
+                                }
                             }
                         })
                         .addOnFailureListener(object : OnFailureListener {
                             override fun onFailure(exception: Exception) {
+                                if(MainActivity.pd.isShowing) {
+                                    MainActivity.pd.dismiss()
+                                }
                             }
                         })
             } catch (e: IOException) {
