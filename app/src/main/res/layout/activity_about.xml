@@ -7,17 +7,17 @@
             type="com.joytan.rec.setting.AboutViewModel" />
     </data>
 
-    <LinearLayout xmlns:tools="http://schemas.android.com/tools"
+        <LinearLayout xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:background="@color/bg_dark"
         tools:context="com.joytan.rec.setting.AboutActivity">
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
 
         <ImageView
             android:layout_width="match_parent"
@@ -59,16 +59,26 @@
             android:gravity="center"
             android:textSize="@dimen/body" />
 
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="30dp">
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="8dp"
             android:layout_marginLeft="@dimen/activity_margin"
             android:layout_marginRight="@dimen/activity_margin"
-            android:text="This section is going to make a detail explaination on permission, term of use etc"
+            android:text="Joytan-REC aims to collect pronunciations (a single word to a short sentence) from the crowd of language enthusiasts and make use of such voice recordings to develop free and fun language learning services.
+
+For instance, the voice recording you send through this app will be used in our YouTube channel (Joytan App) and an even more open platform where everyone can freely download and use for educational purpose.
+
+For now, your benefits of contributing this project are a bumper ad/promo (like your name, social account) or a short promotional movie at the beginning of our YouTube video in which your voice recordings are used. And of course, you will see more free and fun language learning videos from us because your contribution will grow our channel and attract other contributors.
+
+"
             android:textColor="@color/text"
             android:textSize="16dp" />
-
-
+            </ScrollView>
     </LinearLayout>
 </layout>
