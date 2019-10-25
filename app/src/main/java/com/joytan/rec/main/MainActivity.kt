@@ -283,7 +283,7 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
         pd.setMessage("Loading data from server ...")
         pd.setCancelable(false)
         pd.show()
-        Handler().postDelayed({pd.dismiss()}, 2000)
+//        Handler().postDelayed({pd.dismiss()}, 2000)
 
         mAuth.addAuthStateListener { auth ->
             Log.i(INFO_TAG, "Called state listener")
@@ -386,10 +386,9 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
                 if (!adminDones.containsKey(projectDirname))
                     adminDones.put(projectDirname, mutableListOf<Int>())
             }
-
-
             setupSpinner(projectsList)
             updateMainScript(initialEntries, wantedKey, upnKey, lonKey)
+            pd.dismiss()
 
         }.addOnFailureListener {
             val projectsList = listOf("Unknown error occurred!", "Please restart the app :(")
