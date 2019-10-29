@@ -12,7 +12,6 @@ import android.content.pm.PackageManager
 import android.net.ConnectivityManager
 import android.net.Uri
 import android.os.Bundle
-import android.os.Handler
 import android.provider.Settings
 import android.util.Log
 import android.view.*
@@ -362,29 +361,40 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
             }
 
             val projectsList = mutableListOf<String>()
-            val initialEntries = projectsJson.getJSONObject(0).getJSONArray("entries")
-            val wantedKey = projectsJson.getJSONObject(0).getString("wanted")
-            val upnKey = projectsJson.getJSONObject(0).getString("upn")
-            val lonKey = projectsJson.getJSONObject(0).getString("lon")
-
-            currentDirname = projectsJson.getJSONObject(0).getString("dirname")
+            var initialProjectId = -1
 
             for (i in 0 until projectsJson.length()) {
                 val projectTitle = projectsJson.getJSONObject(i).getString("title")
                 val projectDirname = projectsJson.getJSONObject(i).getString("dirname")
+                val projectState = projectsJson.getJSONObject(i).getString("state")
                 val flagEmoji = projectsJson.getJSONObject(i).getString("flags")
 
-                projectsList.add(flagEmoji + projectTitle)
-                projectDirnames.add(projectDirname)
+                if (projectState == "close") {
+                    // Ignore closed projects
+                    continue
+                } else {
+                    if (initialProjectId == -1) {
+                        initialProjectId = i
+                    }
 
-                // If progress of a project not found, intialize with empty or a list
-                if (!myDones.containsKey(projectDirname))
-                    myDones.put(projectDirname, mutableListOf<Int>())
-                if (!adminDones.containsKey(projectDirname))
-                    adminDones.put(projectDirname, mutableListOf<Int>())
+                    projectsList.add(flagEmoji + projectTitle)
+                    projectDirnames.add(projectDirname)
+
+                    // If progress of a project not found, intialize with empty or a list
+                    if (!myDones.containsKey(projectDirname))
+                        myDones.put(projectDirname, mutableListOf<Int>())
+                    if (!adminDones.containsKey(projectDirname))
+                        adminDones.put(projectDirname, mutableListOf<Int>())
+                }
+                val initialEntries = projectsJson.getJSONObject(initialProjectId).getJSONArray("entries")
+                val wantedKey = projectsJson.getJSONObject(initialProjectId).getString("wanted")
+                val upnKey = projectsJson.getJSONObject(initialProjectId).getString("upn")
+                val lonKey = projectsJson.getJSONObject(initialProjectId).getString("lon")
+
+                currentDirname = projectsJson.getJSONObject(i).getString("dirname")
+                updateMainScript(initialEntries, wantedKey, upnKey, lonKey)
             }
             setupSpinner(projectsList)
-            updateMainScript(initialEntries, wantedKey, upnKey, lonKey)
             pd.dismiss()
 
         }.addOnFailureListener {
@@ -423,7 +433,8 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
 
         try {
             val unfinishedIndices =
-                    (0 .. newMainScripts.size - 1).filter { it !in myDones[currentDirname]!! }
+                    (0 .. newMainScripts.size - 1).filter { it !in myDones[currentDirname]!! &&
+                                                            it !in adminDones[currentDirname]!!}
             nextIndex = unfinishedIndices.shuffled().take(1)[0]
         } catch (e: Exception) {
             nextIndex = 0

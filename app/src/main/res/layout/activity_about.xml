@@ -59,26 +59,26 @@
             android:gravity="center"
             android:textSize="@dimen/body" />
 
-            <ScrollView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginBottom="30dp">
-
-        <TextView
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="8dp"
-            android:layout_marginLeft="@dimen/activity_margin"
-            android:layout_marginRight="@dimen/activity_margin"
-            android:text="Joytan-REC aims to collect pronunciations (a single word to a short sentence) from the crowd of language enthusiasts and make use of such voice recordings to develop free and fun language learning services.
+            android:layout_height="match_parent"
+            android:layout_marginBottom="30dp">
 
-For instance, the voice recording you send through this app will be used in our YouTube channel (Joytan App) and an even more open platform where everyone can freely download and use for educational purpose.
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="8dp"
+                android:layout_marginLeft="@dimen/activity_margin"
+                android:layout_marginRight="@dimen/activity_margin"
+                android:text="Joytan-REC aims to collect pronunciations (a single word to a short sentence) from the crowd of language enthusiasts and make use of such voice recordings to develop free and fun language learning services.
 
-For now, your benefits of contributing this project are a bumper ad/promo (like your name, social account) or a short promotional movie at the beginning of our YouTube video in which your voice recordings are used. And of course, you will see more free and fun language learning videos from us because your contribution will grow our channel and attract other contributors.
+    For instance, the voice recording you send through this app will be used in our YouTube channel (Joytan App) and an even more open platform where everyone can freely download and use for educational purpose.
 
-"
-            android:textColor="@color/text"
-            android:textSize="16dp" />
-            </ScrollView>
+    For now, your benefits of contributing this project are a bumper ad/promo (like your name, social account) or a short promotional movie at the beginning of our YouTube video in which your voice recordings are used. And of course, you will see more free and fun language learning videos from us because your contribution will grow our channel and attract other contributors.
+
+    "
+                android:textColor="@color/text"
+                android:textSize="16dp" />
+        </ScrollView>
     </LinearLayout>
 </layout>
