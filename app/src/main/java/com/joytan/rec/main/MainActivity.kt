@@ -361,39 +361,39 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
             }
 
             val projectsList = mutableListOf<String>()
-            var initialProjectId = -1
+            var closedProjectPos = mutableListOf<Int>()
+
+            for (i in projectsJson.length() - 1 downTo 0) {
+                val projectState = projectsJson.getJSONObject(i).getString("state")
+                if (projectState == "close") {
+                    closedProjectPos.add(i)
+                }
+            }
+            closedProjectPos.forEach {
+                projectsJson.remove(it)
+            }
+
 
             for (i in 0 until projectsJson.length()) {
                 val projectTitle = projectsJson.getJSONObject(i).getString("title")
                 val projectDirname = projectsJson.getJSONObject(i).getString("dirname")
-                val projectState = projectsJson.getJSONObject(i).getString("state")
                 val flagEmoji = projectsJson.getJSONObject(i).getString("flags")
 
-                if (projectState == "close") {
-                    // Ignore closed projects
-                    continue
-                } else {
-                    if (initialProjectId == -1) {
-                        initialProjectId = i
-                    }
+                projectsList.add(flagEmoji + projectTitle)
+                projectDirnames.add(projectDirname)
 
-                    projectsList.add(flagEmoji + projectTitle)
-                    projectDirnames.add(projectDirname)
-
-                    // If progress of a project not found, intialize with empty or a list
-                    if (!myDones.containsKey(projectDirname))
-                        myDones.put(projectDirname, mutableListOf<Int>())
-                    if (!adminDones.containsKey(projectDirname))
-                        adminDones.put(projectDirname, mutableListOf<Int>())
-                }
-                val initialEntries = projectsJson.getJSONObject(initialProjectId).getJSONArray("entries")
-                val wantedKey = projectsJson.getJSONObject(initialProjectId).getString("wanted")
-                val upnKey = projectsJson.getJSONObject(initialProjectId).getString("upn")
-                val lonKey = projectsJson.getJSONObject(initialProjectId).getString("lon")
-
-                currentDirname = projectsJson.getJSONObject(i).getString("dirname")
-                updateMainScript(initialEntries, wantedKey, upnKey, lonKey)
+                // If progress of a project not found, intialize with empty or a list
+                if (!myDones.containsKey(projectDirname))
+                    myDones.put(projectDirname, mutableListOf<Int>())
+                if (!adminDones.containsKey(projectDirname))
+                    adminDones.put(projectDirname, mutableListOf<Int>())
             }
+            val initialEntries = projectsJson.getJSONObject(0).getJSONArray("entries")
+            val wantedKey = projectsJson.getJSONObject(0).getString("wanted")
+            val upnKey = projectsJson.getJSONObject(0).getString("upn")
+            val lonKey = projectsJson.getJSONObject(0).getString("lon")
+            currentDirname = projectsJson.getJSONObject(0).getString("dirname")
+            updateMainScript(initialEntries, wantedKey, upnKey, lonKey)
             setupSpinner(projectsList)
             pd.dismiss()
 
