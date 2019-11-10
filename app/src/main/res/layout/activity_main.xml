@@ -133,7 +133,7 @@
             </FrameLayout>
 
             <TextView
-                android:text="Please speak clearly in a quiet place. By sending, your voice recordings will be used on YouTube."
+                android:text="@string/roll_notice"
                 android:singleLine="true"
                 android:ellipsize="marquee"
                 android:marqueeRepeatLimit ="marquee_forever"
@@ -183,7 +183,7 @@
                             android:gravity="right"
                             android:textSize="18dp"
                             android:layout_marginLeft="10dp"
-                            android:text="See other language projects!"/>
+                            android:text="@string/project_tip"/>
                     </LinearLayout>
                     <ImageView
                         android:layout_width="100dp"
@@ -214,7 +214,7 @@
                             android:textColor="#FFDD00"
                             android:gravity="right"
                             android:textSize="18dp"
-                            android:text="Sign up and voice profile"/>
+                            android:text="@string/login_tip"/>
                         <Space
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"

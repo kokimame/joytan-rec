@@ -14,6 +14,9 @@
     <string name="sign_out">Sign Out</string>
     <string name="title_auth">Log in・Sign up</string>
 
+    <string name="login_tip">Log in</string>
+    <string name="project_tip">Other language projects!</string>
+
     <string-array name="projects_array">
         <item>Project 1</item>
         <item>Project 2</item>
@@ -81,4 +84,5 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment" translatable="false">Hello blank fragment</string>
     <string name="title_activity_about" translatable="false">AboutActivity</string>
+    <string name="roll_notice">Please speak clearly in a quiet place. By sending, your voice recordings will be used on YouTube.</string>
 </resources>

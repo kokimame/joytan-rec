@@ -44,4 +44,7 @@
     <string name="sign_up">登録手続き</string>
     <string name="sign_in">サインイン</string>
     <string name="sign_out">ログアウト</string>
+    <string name="login_tip">ログイン</string>
+    <string name="project_tip">他の言語プロジェクトはこちら</string>
+    <string name="roll_notice">静かな環境で明快な発音をお願いしています．送信された音声はYouTubeで利用させて頂きます．</string>
 </resources>
