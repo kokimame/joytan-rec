@@ -12,6 +12,7 @@ import android.content.pm.PackageManager
 import android.net.ConnectivityManager
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
 import android.provider.Settings
 import android.util.Log
 import android.view.*
@@ -395,12 +396,21 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
             currentDirname = projectsJson.getJSONObject(0).getString("dirname")
             updateMainScript(initialEntries, wantedKey, upnKey, lonKey)
             setupSpinner(projectsList)
+
+            // Dismiss the initial (loading) progress dialog
             pd.dismiss()
+
+            // Hide tooltips
+            Handler().postDelayed({
+                overlay.visibility = View.INVISIBLE
+            }, 3000)
 
         }.addOnFailureListener {
             val projectsList = listOf("Unknown error occurred!", "Please restart the app :(")
             setupSpinner(projectsList)
         }
+
+
     }
 
     /**
