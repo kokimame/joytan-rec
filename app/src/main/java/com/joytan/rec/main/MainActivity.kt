@@ -297,9 +297,7 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
 
             // Load personal progress history based on the Realtime DB
             try {
-                Log.i(INFO_TAG, "clientUid; " + clientUid)
                 val entryRef = fDatabaseRef.child("users/$clientUid/audio/projects/")
-                Log.i(INFO_TAG, "Try loading progress from ... users/$clientUid/audio/projects/")
                 entryRef.addListenerForSingleValueEvent((object: ValueEventListener {
                     override fun onCancelled(p0: DatabaseError) {
                     }
