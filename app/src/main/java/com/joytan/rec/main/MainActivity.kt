@@ -294,6 +294,33 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
             }
             MainActivity.clientUid = clientUid
             MainActivity.defaultUid = defaultUid!!
+
+            // Load personal progress history based on the Realtime DB
+            try {
+                Log.i(INFO_TAG, "clientUid; " + clientUid)
+                val entryRef = fDatabaseRef.child("users/$clientUid/audio/projects/")
+                Log.i(INFO_TAG, "Try loading progress from ... users/$clientUid/audio/projects/")
+                entryRef.addListenerForSingleValueEvent((object: ValueEventListener {
+                    override fun onCancelled(p0: DatabaseError) {
+                    }
+
+                    override fun onDataChange(p0: DataSnapshot) {
+                        if (p0.value is Map<*, *>) {
+                            val pData = p0.value as Map<String, Map<String, String>>
+                            for (projectName in pData.keys) {
+                                Log.i(INFO_TAG, projectName)
+                                var myDoneList = pData[projectName]!!.map { it.key.toInt() }
+                                myDoneList = myDoneList.map { it - 1 }.toMutableList()
+                                Log.i(INFO_TAG, myDoneList.toString())
+                                myDones[projectName] = myDoneList
+                            }
+                        }
+                    }
+
+                }))
+            } catch (e: Exception) {
+                Log.i(INFO_TAG, "Exception while loading myDones ... " + e.toString())
+            }
         }
 
         // Detect gestures e.g. swipe
@@ -303,30 +330,6 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
         wh.onCreate(this)
         viewModel.onCreate()
 
-        // Load personal progress history based on the DB
-        try {
-            // New way to load progress from Real Time DB
-            val entryRef = fDatabaseRef.child("users/$clientUid/audio/projects/")
-            Log.i(INFO_TAG, "Try loading progress from ... users/$clientUid/audio/projects/")
-            entryRef.addListenerForSingleValueEvent((object: ValueEventListener {
-                override fun onCancelled(p0: DatabaseError) {
-                }
-
-                override fun onDataChange(p0: DataSnapshot) {
-                    if (p0.value is Map<*, *>) {
-                        val pData = p0.value as Map<String, Map<String, Map<String, String>>>
-                        for (projectName in pData.keys) {
-                            var myDoneList = pData[projectName]!!.map { it.key.toInt() }
-                            myDoneList = myDoneList.map { it - 1 }.toMutableList()
-                            myDones[projectName] = myDoneList
-                        }
-                    }
-                }
-
-            }))
-        } catch (e: Exception) {
-            Log.i(INFO_TAG, "Exception while loading myDones ... " + e.toString())
-        }
         // Load the admin progress history based on the specific DB records
         try {
             // New way to load progress from Real Time DB
@@ -349,7 +352,7 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
 
             }))
         } catch (e: Exception) {
-            Log.i(INFO_TAG, "Exception while loading myDones ... " + e.toString())
+            Log.i(INFO_TAG, "Exception while loading adminDones ... " + e.toString())
         }
 
 
@@ -403,7 +406,7 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
             // Hide tooltips
             Handler().postDelayed({
                 overlay.visibility = View.INVISIBLE
-            }, 3000)
+            }, 2500)
 
         }.addOnFailureListener {
             val projectsList = listOf("Unknown error occurred!", "Please restart the app :(")
