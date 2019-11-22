@@ -170,8 +170,7 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
             upper_note_dummy.text = upper_note.text
             lower_note_dummy.text = lower_note.text
 
-            // FIXME: Error will happen on duplicate entries
-            var index = mainScripts.indexOf(main_text.text)
+            var index = currentIndex
 
             while (true) {
                 if (direction == "left") {
