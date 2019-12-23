@@ -270,9 +270,9 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
         }
         BWU.log("MainActivity#onCreate")
         val binding = DataBindingUtil.setContentView<ActivityMainBinding>(this, R.layout.activity_main)
-        binding.viewModel = viewModel
+//        binding.viewModel = viewModel
 
-        this.setSupportActionBar(toolbar)
+//        this.setSupportActionBar(toolbar)
         // Configure ad
         // setupAd()
         // Volume adjusted to music
