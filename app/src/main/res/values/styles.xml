@@ -1,4 +1,5 @@
 <resources>
+
     <style name="GridDialog" parent="Theme.AppCompat.Dialog">
         <item name="android:windowBackground">@null</item>
         <item name="android:windowCloseOnTouchOutside">true</item>
@@ -64,6 +65,7 @@
         <item name="cardBackgroundColor">@color/ss_card</item>
         <item name="cardElevation">4dp</item>
     </style>
+
     <style name="ScreenShotDescription" parent="TextAppearance.AppCompat.Body1">
         <item name="android:textSize">24sp</item>
         <item name="android:textColor">@color/text_dark</item>
@@ -73,5 +75,14 @@
     <style name="AlertDialog" parent="Theme.AppCompat.Light.Dialog.Alert">
         <item name="colorAccent">@color/primary</item>
     </style>
+
+    <style name="AppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
 </resources>

@@ -39,6 +39,8 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.iid.FirebaseInstanceId
 import com.google.firebase.storage.FirebaseStorage
 import com.joytan.rec.databinding.ActivityMainBinding
+import it.sephiroth.android.library.xtooltip.ClosePolicy
+import it.sephiroth.android.library.xtooltip.Tooltip
 import kotlinx.android.synthetic.main.main_script.*
 import kotlinx.android.synthetic.main.main_script_dummy.*
 import org.json.JSONArray
@@ -50,7 +52,7 @@ import kotlin.math.abs
 
 
 /**
- * メイン画面
+ * Main screen
  */
 class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
     /**
@@ -70,6 +72,11 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
      */
     private val animator = QRecAnimator()
 
+    /**
+     * Tooltip
+     */
+    var loginTip: Tooltip? = null
+    var projectTip: Tooltip? = null
 
     private var projectsJson = JSONArray()
     private var mainScripts = mutableListOf<String>()
@@ -121,6 +128,8 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
     private val SWIPE_MIN_DISTANCE = 120
     private val SWIPE_MAX_OFF_PATH = 250
     private val SWIPE_THRESHOLD_VELOCITY = 200
+    private val TIP_GRAVITY_TOP = Tooltip.Gravity.valueOf("TOP")
+    private val TIP_GRAVITY_BOTTOM = Tooltip.Gravity.valueOf("BOTTOM")
 
     companion object {
         private val CODE_SETTING = 1
@@ -259,18 +268,16 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
         } else {
             // Permission has already been granted
         }
-
-
         BWU.log("MainActivity#onCreate")
         val binding = DataBindingUtil.setContentView<ActivityMainBinding>(this, R.layout.activity_main)
         binding.viewModel = viewModel
-        //ツールバー設定
+
         this.setSupportActionBar(toolbar)
-        //広告の設定
-//        setupAd()
-        //ボリューム調整を音楽にする
+        // Configure ad
+        // setupAd()
+        // Volume adjusted to music
         volumeControlStream = AudioManager.STREAM_MUSIC
-        //AudioManagerを取得
+
         this.audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
 
         // DO NOT ALLOW USERS TO TOUCH BUTTON BEFORE LOADING CONTENT
@@ -323,7 +330,7 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
         // Detect gestures e.g. swipe
         this.mDetector = GestureDetectorCompat(this, this)
 
-        //警告担当
+        // Warning handler
         wh.onCreate(this)
         viewModel.onCreate()
 
@@ -351,7 +358,6 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
         } catch (e: Exception) {
             Log.i(INFO_TAG, "Exception while loading adminDones ... " + e.toString())
         }
-
 
         projectsRef.getFile(tempProjectsFile).addOnSuccessListener {
             val jsonString: String = tempProjectsFile.readText(Charsets.UTF_8)
@@ -400,10 +406,26 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
             // Dismiss the initial (loading) progress dialog
             pd.dismiss()
 
-            // Hide tooltips
-            Handler().postDelayed({
-                overlay.visibility = View.INVISIBLE
-            }, 2500)
+            loginTip = getTooltip(this, fab_setting, getString(R.string.login_tip), 0)
+            projectTip = getTooltip(
+                    this, projects_spinner, getString(R.string.project_tip),
+                    resources.displayMetrics.widthPixels / 4
+            )
+            loginTip
+                    ?.doOnHidden {
+                        loginTip = null
+                    }
+                    ?.doOnFailure { }
+                    ?.doOnShown {}
+                    ?.show(fab_setting!!, TIP_GRAVITY_TOP, true)
+            projectTip
+                    ?.doOnHidden {
+                        projectTip = null
+                    }
+                    ?.doOnFailure { }
+                    ?.doOnShown {}
+                    ?.show(projects_spinner!!, TIP_GRAVITY_BOTTOM, true)
+
 
         }.addOnFailureListener {
             val projectsList = listOf("Unknown error occurred!", "Please restart the app :(")
@@ -412,7 +434,6 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
 
 
     }
-
     /**
      * Update the main script
      */
@@ -559,6 +580,29 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
         } catch (e: Exception) {
             Log.i(INFO_TAG, "Grid initialization failed but ignored")
         }
+    }
+
+    private fun getClosePolicy(): ClosePolicy {
+        val builder = ClosePolicy.Builder()
+        return builder.build()
+    }
+
+    private fun getTooltip(context: Context, anchor: View, text: String, xoff: Int): Tooltip {
+        var tooltip: Tooltip
+        tooltip = Tooltip.Builder(context)
+                .anchor(anchor, xoff, 0, false)
+                .text(text)
+                .styleId(null)
+                .typeface(null)
+                .maxWidth(resources.displayMetrics.widthPixels / 2)
+                .arrow(true)
+                .floatingAnimation(Tooltip.Animation.DEFAULT)
+                .closePolicy(getClosePolicy())
+                // Show for the first 7 seconds
+                .showDuration(7000)
+                .overlay(false)
+                .create()
+        return tooltip
     }
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
