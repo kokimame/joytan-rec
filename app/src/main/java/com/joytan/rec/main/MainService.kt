@@ -9,7 +9,9 @@ import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.idling.CountingIdlingResource
 import com.joytan.rec.R
 import com.joytan.rec.analytics.AnalyticsHandler
+import com.joytan.rec.data.QRecStatus
 import com.joytan.rec.data.QRecStorage
+import com.joytan.rec.main.handler.*
 import com.joytan.rec.setting.SettingFragment
 import com.joytan.util.BWU
 

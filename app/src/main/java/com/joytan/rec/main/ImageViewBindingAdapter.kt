@@ -4,9 +4,8 @@ package com.joytan.rec.main
 import android.widget.ImageView
 import androidx.databinding.BindingAdapter
 
-
 /**
- * ImageViewに表示する画像を、image_src属性で設定するBindingAdapter
+ * A BindingAdapter to use image_src attribute for setting an image displayed in ImageView
  */
 @BindingAdapter("image_src")
 fun setImageSrc(imageView: ImageView, resId: Int) {

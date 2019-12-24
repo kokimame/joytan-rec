@@ -1,12 +1,9 @@
 package com.joytan.rec.main
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.media.AudioManager
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.widget.AdapterView
 import android.widget.GridView
@@ -22,7 +19,9 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.iid.FirebaseInstanceId
 import com.google.firebase.storage.FirebaseStorage
 import com.joytan.rec.R
+import com.joytan.rec.data.QRecAnimator
 import com.joytan.rec.databinding.FragmentMainBinding
+import com.joytan.rec.main.handler.WarningHandler
 import com.joytan.rec.setting.SettingActivity
 import com.joytan.util.BWU
 import it.sephiroth.android.library.xtooltip.ClosePolicy
@@ -332,17 +331,18 @@ class MainFragment : Fragment(){
         return binding.root
     }
 
-
+    /**
+     * FIXME:
+     * Could be done in a single onEvent function?
+     */
     override fun onAttach(context: Context) {
         super.onAttach(context)
-
         mContext = context
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         activity!!.volumeControlStream = AudioManager.STREAM_MUSIC
-
         this.audioManager = activity!!.getSystemService(Context.AUDIO_SERVICE) as AudioManager
     }
 
@@ -582,7 +582,7 @@ class MainFragment : Fragment(){
         startActivityForResult(intent, MainActivity.CODE_SETTING)
     }
     /**
-     * 実行時パーミッションの解説
+     * Explain permissions
      */
 //    private fun showInformation() {
 //        val adb = AlertDialog.Builder(this)
@@ -597,7 +597,7 @@ class MainFragment : Fragment(){
 //    }
 
     /**
-     * アプリ詳細を呼び出す
+     * Call application detail
      */
 //    private fun callApplicationDetailActivity() {
 //        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,

@@ -1,4 +1,4 @@
-package com.joytan.rec.main
+package com.joytan.rec.data
 
 import android.animation.ObjectAnimator
 import android.animation.PropertyValuesHolder
@@ -8,13 +8,13 @@ import android.widget.LinearLayout
 import android.widget.TextView
 
 /**
- * メイン画面のアニメ隔離クラス
+ * Independent animation class for the main screen
  */
 class QRecAnimator {
 
 
     /**
-     * 削除アニメーションを開始する。
+     * Starting to delete animation
      */
     fun startDeleteAnimation(view: View) {
         val dp = view.resources.displayMetrics.density
@@ -26,7 +26,7 @@ class QRecAnimator {
     }
 
     /**
-     * フェードインを行う
+     * Play fade-in animation
      * @param view
      */
     fun fadeIn(view: View) {

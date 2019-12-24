@@ -1,14 +1,12 @@
 package com.joytan.rec.main
 
 import android.content.*
-import android.net.ConnectivityManager
-import android.net.NetworkInfo
 //import android.databinding.ObservableField
 import android.os.IBinder
 import android.view.View
-import androidx.appcompat.app.AlertDialog
 import androidx.databinding.ObservableField
 import com.joytan.rec.R
+import com.joytan.rec.data.QRecStatus
 import com.joytan.util.BWU
 
 /**

@@ -1,7 +1,8 @@
-package com.joytan.rec.main
+package com.joytan.rec.main.handler
 
 import android.content.Context
 import android.os.Handler
+import com.joytan.rec.data.QRecAnimator
 
 
 /**

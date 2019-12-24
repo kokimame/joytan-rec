@@ -1,58 +1,58 @@
-package com.joytan.rec.main
+package com.joytan.rec.data
 
 /**
  * 現在の状態
  */
 enum class QRecStatus {
     /**
-     * 初期化中
+     * During initialization
      */
     INIT,
     /**
-     * 初期化完了(1回目)
+     * Initialization completed (1st time)
      */
     READY_FIRST,
     /**
-     * 初期化完了(2回目)
+     * Initialization completed (2nd time)
      */
     READY,
     /**
-     * 停止状態
+     * Recording stopped
      */
     STOP,
     /**
-     * 録音中削除
+     * Delete while recording
      */
     DELETE_RECORDING,
 
     /**
-     * 再生中削除
+     * Delete while playing
      */
     DELETE_PLAYING,
     /**
-     * 録音開始中
+     * Starting to record
      */
     STARTING_RECORD,
     /**
-     * 録音中
+     * While recording
      */
     RECORDING,
     /**
-     * 録音停止中
+     * Stopping to record
      */
     STOPPING_RECORD,
     /**
-     * 再生中
+     * While playing
      */
     PLAYING,
 
     /**
-     * 再生停止中
+     * While playing is stopped
      */
     STOPPING_PLAYING,
 
     /**
-     * Sharing
+     * While sharing to the server
      */
     SHARE
 }

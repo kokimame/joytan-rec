@@ -1,5 +1,7 @@
 package com.joytan.rec.main
 
+import com.joytan.rec.data.QRecStatus
+
 /**
  * Callback from MainService
  */

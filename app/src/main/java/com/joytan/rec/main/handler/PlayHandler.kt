@@ -1,11 +1,10 @@
-package com.joytan.rec.main
+package com.joytan.rec.main.handler
 
 import android.media.AudioFormat
 import android.media.AudioManager
 import android.media.AudioTrack
 import android.os.*
 import android.os.Process
-import android.util.Log
 
 import java.util.Arrays
 

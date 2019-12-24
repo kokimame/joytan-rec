@@ -1,4 +1,4 @@
-package com.joytan.rec.main
+package com.joytan.rec.main.handler
 
 import android.media.AudioFormat
 import android.media.AudioManager
@@ -6,7 +6,6 @@ import android.media.AudioTrack
 import android.net.Uri
 import android.os.*
 import android.os.Process
-import android.util.Log
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.firebase.auth.FirebaseAuth
@@ -14,6 +13,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.UploadTask
 import com.joytan.rec.data.QRecStorage
+import com.joytan.rec.main.MainActivity
 import java.io.File
 import java.io.IOException
 

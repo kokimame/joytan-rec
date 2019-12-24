@@ -1,4 +1,4 @@
-package com.joytan.rec.main
+package com.joytan.rec.main.handler
 
 import android.app.Activity
 import android.os.Handler
