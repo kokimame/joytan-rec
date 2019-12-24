@@ -50,16 +50,6 @@
         <item name="android:alertDialogStyle">@style/AlertDialog</item>
 
     </style>
-
-    <style name="Toolbar" parent="Widget.AppCompat.Toolbar">
-        <item name="titleTextAppearance">@style/Toolbar.Title</item>
-        <item name="android:background">@color/primary</item>
-    </style>
-
-    <style name="Toolbar.Title" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
-        <item name="android:textColor">@color/toolbar_title</item>
-    </style>
-
     <!-- スクリーンショット用 -->
     <style name="ScreenShotCardView">
         <item name="cardBackgroundColor">@color/ss_card</item>
@@ -82,7 +72,15 @@
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
-
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="Toolbar" parent="Widget.AppCompat.Toolbar">
+        <item name="titleTextAppearance">@style/Toolbar.Title</item>
+        <item name="android:background">@color/primary</item>
+    </style>
+
+    <style name="Toolbar.Title" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
+        <item name="android:textColor">@color/toolbar_title</item>
+    </style>
 
 </resources>

@@ -46,7 +46,6 @@ class AccountActivity : AppCompatActivity() {
             finish()
         }
         uname_text.text = mAuth.currentUser!!.displayName
-        Log.i(MainActivity.INFO_TAG, "Show account info of " + mAuth.currentUser!!.displayName)
 
         try {
             val ref = fDatabaseRef.child("users").
@@ -80,7 +79,6 @@ class AccountActivity : AppCompatActivity() {
                 }
             })
         } catch (e: Exception) {
-            Log.i(MainActivity.INFO_TAG, "Exception: " + e.toString())
         }
 
     }

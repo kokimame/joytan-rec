@@ -52,9 +52,6 @@ class SignupActivity : AppCompatActivity() {
     }
 
     fun trySignUp() {
-        Log.i(MainActivity.INFO_TAG, "Do registering")
-        Log.i(MainActivity.INFO_TAG, mAuth.currentUser.toString())
-
         val emailText = signup_email.text.toString()
         val pswText = signup_psw.text.toString()
         val confirmPswText = confirm_password.text.toString()
@@ -76,7 +73,6 @@ class SignupActivity : AppCompatActivity() {
                                 setDisplayName(unameText).build()
                         user.updateProfile(profUpdates).addOnCompleteListener(OnCompleteListener { task ->
                             if (task.isSuccessful) {
-                                Log.i(MainActivity.INFO_TAG, "User profile successfully updated.")
                             }
                         })
 
@@ -131,7 +127,6 @@ class SignupActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        Log.i(MainActivity.INFO_TAG, mAuth.currentUser.toString())
     }
 
     override fun onResume() {

@@ -6,6 +6,7 @@ import android.view.View
 import android.view.animation.AlphaAnimation
 import android.widget.TextView
 import com.joytan.rec.R
+import kotlinx.android.synthetic.main.fragment_main.*
 
 /**
  * 警告表示担当
