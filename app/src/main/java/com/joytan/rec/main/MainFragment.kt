@@ -5,17 +5,13 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.media.AudioManager
-import android.net.Uri
 import android.os.Bundle
-import android.provider.Settings
-import android.util.AttributeSet
 import android.util.Log
 import android.view.*
 import android.widget.AdapterView
 import android.widget.GridView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
-import androidx.core.view.GestureDetectorCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import com.google.firebase.auth.FirebaseAuth
@@ -44,7 +40,9 @@ import kotlin.math.abs
 
 
 class MainFragment : Fragment(){
-
+    /**
+     * Context of host activity
+     */
     private lateinit var mContext: Context
     /**
      * Warning
@@ -217,6 +215,13 @@ class MainFragment : Fragment(){
             }
 
         });
+
+        viewModel.onCreate()
+        val binding = DataBindingUtil.inflate<FragmentMainBinding>(
+                inflater, R.layout.fragment_main, container, false
+        )
+        binding.viewModel = viewModel
+
         mAuth.addAuthStateListener { auth ->
             val user = auth.currentUser
             if (user != null) {
@@ -249,12 +254,6 @@ class MainFragment : Fragment(){
             } catch (e: Exception) {
             }
         }
-        viewModel.onCreate()
-        val binding = DataBindingUtil.inflate<FragmentMainBinding>(
-                inflater, R.layout.fragment_main, container, false
-        )
-        binding.viewModel = viewModel
-
         // Load the admin progress history based on the specific DB records
         try {
             // New way to load progress from Real Time DB
@@ -353,6 +352,28 @@ class MainFragment : Fragment(){
         // because some views are not inflated? created? yet
         // and they return null and crash.
         wh.onCreate(activity!!)
+        view.setOnTouchListener(object : OnMainTouchListener() {
+            override fun onScriptNavigation(
+                    e0: MotionEvent?, e1: MotionEvent?, vx: Float, vy: Float): Boolean {
+                try {
+                    if (abs(e0!!.getY() - e1!!.getY()) > SWIPE_MAX_OFF_PATH) {
+                        return false
+                    } else if (e0!!.getX() - e1!!.getX() > SWIPE_MIN_DISTANCE &&
+                            abs(vx) > SWIPE_THRESHOLD_VELOCITY) {
+                        viewModel.onRightClicked()
+                        return true
+                    } else if (e1!!.getX() - e0!!.getX() > SWIPE_MIN_DISTANCE &&
+                            abs(vx) > SWIPE_THRESHOLD_VELOCITY) {
+                        viewModel.onLeftClicked()
+                        return true
+                    }
+                } catch (e: Exception) {
+
+                }
+                return false
+            }
+        })
+
     }
 
     /**
@@ -493,24 +514,6 @@ class MainFragment : Fragment(){
         return tooltip
     }
 
-    fun onFling(e0: MotionEvent?, e1: MotionEvent?, vx: Float, vy: Float) : Boolean{
-        try {
-            if (abs(e0!!.getY() - e1!!.getY()) > SWIPE_MAX_OFF_PATH) {
-                return false
-            } else if (e0!!.getX() - e1!!.getX() > SWIPE_MIN_DISTANCE &&
-                    abs(vx) > SWIPE_THRESHOLD_VELOCITY) {
-                viewModel.onRightClicked()
-                return true
-            } else if (e1!!.getX() - e0!!.getX() > SWIPE_MIN_DISTANCE &&
-                    abs(vx) > SWIPE_THRESHOLD_VELOCITY) {
-                viewModel.onLeftClicked()
-                return true
-            }
-        } catch (e: Exception) {
-
-        }
-        return false
-    }
     override fun onStart() {
         super.onStart()
         BWU.log("MainActivity#onStart")

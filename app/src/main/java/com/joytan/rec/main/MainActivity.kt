@@ -7,7 +7,6 @@ import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.net.ConnectivityManager
 import android.os.Bundle
-import android.view.*
 
 import com.joytan.util.BWU
 import com.joytan.rec.R
@@ -15,7 +14,6 @@ import com.joytan.rec.R
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.view.GestureDetectorCompat
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
@@ -24,13 +22,12 @@ import androidx.navigation.ui.setupWithNavController
 
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
-import java.lang.Exception
-import kotlin.math.abs
 
 /**
  * Main screen
  */
-class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
+class MainActivity : AppCompatActivity() {
+
     companion object {
         val CODE_SETTING = 1
         var defaultUid = ""
@@ -42,10 +39,6 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
         lateinit var pd: ProgressDialog
     }
 
-    /**
-     * Detect swipe gesture etc
-     */
-    private lateinit var mDetector: GestureDetectorCompat
     /**
      * Toolbar and NavDrawer configuration
      */
@@ -84,7 +77,6 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
             // Permission has already been granted
         }
         BWU.log("MainActivity#onCreate")
-        mDetector = GestureDetectorCompat(this, this)
         // Title in toolbar is empty by default
         // and to be changed to project name in the MainFragment
         toolbar_main.title = ""
@@ -115,37 +107,4 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
         val navController = findNavController(R.id.nav_host_fragment)
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
-
-    override fun onTouchEvent(event: MotionEvent?): Boolean {
-        return if (mDetector.onTouchEvent(event)) {
-            true
-        } else {
-            super.onTouchEvent(event)
-        }
-    }
-
-    override fun onShowPress(p0: MotionEvent?) {
-    }
-
-    override fun onSingleTapUp(p0: MotionEvent?): Boolean {
-        return true
-    }
-
-    override fun onDown(p0: MotionEvent?): Boolean {
-        return true
-    }
-
-    override fun onScroll(p0: MotionEvent?, p1: MotionEvent?, p2: Float, p3: Float): Boolean {
-        return true
-    }
-
-    override fun onLongPress(p0: MotionEvent?) {
-    }
-
-    override fun onFling(e0: MotionEvent?, e1: MotionEvent?, vx: Float, vy: Float) : Boolean{
-        return true
-    }
-
-
-
 }
