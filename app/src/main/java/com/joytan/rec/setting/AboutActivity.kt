@@ -14,7 +14,7 @@ import com.joytan.rec.databinding.ActivityAboutBinding
 import kotlinx.android.synthetic.main.activity_about.*
 
 /**
- * アプリについて画面
+ * About the application, details, goals, version, etc
  */
 class AboutActivity : AppCompatActivity() {
 
