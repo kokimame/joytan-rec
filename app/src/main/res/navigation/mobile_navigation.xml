@@ -4,8 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/nav_main"
-    >
+    app:startDestination="@+id/nav_main">
 
     <fragment
         android:id="@+id/nav_main"
@@ -13,8 +12,40 @@
         tools:layout="@layout/fragment_main" />
 
     <fragment
+        android:id="@+id/nav_signup"
+        android:name="com.joytan.rec.setting.SignupFragment"
+        android:label="@string/title_auth"
+        tools:layout="@layout/fragment_signup" >
+        <action
+            android:id="@+id/action_nav_signup_to_nav_login"
+            app:destination="@id/nav_login"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popUpTo="@+id/nav_main" />
+        <action
+            android:id="@+id/action_nav_signup_to_nav_main"
+            app:destination="@id/nav_main"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_login"
+        android:name="com.joytan.rec.setting.LoginFragment"
+        android:label="@string/login"
+        tools:layout="@layout/fragment_login" >
+        <action
+            android:id="@+id/action_nav_login_to_nav_signup"
+            app:destination="@id/nav_signup"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popUpTo="@+id/nav_main" />
+    </fragment>
+
+    <fragment
         android:id="@+id/nav_about"
         android:name="com.joytan.rec.setting.AboutFragment"
         android:label="@string/menu_about"
         tools:layout="@layout/fragment_about" />
+
 </navigation>

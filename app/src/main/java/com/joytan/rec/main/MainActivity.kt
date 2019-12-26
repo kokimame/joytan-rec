@@ -7,6 +7,7 @@ import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.net.ConnectivityManager
 import android.os.Bundle
+import android.util.Log
 
 import com.joytan.util.BWU
 import com.joytan.rec.R
@@ -14,6 +15,7 @@ import com.joytan.rec.R
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
@@ -22,6 +24,12 @@ import androidx.navigation.ui.setupWithNavController
 
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
+import androidx.core.content.ContextCompat.getSystemService
+import android.icu.lang.UCharacter.GraphemeClusterBreak.T
+import android.net.Uri
+import com.google.android.gms.appinvite.AppInviteInvitation
+import com.joytan.rec.setting.HtmlViewerActivity
+
 
 /**
  * Main screen
@@ -43,6 +51,7 @@ class MainActivity : AppCompatActivity() {
      * Toolbar and NavDrawer configuration
      */
     private lateinit var appBarConfiguration: AppBarConfiguration
+    private lateinit var navController: NavController
 
     // Internet connection receiver/monitor
     private val connFilter = IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION).apply {
@@ -93,18 +102,51 @@ class MainActivity : AppCompatActivity() {
         pd.setCancelable(false)
         pd.show()
 
-        val navController = findNavController(R.id.nav_host_fragment)
+        navController = findNavController(R.id.nav_host_fragment)
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         appBarConfiguration = AppBarConfiguration(
-                setOf(R.id.nav_main, R.id.nav_share), drawer_layout
+                setOf(R.id.nav_main), drawer_layout
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         nav_view.setupWithNavController(navController)
+        nav_view.itemIconTintList = null
+        nav_view.setNavigationItemSelectedListener {
+            val id = it.itemId
+            when (it.itemId) {
+                R.id.nav_slack -> {
+                    val intent = Intent(Intent.ACTION_VIEW)
+                    intent.data = Uri.parse("http://slack-invite.joytan.pub/")
+                    startActivity(intent)
+                }
+                R.id.nav_pub -> {
+                    val intent = Intent(Intent.ACTION_VIEW)
+                    intent.data = Uri.parse("https://joytan.pub")
+                    startActivity(intent)
+                }
+                R.id.nav_youtube -> {
+                    val intent = Intent(Intent.ACTION_VIEW)
+                    intent.data = Uri.parse("https://youtube.com/c/JoytanApp")
+                    startActivity(intent)
+                }
+                R.id.nav_share -> {
+                    val intent = AppInviteInvitation.IntentBuilder(getString(R.string.invite_title))
+                            .setDeepLink(Uri.parse("https://cp999.app.goo.gl/cffF"))
+                            .build();
+                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                    startActivityForResult(intent,1);
+                }
+                else -> {
+                    navController.navigate(it.itemId)
+                }
+            }
+            drawer_layout.closeDrawers()
+            true
+        }
 
     }
+
     override fun onSupportNavigateUp(): Boolean {
-        val navController = findNavController(R.id.nav_host_fragment)
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
 }

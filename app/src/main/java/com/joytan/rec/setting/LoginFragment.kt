@@ -3,6 +3,7 @@ package com.joytan.rec.setting
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
@@ -16,18 +17,26 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserProfileChangeRequest
 import com.joytan.rec.R
 import com.joytan.rec.analytics.AnalyticsHandler
-import com.joytan.rec.databinding.FragmentSignupBinding
-import kotlinx.android.synthetic.main.activity_signup.*
 import android.view.inputmethod.InputMethodManager.HIDE_NOT_ALWAYS
 import androidx.core.content.ContextCompat.getSystemService
-
+import androidx.fragment.app.FragmentTransaction
+import androidx.navigation.fragment.findNavController
+import com.google.android.material.snackbar.Snackbar
+import com.joytan.rec.databinding.FragmentLoginBinding
+import com.joytan.rec.main.MainActivity
+import kotlinx.android.synthetic.main.activity_login.*
+import kotlinx.android.synthetic.main.content_main.*
 
 
 /**
  * Fragment activity to sign up or move to login
  * (Landing screen for authentication)
  */
-class SignupFragment : Fragment() {
+/**
+ * FIXME
+ * Make a base AuthFragment to
+ */
+class LoginFragment : Fragment() {
 
     private lateinit var mContext: Context
     private val mAuth = FirebaseAuth.getInstance()
@@ -38,8 +47,8 @@ class SignupFragment : Fragment() {
             container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View? {
-        val binding = DataBindingUtil.inflate<FragmentSignupBinding>(
-                inflater, R.layout.fragment_signup, container, false)
+        val binding = DataBindingUtil.inflate<FragmentLoginBinding>(
+                inflater, R.layout.fragment_login, container, false)
 
         return binding.root
     }
@@ -47,14 +56,18 @@ class SignupFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        btn_to_login.setOnClickListener{
-            //            val intent = Intent(this, LoginActivity::class.java)
-//            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-//            startActivity(intent)
-//            finish()
+        btn_to_signup.setOnClickListener{
+            findNavController().navigate(R.id.action_nav_login_to_nav_signup)
+//            val frag = SignupFragment()
+//            val ft = fragmentManager!!.beginTransaction()
+//            ft.replace(R.id.fragment_container, frag)
+//            ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+//            ft.addToBackStack(null)
+//            ft.commit()
+//            activity?.onBackPressed()
         }
-        btn_do_signup.setOnClickListener{
-            trySignUp()
+        btn_do_login.setOnClickListener{ view ->
+            tryLogin(view)
         }
         //Analytics
         ah.onCreate(activity!!)
@@ -67,14 +80,16 @@ class SignupFragment : Fragment() {
     /**
      * Close soft keyboard on a pause
      */
-    override fun onPause() {
+    fun hideSoftKeyboard() {
         val inputManager = activity!!.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         // check if no view has focus:
         val currentFocusedView = activity!!.currentFocus
         if (currentFocusedView != null) {
             inputManager.hideSoftInputFromWindow(currentFocusedView!!.windowToken, HIDE_NOT_ALWAYS)
         }
-
+    }
+    override fun onPause() {
+        hideSoftKeyboard()
         super.onPause()
     }
 
@@ -83,63 +98,40 @@ class SignupFragment : Fragment() {
         ah.onResume()
     }
 
-    fun trySignUp() {
-        val emailText = signup_email.text.toString()
-        val pswText = signup_psw.text.toString()
-        val confirmPswText = confirm_password.text.toString()
-        val unameText = signup_uname.text.toString()
+    fun tryLogin(view: View) {
+        hideSoftKeyboard()
 
-        if (!validateTextInput(emailText, pswText, confirmPswText, unameText)) {
+        val emailText = login_email.text.toString()
+        val pswText = login_psw.text.toString()
+
+        if (!validateTextInput(emailText, pswText)) {
             return
         }
 
-        mAuth.createUserWithEmailAndPassword(emailText, pswText)
+        showSnackBarMessage(view, "Authenticating...")
+        mAuth.signInWithEmailAndPassword(emailText, pswText)
                 .addOnCompleteListener(activity!!, OnCompleteListener { task ->
                     if (task.isSuccessful) {
                         val user = mAuth.currentUser!!
-
-                        Toast.makeText(mContext, "Successfully registered :)",
+                        Toast.makeText(mContext, "Successfully logged in :)",
                                 Toast.LENGTH_LONG).show()
-
-                        val profUpdates = UserProfileChangeRequest.Builder().
-                                setDisplayName(unameText).build()
-                        user.updateProfile(profUpdates).addOnCompleteListener(OnCompleteListener { task ->
-                            if (task.isSuccessful) {
-                            }
-                        })
-                        activity?.finish()
+                        activity?.onBackPressed()
                     } else {
-                        Toast.makeText(mContext, "Error registering, try again later :(",
-                                Toast.LENGTH_LONG).show()
+                        showSnackBarMessage(view, "Log in failed.")
                     }
                 })
     }
 
-    fun validateTextInput(emailText: String, pswText: String,
-                          confirmPswText: String, unameText: String) : Boolean{
+    fun validateTextInput(emailText: String, pswText: String) : Boolean{
         if (emailText.isEmpty()) {
             Toast.makeText(mContext, "Please enter your email address.", Toast.LENGTH_LONG).show()
             return false
         } else if (pswText.isEmpty()) {
             Toast.makeText(mContext, "Please enter your password.", Toast.LENGTH_LONG).show()
             return false
-        } else if (unameText.isEmpty()) {
-            Toast.makeText(mContext, "Please enter your username.", Toast.LENGTH_LONG).show()
-            return false
-        } else if (confirmPswText.isEmpty()) {
-            Toast.makeText(mContext, "Please confirm your password.", Toast.LENGTH_LONG).show()
-            return false
-        } else if (confirmPswText.isEmpty()) {
-            Toast.makeText(mContext, "Please confirm your password.", Toast.LENGTH_LONG).show()
-            return false
         }
         if (pswText.length < 8) {
-            Toast.makeText(mContext, "Please make your password longer than 8 characters.",
-                    Toast.LENGTH_LONG).show()
-            return false
-        }
-        if (unameText.length < 3) {
-            Toast.makeText(mContext, "Please make your username longer than 3 characters.",
+            Toast.makeText(mContext, "Please make sure your password is longer than 8 characters.",
                     Toast.LENGTH_LONG).show()
             return false
         }
@@ -147,11 +139,10 @@ class SignupFragment : Fragment() {
             Toast.makeText(mContext, "Please enter an valid email address.", Toast.LENGTH_LONG).show()
             return false
         }
-        if (pswText != confirmPswText) {
-            Toast.makeText(mContext, "Confirmation password does not match.", Toast.LENGTH_LONG).show()
-            return false
-        }
+
         return true
     }
-
+    fun showSnackBarMessage(view: View, message: String){
+        Snackbar.make(view, message, Snackbar.LENGTH_SHORT).setAction("Action", null).show()
+    }
 }

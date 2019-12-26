@@ -28,10 +28,6 @@ class AboutFragment : Fragment() {
         val binding = DataBindingUtil.inflate<FragmentAboutBinding>(
                 inflater, R.layout.fragment_about, container, false)
         binding.viewModel = viewModel
-//        setSupportActionBar(toolbar)
-//        val lsab = supportActionBar
-//        lsab?.setHomeButtonEnabled(true)
-//        lsab?.setDisplayHomeAsUpEnabled(true)
 
         return binding.root
     }

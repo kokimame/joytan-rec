@@ -124,11 +124,6 @@ class SignupActivity : AppCompatActivity() {
         return true
     }
 
-
-    override fun onStart() {
-        super.onStart()
-    }
-
     override fun onResume() {
         super.onResume()
         ah.onResume()
@@ -140,9 +135,5 @@ class SignupActivity : AppCompatActivity() {
             return true
         }
         return false
-    }
-
-    companion object {
-        private val CODE_LOGIN = 3
     }
 }
