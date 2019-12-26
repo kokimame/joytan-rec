@@ -110,7 +110,7 @@ class MainActivity : AppCompatActivity() {
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         nav_view.setupWithNavController(navController)
-        nav_view.itemIconTintList = null
+//        nav_view.itemIconTintList = null
         nav_view.setNavigationItemSelectedListener {
             val id = it.itemId
             when (it.itemId) {
@@ -143,7 +143,6 @@ class MainActivity : AppCompatActivity() {
             drawer_layout.closeDrawers()
             true
         }
-
     }
 
     override fun onSupportNavigateUp(): Boolean {
