@@ -12,9 +12,8 @@ import com.joytan.rec.R
 class GridBaseAdapter(private val context: Context,
                       private val mList: List<Int>,
                       private val mainScripts: MutableList<String>,
-                      private val myDones: MutableMap<String, MutableList<Int>>,
-                      private val adminDones: MutableMap<String, MutableList<Int>>,
-                      private val currentDirname: String) : BaseAdapter() {
+                      private val myProgress: MutableList<Int>?,
+                      private val adminProgress: MutableList<Int>?) : BaseAdapter() {
 
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
@@ -29,10 +28,10 @@ class GridBaseAdapter(private val context: Context,
 
         val currentIndex = mList[position] - 1
 
-        if (currentIndex in adminDones[currentDirname]!!) {
+        if (currentIndex in adminProgress!!) {
             gridItem.setBackgroundColor(ContextCompat.getColor(context, R.color.bs_green))
         }
-        else if (currentIndex in myDones[currentDirname]!!) {
+        else if (currentIndex in myProgress!!) {
             gridItem.setBackgroundColor(ContextCompat.getColor(context, R.color.bs_blue))
         }
         else {

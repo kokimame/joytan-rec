@@ -14,6 +14,7 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.UploadTask
 import com.joytan.rec.data.QRecStorage
 import com.joytan.rec.main.MainActivity
+import com.joytan.rec.main.MainFragment
 import java.io.File
 import java.io.IOException
 
@@ -64,10 +65,9 @@ class ShareHandler(private val storage: QRecStorage) {
                             override fun onSuccess(taskSnapshot: UploadTask.TaskSnapshot) {
                                 val result = mapOf("file" to fileName)
 
-                                val clientUid = MainActivity.clientUid
+                                val clientUid = MainFragment.clientUid!!
 
-                                val newKey = fDatabaseRef.child("users").
-                                        child(clientUid).child("audio").push().key
+                                val newKey = fDatabaseRef.child("users/$clientUid/audio").push().key
                                 // First write this will probably be removed
                                 val childUpdates = HashMap<String, Any>()
                                 childUpdates["users/$clientUid/audio/all/$newKey"] = result

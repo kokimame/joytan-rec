@@ -14,17 +14,12 @@
             android:orientation="vertical"
             android:paddingHorizontal="50dp">
 
-            <TextView
-                android:id="@+id/textView"
+            <ImageView
+                android:id="@+id/imageView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="20dp"
-                android:gravity="center"
-                android:text="@string/sign_up"
-                android:textAllCaps="true"
-                android:textColor="@android:color/white"
-                android:textSize="26sp"
-                android:textStyle="bold" />
+                android:layout_marginBottom="20dp"
+                android:src="@mipmap/ic_launcher_foreground" />
 
             <EditText
                 android:id="@+id/signup_email"

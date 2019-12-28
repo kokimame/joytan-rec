@@ -38,6 +38,4 @@ interface MainServiceCallback {
     fun onDismissProgress()
 
     fun onShowGrid()
-
-    fun onCallSetting()
 }

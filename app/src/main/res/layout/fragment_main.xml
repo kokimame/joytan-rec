@@ -77,7 +77,7 @@
             <include
                 layout="@layout/main_status"
                 android:layout_width="match_parent"
-                android:layout_height="620dp"
+                android:layout_height="573dp"
                 app:viewModel="@{viewModel}" />
 
             <!-- Main controller-->

@@ -92,13 +92,14 @@
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
 
-    <string name="menu_slack">Join Team</string>
+    <string name="menu_slack">Join team</string>
     <string name="menu_pub">Joytan Public</string>
     <string name="menu_youtube">Joytan App</string>
-    <string name="menu_projects">Change project</string>
+    <string name="menu_project">Start project</string>
     <string name="menu_tools">Settings</string>
     <string name="menu_share">Share this app</string>
     <string name="menu_about">About this app</string>
 
+    <string name="project_startup">Project startup🚀</string>
     <string name="invite_title">Invite people!</string>
 </resources>

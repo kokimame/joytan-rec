@@ -1,11 +1,8 @@
 package com.joytan.rec.setting
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
@@ -14,19 +11,15 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.UserProfileChangeRequest
 import com.joytan.rec.R
 import com.joytan.rec.analytics.AnalyticsHandler
 import android.view.inputmethod.InputMethodManager.HIDE_NOT_ALWAYS
-import androidx.core.content.ContextCompat.getSystemService
-import androidx.fragment.app.FragmentTransaction
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.joytan.rec.databinding.FragmentLoginBinding
-import com.joytan.rec.main.MainActivity
-import kotlinx.android.synthetic.main.activity_login.*
-import kotlinx.android.synthetic.main.content_main.*
-
+import kotlinx.android.synthetic.main.fragment_login.*
+import kotlinx.android.synthetic.main.activity_main.*
 
 /**
  * Fragment activity to sign up or move to login
@@ -58,19 +51,13 @@ class LoginFragment : Fragment() {
 
         btn_to_signup.setOnClickListener{
             findNavController().navigate(R.id.action_nav_login_to_nav_signup)
-//            val frag = SignupFragment()
-//            val ft = fragmentManager!!.beginTransaction()
-//            ft.replace(R.id.fragment_container, frag)
-//            ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-//            ft.addToBackStack(null)
-//            ft.commit()
-//            activity?.onBackPressed()
         }
         btn_do_login.setOnClickListener{ view ->
             tryLogin(view)
         }
         //Analytics
         ah.onCreate(activity!!)
+        activity!!.drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
     }
     override fun onAttach(context: Context) {
         super.onAttach(context)

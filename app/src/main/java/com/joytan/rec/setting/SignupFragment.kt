@@ -18,13 +18,12 @@ import com.google.firebase.auth.UserProfileChangeRequest
 import com.joytan.rec.R
 import com.joytan.rec.analytics.AnalyticsHandler
 import com.joytan.rec.databinding.FragmentSignupBinding
-import kotlinx.android.synthetic.main.activity_signup.*
+import kotlinx.android.synthetic.main.fragment_signup.*
 import android.view.inputmethod.InputMethodManager.HIDE_NOT_ALWAYS
-import androidx.core.content.ContextCompat.getSystemService
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
-import com.joytan.rec.main.MainActivity
-import kotlinx.android.synthetic.main.app_bar_main.*
+import kotlinx.android.synthetic.main.activity_main.*
 
 
 /**
@@ -59,6 +58,7 @@ class SignupFragment : Fragment() {
         }
         //Analytics
         ah.onCreate(activity!!)
+        activity!!.drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
     }
     override fun onAttach(context: Context) {
         super.onAttach(context)

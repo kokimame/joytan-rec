@@ -9,13 +9,13 @@
             android:icon="@drawable/ic_user"
             android:title="@string/title_auth" />
         <item
-            android:id="@+id/nav_projects"
+            android:id="@+id/nav_project"
             android:icon="@drawable/ic_start_up"
-            android:title="@string/menu_projects" />
-        <item
-            android:id="@+id/nav_tool"
-            android:icon="@drawable/ic_menu_manage"
-            android:title="@string/menu_tools" />
+            android:title="@string/menu_project" />
+<!--        <item-->
+<!--            android:id="@+id/nav_tool"-->
+<!--            android:icon="@drawable/ic_menu_manage"-->
+<!--            android:title="@string/menu_tools" />-->
     </group>
 
     <item android:title="Our services">

@@ -53,8 +53,6 @@ class MainViewModel(private val context: Context, private val listener: Listener
         fun onGetAudioPath(): String
 
         fun onShowGrid()
-
-        fun onCallSetting()
     }
 
     /**
@@ -233,11 +231,6 @@ class MainViewModel(private val context: Context, private val listener: Listener
         override fun onShowGrid() {
             return listener.onShowGrid()
         }
-
-        override fun onCallSetting() {
-            return listener.onCallSetting()
-        }
-
     }
 
 
@@ -245,7 +238,6 @@ class MainViewModel(private val context: Context, private val listener: Listener
         override fun onServiceConnected(name: ComponentName, binder: IBinder) {
             service = (binder as MainService.MainServiceBinder).service
             service?.setCallback(mainCB)
-            service?.onSettingUpdated()
         }
 
         override fun onServiceDisconnected(name: ComponentName) {
@@ -295,13 +287,6 @@ class MainViewModel(private val context: Context, private val listener: Listener
     }
 
     /**
-     * On Setting button pressed
-     */
-    fun onSettingUpdate() {
-        service?.onSettingUpdated()
-    }
-
-    /**
      * On Record button clicked
      */
     fun onRecordClicked(view : View) {
@@ -341,11 +326,6 @@ class MainViewModel(private val context: Context, private val listener: Listener
     fun onDeleteClicked(view : View) {
         service?.onDelete()
     }
-
-    fun onSettingClicked(view : View) {
-        service?.onSetting()
-    }
-
     /*
      * On Left button clicked
      */

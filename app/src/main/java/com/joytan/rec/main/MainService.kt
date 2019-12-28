@@ -12,7 +12,6 @@ import com.joytan.rec.analytics.AnalyticsHandler
 import com.joytan.rec.data.QRecStatus
 import com.joytan.rec.data.QRecStorage
 import com.joytan.rec.main.handler.*
-import com.joytan.rec.setting.SettingFragment
 import com.joytan.util.BWU
 
 /**
@@ -124,8 +123,6 @@ class MainService : Service() {
         BWU.log("MainService#onCreate")
         //終了タスクを予約
         handler.postDelayed(endTask, END_TIME.toLong())
-        //設定を反映
-        onSettingUpdated()
         //視覚的ボリューム
         vvh.onCreate(this, object : VisualVolumeHandler.Callback {
             override fun getRecordVisualVolume(): Float {
@@ -205,14 +202,6 @@ class MainService : Service() {
             return false
         }
     }
-
-    /*
-     * On Setting updated
-     */
-    fun onSettingUpdated() {
-        seh.isEnabled = SettingFragment.isSoundEffect(this)
-    }
-
     /**
      * When Record is requested
      */
@@ -290,10 +279,6 @@ class MainService : Service() {
 
     fun onGrid() {
         cb?.onShowGrid()
-    }
-
-    fun onSetting() {
-        cb?.onCallSetting()
     }
 
     /*

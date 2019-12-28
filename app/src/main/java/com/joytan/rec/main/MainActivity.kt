@@ -29,6 +29,11 @@ import android.icu.lang.UCharacter.GraphemeClusterBreak.T
 import android.net.Uri
 import com.google.android.gms.appinvite.AppInviteInvitation
 import com.joytan.rec.setting.HtmlViewerActivity
+import androidx.drawerlayout.widget.DrawerLayout
+import androidx.core.content.ContextCompat.getSystemService
+import android.icu.lang.UCharacter.GraphemeClusterBreak.T
+
+
 
 
 /**
@@ -38,9 +43,7 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         val CODE_SETTING = 1
-        var defaultUid = ""
-        var clientUid = ""
-        val INFO_TAG = "kohki"
+        val INFO_TAG = "print_debug"
         /**
          * Show progress of data transaction with Firebase server
          */
@@ -112,7 +115,6 @@ class MainActivity : AppCompatActivity() {
         nav_view.setupWithNavController(navController)
 //        nav_view.itemIconTintList = null
         nav_view.setNavigationItemSelectedListener {
-            val id = it.itemId
             when (it.itemId) {
                 R.id.nav_slack -> {
                     val intent = Intent(Intent.ACTION_VIEW)
@@ -147,5 +149,13 @@ class MainActivity : AppCompatActivity() {
 
     override fun onSupportNavigateUp(): Boolean {
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
+    }
+
+    fun lockDrawer() {
+        drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+    }
+
+    fun unlockDrawer() {
+        drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
     }
 }

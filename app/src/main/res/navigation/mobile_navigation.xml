@@ -9,12 +9,42 @@
     <fragment
         android:id="@+id/nav_main"
         android:name="com.joytan.rec.main.MainFragment"
-        tools:layout="@layout/fragment_main" />
+        tools:layout="@layout/fragment_main" >
+        <action
+            android:id="@+id/action_nav_main_to_nav_signup"
+            app:destination="@id/nav_signup"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim" />
+        <action
+            android:id="@+id/action_nav_main_to_nav_login"
+            app:destination="@id/nav_login"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim" />
+        <action
+            android:id="@+id/action_nav_main_to_nav_project"
+            app:destination="@id/nav_project"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_project"
+        android:name="com.joytan.rec.setting.ProjectFragment"
+        android:label="@string/project_startup"
+        tools:layout="@layout/fragment_project" >
+        <action
+            android:id="@+id/action_nav_project_to_nav_main"
+            app:destination="@id/nav_main"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_signup"
         android:name="com.joytan.rec.setting.SignupFragment"
-        android:label="@string/title_auth"
+        android:label="@string/sign_up"
         tools:layout="@layout/fragment_signup" >
         <action
             android:id="@+id/action_nav_signup_to_nav_login"
@@ -24,17 +54,12 @@
             app:popEnterAnim="@anim/nav_default_pop_enter_anim"
             app:popExitAnim="@anim/nav_default_pop_exit_anim"
             app:popUpTo="@+id/nav_main" />
-        <action
-            android:id="@+id/action_nav_signup_to_nav_main"
-            app:destination="@id/nav_main"
-            app:enterAnim="@anim/nav_default_enter_anim"
-            app:exitAnim="@anim/nav_default_exit_anim" />
     </fragment>
 
     <fragment
         android:id="@+id/nav_login"
         android:name="com.joytan.rec.setting.LoginFragment"
-        android:label="@string/login"
+        android:label="@string/log_in"
         tools:layout="@layout/fragment_login" >
         <action
             android:id="@+id/action_nav_login_to_nav_signup"
