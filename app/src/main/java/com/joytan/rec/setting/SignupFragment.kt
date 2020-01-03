@@ -1,11 +1,8 @@
 package com.joytan.rec.setting
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
@@ -16,13 +13,15 @@ import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserProfileChangeRequest
 import com.joytan.rec.R
-import com.joytan.rec.analytics.AnalyticsHandler
+import com.joytan.rec.handler.AnalyticsHandler
 import com.joytan.rec.databinding.FragmentSignupBinding
 import kotlinx.android.synthetic.main.fragment_signup.*
 import android.view.inputmethod.InputMethodManager.HIDE_NOT_ALWAYS
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.fragment.findNavController
+import com.firebase.ui.auth.AuthUI
 import com.google.android.material.snackbar.Snackbar
+import com.joytan.rec.main.MainActivity
 import kotlinx.android.synthetic.main.activity_main.*
 
 
@@ -51,7 +50,21 @@ class SignupFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         btn_to_login.setOnClickListener{
-            findNavController().navigate(R.id.action_nav_signup_to_nav_login)
+//            findNavController().navigate(R.id.action_nav_signup_to_nav_login)
+            // Choose authentication providers
+            val providers = arrayListOf(
+                    AuthUI.IdpConfig.EmailBuilder().build(),
+                    AuthUI.IdpConfig.PhoneBuilder().build(),
+                    AuthUI.IdpConfig.GoogleBuilder().build(),
+                    AuthUI.IdpConfig.FacebookBuilder().build(),
+                    AuthUI.IdpConfig.TwitterBuilder().build())
+
+// Create and launch sign-in intent
+            startActivityForResult(
+                    AuthUI.getInstance()
+                            .createSignInIntentBuilder()
+                            .setAvailableProviders(providers)
+                            .build(), MainActivity.RC_SIGN_IN)
         }
         btn_do_signup.setOnClickListener{view ->
             trySignUp(view)

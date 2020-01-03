@@ -50,6 +50,8 @@ class MainViewModel(private val context: Context, private val listener: Listener
 
         fun onScriptNavigation(direction: String)
 
+        fun onUpdateProgress(progress : MutableList<Int>, color : Int,  initialIndex : Int, totalSize : Int)
+
         fun onGetAudioPath(): String
 
         fun onShowGrid()
@@ -212,6 +214,10 @@ class MainViewModel(private val context: Context, private val listener: Listener
             listener.onScriptNavigation(direction)
         }
 
+        override fun onUpdateProgress(progress : MutableList<Int>, color : Int, initialIndex : Int, totalSize : Int) {
+            listener.onUpdateProgress(progress, color, initialIndex, totalSize)
+        }
+
         override fun onShowWarningMessage(resId: Int) {
             listener.onShowWarningMessage(resId)
         }
@@ -249,7 +255,6 @@ class MainViewModel(private val context: Context, private val listener: Listener
      * To be called from onCreate in Activity
      */
     fun onCreate() {
-
     }
 
     /**
@@ -317,6 +322,10 @@ class MainViewModel(private val context: Context, private val listener: Listener
 
     fun onGridClicked(view : View) {
         service?.onGrid()
+    }
+
+    fun onUpdateProgress(progress : MutableList<Int>, color : Int, initialIndex : Int, totalSize : Int) {
+        service?.onUpdateProgress(progress, color, initialIndex, totalSize)
     }
 
 

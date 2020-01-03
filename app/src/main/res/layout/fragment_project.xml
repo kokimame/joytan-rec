@@ -13,7 +13,7 @@
             android:layout_width="match_parent"
             android:layout_height="251dp"
             android:layout_marginHorizontal="10dp"
-            android:background="@drawable/project_bg"
+            android:background="@drawable/bg_dark_round"
             android:stateListAnimator="@drawable/spinner_sla"
             android:theme="@style/MatchSpinnerTheme" />
 
@@ -26,9 +26,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="40dp"
-            android:background="#f05924"
-            android:text="OK"
+            android:background="@drawable/bg_red_round"
+            android:text="Get started"
             android:textColor="@android:color/white" />
-
     </LinearLayout>
 </layout>

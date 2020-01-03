@@ -25,6 +25,8 @@ interface MainServiceCallback {
      */
     fun onScriptNavigation(direction: String)
 
+    fun onUpdateProgress(progress : MutableList<Int>, color : Int, initialIndex : Int, totalSize : Int)
+
     fun onGetAudioPath(): String
 
     /**

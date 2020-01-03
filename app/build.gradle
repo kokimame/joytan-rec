@@ -13,7 +13,6 @@ android {
         targetSdkVersion 28
         versionCode 23
         versionName "BETA-1.1"
-
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
     }
@@ -27,7 +26,10 @@ android {
     dataBinding {
         enabled = true
     }
-
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
 allprojects {
@@ -62,6 +64,10 @@ dependencies {
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'com.google.android.material:material:1.0.0-rc01'
 
+    implementation ('com.github.JakeWharton:ViewPagerIndicator:2.4.1'){
+        exclude module: 'support-v4'
+    }
+
     //ButterKnife
     implementation project(':material-preference')
 
@@ -77,6 +83,15 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-extensions:2.0.0'
     implementation 'androidx.navigation:navigation-fragment-ktx:2.0.0'
     implementation 'androidx.navigation:navigation-ui-ktx:2.0.0'
+
+    implementation 'com.firebaseui:firebase-ui-auth:4.3.1'
+    // Required only if Facebook login support is required
+    // Find the latest Facebook SDK releases here: https://goo.gl/Ce5L94
+    implementation 'com.facebook.android:facebook-android-sdk:4.41.0'
+    // Required only if Twitter login support is required
+    // Find the latest Twitter SDK releases here: https://goo.gl/E5wZvQ
+    implementation 'com.twitter.sdk.android:twitter-core:3.2.0'
+    implementation 'com.firebaseui:firebase-ui-auth-github:4.3.0'
 }
 
 kapt {

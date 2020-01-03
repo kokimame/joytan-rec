@@ -14,14 +14,12 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/cool_gradient">
+        android:background="@drawable/bg_gradient">
 
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1">
-
-            <!-- Contents -->
 
             <!-- Explosion effect -->
             <com.joytan.rec.main.view.ExplosionView
@@ -50,7 +48,7 @@
                     android:paddingHorizontal="10dp"
                     android:paddingVertical="4dp"
                     android:id="@+id/grid_jump"
-                    android:src="@drawable/ic_grid_24dp"
+                    android:src="@drawable/ic_grid"
                     android:paddingTop="-2dp"
                     android:background="@null"
                     android:onClick="@{viewModel::onGridClicked}"
@@ -59,7 +57,7 @@
             </LinearLayout>
 
             <include
-                layout="@layout/background_arrows"
+                layout="@layout/background_main"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
 

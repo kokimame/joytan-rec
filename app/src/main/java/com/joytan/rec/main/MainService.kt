@@ -8,10 +8,10 @@ import android.os.IBinder
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.idling.CountingIdlingResource
 import com.joytan.rec.R
-import com.joytan.rec.analytics.AnalyticsHandler
+import com.joytan.rec.handler.AnalyticsHandler
 import com.joytan.rec.data.QRecStatus
 import com.joytan.rec.data.QRecStorage
-import com.joytan.rec.main.handler.*
+import com.joytan.rec.handler.*
 import com.joytan.util.BWU
 
 /**
@@ -267,6 +267,10 @@ class MainService : Service() {
             status = QRecStatus.DELETE_PLAYING
             update()
         }
+    }
+
+    fun onUpdateProgress(progress : MutableList<Int>, color : Int, initialIndex : Int, totalSize : Int) {
+        cb?.onUpdateProgress(progress, color, initialIndex, totalSize)
     }
 
     fun onLeft() {

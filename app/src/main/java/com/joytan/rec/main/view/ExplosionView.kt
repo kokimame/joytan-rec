@@ -59,7 +59,7 @@ class ExplosionView : View {
 
     override fun onDraw(canvas: Canvas) {
         //円を描画する
-        paint.color = -0x333334 //0xffcccccc
+        paint.color = -0x330000 //0xffcccccc
         paint.isAntiAlias = true
         paint.style = Paint.Style.FILL
         canvas.drawCircle(centerX, centerY, radius, paint)

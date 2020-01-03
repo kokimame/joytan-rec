@@ -8,7 +8,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import com.joytan.rec.R
-import com.joytan.rec.analytics.AnalyticsHandler
+import com.joytan.rec.handler.AnalyticsHandler
 import com.joytan.rec.databinding.FragmentAboutBinding
 import kotlinx.android.synthetic.main.activity_main.*
 

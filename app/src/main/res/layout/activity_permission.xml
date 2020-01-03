@@ -8,8 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="6dp"
         android:layout_marginTop="56dp"
-        android:src="@drawable/shadow"
-        />
+        android:src="@drawable/bg_toolbar_shadow"/>
     
     <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"

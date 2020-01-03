@@ -1,7 +1,8 @@
 package com.joytan.rec.main
 
+import android.app.Activity
 import android.content.Context
-import android.content.Intent
+import android.graphics.Color
 import android.media.AudioManager
 import android.os.Bundle
 import android.util.Log
@@ -18,21 +19,23 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.iid.FirebaseInstanceId
 import com.google.firebase.storage.FirebaseStorage
 import com.joytan.rec.R
 import com.joytan.rec.data.QRecAnimator
 import com.joytan.rec.databinding.FragmentMainBinding
-import com.joytan.rec.main.handler.WarningHandler
+import com.joytan.rec.handler.WarningHandler
 import com.joytan.util.BWU
-import it.sephiroth.android.library.xtooltip.Tooltip
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
+import kotlinx.android.synthetic.main.background_main.*
 import kotlinx.android.synthetic.main.fragment_main.*
 import kotlinx.android.synthetic.main.main_control.*
 import kotlinx.android.synthetic.main.main_script.*
 import kotlinx.android.synthetic.main.main_script_dummy.*
 import kotlinx.android.synthetic.main.main_status.*
+import kotlinx.android.synthetic.main.nav_header_main.*
 import org.json.JSONArray
 import java.io.File
 import java.lang.Exception
@@ -49,7 +52,9 @@ class MainFragment : Fragment(){
     }
 
     // Context of host activity
-    private lateinit var mContext: Context
+    private lateinit var mContext : Context
+    private lateinit var mActivity : Activity
+
     private val wh = WarningHandler()
     // Audio volume
     private lateinit var audioManager: AudioManager
@@ -68,9 +73,12 @@ class MainFragment : Fragment(){
     private val fStorageRef = FirebaseStorage.getInstance().reference
     // Create a RealTime database reference from our app
     private val fDatabaseRef = FirebaseDatabase.getInstance().reference
+    // Create a Firestore database reference from our app
+    private val db = FirebaseFirestore.getInstance()
 
     private var currentIndex = 0
-    private var currentProjectId = String()
+    private var currentProjectName = String()
+    private var lastProjectName = String()
     private val projectJsonRef = fStorageRef.child("project_json")
     private var entryArray = JSONArray()
 
@@ -135,7 +143,7 @@ class MainFragment : Fragment(){
                     // Skip the finalized entries while swipe navigation
                     // TODO: Change bahavior when all completed
                     //  (Likely to not happen because such projects will be archived by admin)
-                    if (adminProgress[currentProjectId]!!.indexOf(index) == -1) {
+                    if (adminProgress[currentProjectName]!!.indexOf(index) == -1) {
                         break
                     }
                 }
@@ -143,8 +151,13 @@ class MainFragment : Fragment(){
                 animator.fadeOut(script_layout_dummy, direction)
                 animator.fadeIn(script_layout, direction)
             }
+
+            override fun onUpdateProgress(progress : MutableList<Int>, color : Int, initialIndex : Int, totalSize : Int) {
+                circular_progress.initProgress(progress, color, initialIndex, totalSize)
+            }
+
             override fun onGetAudioPath(): String {
-                return "projects/${currentProjectId}/" +
+                return "projects/${currentProjectName}/" +
                         (currentIndex + 1).toString().padStart(5, '0') +
                         "/$clientUid/${currentProject["wanted"]}.wav"
             }
@@ -175,9 +188,8 @@ class MainFragment : Fragment(){
         activity!!.volumeControlStream = AudioManager.STREAM_MUSIC
         this.audioManager = activity!!.getSystemService(Context.AUDIO_SERVICE) as AudioManager
 
-        mAuth.addAuthStateListener { auth ->
-            val user = auth.currentUser
-            clientUid = if (user != null) mAuth.currentUser!!.uid else clientUid
+        if (currentProjectName.isEmpty()) {
+            lastProjectName = "ja_n4_vocab"// sharedPref.getString("pref_last_proj", "")!!
         }
     }
 
@@ -195,16 +207,51 @@ class MainFragment : Fragment(){
         return binding.root
     }
 
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        Log.e(MainActivity.INFO_TAG, "onActivityCreated")
+        super.onActivityCreated(savedInstanceState)
+    }
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
         Log.e(MainActivity.INFO_TAG, "onAttach")
         mContext = context
-    }
+        mActivity = mContext as Activity
 
+        mAuth.addAuthStateListener { auth ->
+            Log.e(MainActivity.INFO_TAG, "${auth.toString()}, ${auth.currentUser.toString()}")
+            val user = auth.currentUser
+            if (user != null) {
+                clientUid = user.uid
+                mActivity.nav_username.text = user.displayName
+                mActivity.nav_view.menu.findItem(R.id.nav_logout).isVisible = true
+                mActivity.nav_view.menu.findItem(R.id.nav_signup).isVisible = false
+            } else {
+                mActivity.nav_username.text = ""
+                mActivity.nav_view.menu.findItem(R.id.nav_logout).isVisible = false
+                mActivity.nav_view.menu.findItem(R.id.nav_signup).isVisible = true
+            }
+
+            db.collection("users").document(clientUid!!)
+                    .get()
+                    .addOnSuccessListener { document ->
+                        try {
+                            if (document.get("voice_add") != null) {
+                                mActivity.cnt_voice.text = document.get("voice_add").toString()
+                            }
+
+                        } catch (e: Exception) { Log.e(MainActivity.INFO_TAG, e.toString()) }
+                    }
+                    .addOnFailureListener { exception ->
+                        Log.e(MainActivity.INFO_TAG, "Error getting user counter ... ", exception)
+                    }
+        }
+    }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
         Log.e(MainActivity.INFO_TAG, "onViewStateRestored")
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -217,21 +264,38 @@ class MainFragment : Fragment(){
         activity!!.drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
 
         if (currentProject.isEmpty()) {
-            findNavController().navigate(R.id.action_nav_main_to_nav_project)
-            MainActivity.pd.dismiss()
-        } else {
-            // If a project is set in MainFragment
-            if (currentProjectId != currentProject["dirname"]!!) {
-                currentProjectId = currentProject["dirname"]!!
-                loadProgressData(myProgress,"users/$clientUid/audio/projects/${currentProject["dirname"]}")
-                loadProgressData(adminProgress,"users/$adminUid/done/projects/${currentProject["dirname"]}")
-                setNewProject()
-            } else {
-                // If the new project is the same with the previous one
-                // Keep the previous index
-                updateIndex(currentIndex)
+            // When project information is not available, try to load the last project
+            try {
+                db.collection("project_info").document(lastProjectName)
+                        .get()
+                        .addOnSuccessListener {
+                            currentProject = it.data as Map<String, String>
+                            loadProgressData(myProgress, clientUid!!, lastProjectName)
+                            loadProgressData(adminProgress, adminUid, lastProjectName)
+                            setNewProject(lastProjectName)
+                            currentProjectName = lastProjectName
+                        }
+                        .addOnFailureListener { exception ->
+                            Log.e(MainActivity.INFO_TAG, "Error getting documents ... ", exception)
+                        }
+            } catch (e : Exception) {
+                // If loading the last project fails, go to the project fragment
+                findNavController().navigate(R.id.action_nav_main_to_nav_project)
+                MainActivity.pd.dismiss()
             }
-            updateToolbarTitle(currentProject["flags"] + currentProject["title"])
+        } else {
+            if (currentProjectName != currentProject["dirname"]!!) {
+                // New project selected from the Project fragment
+                currentProjectName = currentProject["dirname"]!!
+                loadProgressData(myProgress, clientUid!!, currentProjectName)
+                loadProgressData(adminProgress, adminUid, currentProjectName)
+                setNewProject(currentProjectName)
+            } else {
+                updateIndex(currentIndex)
+                circular_progress.initProgress(adminProgress[currentProjectName]!!,
+                        Color.GREEN, currentIndex, currentProject["size"]!!.toInt())
+                updateToolbarTitle()
+            }
         }
         view.setOnTouchListener(object : OnMainTouchListener() {
             override fun onScriptNavigation(
@@ -254,14 +318,16 @@ class MainFragment : Fragment(){
             }
         })
     }
-    private fun setNewProject() {
-        val tempProjectFile = File.createTempFile(currentProjectId, "json")
+
+    private fun setNewProject(projectName : String) {
+        val tempProjectFile = File.createTempFile(projectName, "json")
         MainActivity.pd.show ()
-        projectJsonRef.child("$currentProjectId.json")
+        projectJsonRef.child("$projectName.json")
                 .getFile(tempProjectFile).addOnSuccessListener {
                     val jsonString: String = tempProjectFile.readText(Charsets.UTF_8)
                     entryArray = JSONArray(jsonString)
                     updateScript(entryArray)
+                    updateToolbarTitle()
                     MainActivity.pd.dismiss()
                 }.addOnFailureListener {
                     // FIXME
@@ -270,17 +336,20 @@ class MainFragment : Fragment(){
                 }
     }
     private fun loadProgressData (progressLookup : MutableMap<String, MutableList<Int>>,
-                                  pathString : String) {
+                                  uid : String,
+                                  projectName : String) {
+        val pathString = "users/$uid/audio/projects/$projectName"
         try {
             val entryRef = fDatabaseRef.child(pathString)
             // Progress initialization for current project
-            progressLookup[currentProjectId] = mutableListOf<Int>()
+            progressLookup[projectName] = mutableListOf<Int>()
             entryRef.addListenerForSingleValueEvent((object: ValueEventListener {
                 override fun onDataChange(p0: DataSnapshot) {
                     if (p0.value is Map<*, *>) {
                         val pData = p0.value as Map<String, Map<String, String>>
                         var newData = pData.map { it.key.toInt() - 1 }.toMutableList()
-                        progressLookup[currentProjectId] = newData
+                        progressLookup[projectName] = newData
+                        circular_progress.initProgress(newData, Color.GREEN, currentIndex, currentProject["size"]!!.toInt())
                     }
                 }
                 override fun onCancelled(p0: DatabaseError) {
@@ -317,8 +386,8 @@ class MainFragment : Fragment(){
 
         try {
             val unfinishedIndices =
-                    (0 .. newMainScripts.size - 1).filter { it !in myProgress[currentProjectId]!! &&
-                            it !in adminProgress[currentProjectId]!!}
+                    (0 .. newMainScripts.size - 1).filter { it !in myProgress[currentProjectName]!! &&
+                            it !in adminProgress[currentProjectName]!!}
             nextIndex = unfinishedIndices.shuffled().take(1)[0]
         } catch (e: Exception) {
             nextIndex = 0
@@ -337,12 +406,12 @@ class MainFragment : Fragment(){
 
         index_text!!.text = "${currentIndex + 1}/${mainScripts.size}"
 
-        if (newIndex in adminProgress[currentProjectId]!!) {
+        if (newIndex in adminProgress[currentProjectName]!!) {
             checkbox.visibility = View.VISIBLE
             checkbox.setImageResource(R.drawable.ic_done_24dp)
             checkbox_dummy.setImageResource(R.drawable.ic_done_24dp)
         }
-        else if (newIndex in myProgress[currentProjectId]!!) {
+        else if (newIndex in myProgress[currentProjectName]!!) {
             checkbox.visibility = View.VISIBLE
             checkbox.setImageResource(R.drawable.ic_thanks_24dp)
             checkbox_dummy.setImageResource(R.drawable.ic_thanks_24dp)
@@ -350,19 +419,20 @@ class MainFragment : Fragment(){
         else {
             checkbox.visibility = View.INVISIBLE
         }
+        circular_progress.setCurrentIndex(currentIndex)
     }
 
     private fun updateMyProgress(){
-        if (currentIndex !in myProgress[currentProjectId]!!)
-            myProgress[currentProjectId]?.add(currentIndex)
+        if (currentIndex !in myProgress[currentProjectName]!!)
+            myProgress[currentProjectName]?.add(currentIndex)
         checkbox.visibility = View.VISIBLE
         // Explictly set bitmap source because initially not specified
         checkbox.setImageResource(R.drawable.ic_thanks_24dp)
         checkbox_dummy.setImageResource(R.drawable.ic_thanks_24dp)
     }
 
-    private fun updateToolbarTitle(newTitle : String) {
-        activity!!.toolbar_main.title = newTitle
+    private fun updateToolbarTitle() {
+        activity!!.toolbar_main.title = currentProject["flags"] + currentProject["title"]
     }
 
     private fun showGrid() {
@@ -376,7 +446,7 @@ class MainFragment : Fragment(){
                 mList.add(i)
             }
             GridBaseAdapter(
-                    mContext, mList, mainScripts, myProgress[currentProjectId], adminProgress[currentProjectId]
+                    mContext, mList, mainScripts, myProgress[currentProjectName], adminProgress[currentProjectName]
             ).also { adapter ->
                 gridView.setAdapter(adapter)
             }

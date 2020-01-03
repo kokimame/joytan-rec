@@ -14,12 +14,11 @@ import androidx.navigation.fragment.findNavController
 import com.google.firebase.firestore.FirebaseFirestore
 
 import com.joytan.rec.R
-import com.joytan.rec.analytics.AnalyticsHandler
+import com.joytan.rec.handler.AnalyticsHandler
 import com.joytan.rec.databinding.FragmentProjectBinding
 import com.joytan.rec.main.MainActivity
 import com.joytan.rec.main.MainFragment
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.fragment_project.*
 
 class ProjectFragment : Fragment() {

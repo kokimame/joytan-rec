@@ -12,12 +12,14 @@ import androidx.fragment.app.Fragment
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.FirebaseAuth
 import com.joytan.rec.R
-import com.joytan.rec.analytics.AnalyticsHandler
+import com.joytan.rec.handler.AnalyticsHandler
 import android.view.inputmethod.InputMethodManager.HIDE_NOT_ALWAYS
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.fragment.findNavController
+import com.firebase.ui.auth.AuthUI
 import com.google.android.material.snackbar.Snackbar
 import com.joytan.rec.databinding.FragmentLoginBinding
+import com.joytan.rec.main.MainActivity
 import kotlinx.android.synthetic.main.fragment_login.*
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -50,7 +52,21 @@ class LoginFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         btn_to_signup.setOnClickListener{
-            findNavController().navigate(R.id.action_nav_login_to_nav_signup)
+//            findNavController().navigate(R.id.action_nav_login_to_nav_signup)
+            // Choose authentication providers
+            val providers = arrayListOf(
+                    AuthUI.IdpConfig.EmailBuilder().build(),
+                    AuthUI.IdpConfig.PhoneBuilder().build(),
+                    AuthUI.IdpConfig.GoogleBuilder().build(),
+                    AuthUI.IdpConfig.FacebookBuilder().build(),
+                    AuthUI.IdpConfig.TwitterBuilder().build())
+
+// Create and launch sign-in intent
+            startActivityForResult(
+                    AuthUI.getInstance()
+                            .createSignInIntentBuilder()
+                            .setAvailableProviders(providers)
+                            .build(), MainActivity.RC_SIGN_IN)
         }
         btn_do_login.setOnClickListener{ view ->
             tryLogin(view)
@@ -102,7 +118,7 @@ class LoginFragment : Fragment() {
                         val user = mAuth.currentUser!!
                         Toast.makeText(mContext, "Successfully logged in :)",
                                 Toast.LENGTH_LONG).show()
-                        activity?.onBackPressed()
+                        findNavController().popBackStack()
                     } else {
                         showSnackBarMessage(view, "Log in failed.")
                     }

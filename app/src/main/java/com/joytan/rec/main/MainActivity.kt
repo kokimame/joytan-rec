@@ -24,16 +24,12 @@ import androidx.navigation.ui.setupWithNavController
 
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
-import androidx.core.content.ContextCompat.getSystemService
-import android.icu.lang.UCharacter.GraphemeClusterBreak.T
 import android.net.Uri
 import com.google.android.gms.appinvite.AppInviteInvitation
-import com.joytan.rec.setting.HtmlViewerActivity
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.core.content.ContextCompat.getSystemService
-import android.icu.lang.UCharacter.GraphemeClusterBreak.T
-
-
+import com.firebase.ui.auth.AuthUI
+import com.google.firebase.auth.FirebaseAuth
+import com.joytan.rec.setting.AboutActivity
 
 
 /**
@@ -43,6 +39,7 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         val CODE_SETTING = 1
+        const val RC_SIGN_IN = 123
         val INFO_TAG = "print_debug"
         /**
          * Show progress of data transaction with Firebase server
@@ -116,6 +113,25 @@ class MainActivity : AppCompatActivity() {
 //        nav_view.itemIconTintList = null
         nav_view.setNavigationItemSelectedListener {
             when (it.itemId) {
+                R.id.nav_signup -> {
+                    // Choose authentication providers
+                    val providers = arrayListOf(
+                            AuthUI.IdpConfig.EmailBuilder().build(),
+                            AuthUI.IdpConfig.GoogleBuilder().build(),
+                            AuthUI.IdpConfig.FacebookBuilder().build(),
+                            AuthUI.IdpConfig.TwitterBuilder().build()
+//                            AuthUI.IdpConfig.GitHubBuilder().build()
+                    )
+
+                    // Create and launch sign-in intent
+                    startActivityForResult(
+                            AuthUI.getInstance()
+                                    .createSignInIntentBuilder()
+                                    .setTheme(R.style.AppTheme_AppBarOverlay)
+                                    .setAvailableProviders(providers)
+                                    .setLogo(R.mipmap.ic_launcher_foreground)
+                                    .build(), RC_SIGN_IN)
+                }
                 R.id.nav_slack -> {
                     val intent = Intent(Intent.ACTION_VIEW)
                     intent.data = Uri.parse("http://slack-invite.joytan.pub/")
@@ -137,6 +153,15 @@ class MainActivity : AppCompatActivity() {
                             .build();
                     intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
                     startActivityForResult(intent,1);
+                }
+                R.id.nav_logout -> {
+                    FirebaseAuth.getInstance().signOut()
+                    MainFragment.clientUid = MainFragment.defaultUid
+                    this.recreate()
+                }
+                R.id.nav_about -> {
+                    val intent = Intent(this, AboutActivity::class.java)
+                    startActivity(intent)
                 }
                 else -> {
                     navController.navigate(it.itemId)
