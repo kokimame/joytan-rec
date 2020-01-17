@@ -27,9 +27,14 @@ import kotlinx.android.synthetic.main.app_bar_main.*
 import android.net.Uri
 import com.google.android.gms.appinvite.AppInviteInvitation
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.fragment.app.FragmentTransaction
 import com.firebase.ui.auth.AuthUI
 import com.google.firebase.auth.FirebaseAuth
 import com.joytan.rec.setting.AboutActivity
+import com.joytan.rec.setting.ProjectActivity
+import androidx.core.content.ContextCompat.getSystemService
+import android.icu.lang.UCharacter.GraphemeClusterBreak.T
+import kotlinx.android.synthetic.main.content_main.*
 
 
 /**
@@ -40,7 +45,7 @@ class MainActivity : AppCompatActivity() {
     companion object {
         val CODE_SETTING = 1
         const val RC_SIGN_IN = 123
-        val INFO_TAG = "print_debug"
+        val DEBUG_TAG = "print_debug"
         /**
          * Show progress of data transaction with Firebase server
          */
@@ -95,7 +100,7 @@ class MainActivity : AppCompatActivity() {
         // Volume adjusted to music
 
         // DO NOT ALLOW USERS TO TOUCH BUTTON BEFORE LOADING CONTENT
-        pd = ProgressDialog(this, ProgressDialog.THEME_HOLO_LIGHT)
+        pd = ProgressDialog(this, R.style.AlertDialog)
         // TODO Synchronize with the actual internet connection time
         pd.setProgressStyle(ProgressDialog.STYLE_SPINNER)
         pd.setMessage("Loading data from server ...")
@@ -116,10 +121,10 @@ class MainActivity : AppCompatActivity() {
                 R.id.nav_signup -> {
                     // Choose authentication providers
                     val providers = arrayListOf(
-                            AuthUI.IdpConfig.EmailBuilder().build(),
-                            AuthUI.IdpConfig.GoogleBuilder().build(),
+                            AuthUI.IdpConfig.TwitterBuilder().build(),
                             AuthUI.IdpConfig.FacebookBuilder().build(),
-                            AuthUI.IdpConfig.TwitterBuilder().build()
+                            AuthUI.IdpConfig.GoogleBuilder().build(),
+                            AuthUI.IdpConfig.EmailBuilder().build()
 //                            AuthUI.IdpConfig.GitHubBuilder().build()
                     )
 
@@ -163,6 +168,10 @@ class MainActivity : AppCompatActivity() {
                     val intent = Intent(this, AboutActivity::class.java)
                     startActivity(intent)
                 }
+                R.id.nav_project -> {
+                    val intent = Intent(this, ProjectActivity::class.java)
+                    startActivityForResult(intent, MainFragment.PROJECT_STARTUP_CODE)
+                }
                 else -> {
                     navController.navigate(it.itemId)
                 }
@@ -172,15 +181,15 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+
     override fun onSupportNavigateUp(): Boolean {
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
 
-    fun lockDrawer() {
-        drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
-    }
-
-    fun unlockDrawer() {
-        drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == resultCode) {
+            this.recreate()
+        }
+        super.onActivityResult(requestCode, resultCode, data)
     }
 }

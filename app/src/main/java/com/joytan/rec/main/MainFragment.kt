@@ -1,7 +1,10 @@
 package com.joytan.rec.main
 
 import android.app.Activity
+import android.app.ProgressDialog
 import android.content.Context
+import android.content.DialogInterface
+import android.content.Intent
 import android.graphics.Color
 import android.media.AudioManager
 import android.os.Bundle
@@ -13,12 +16,10 @@ import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.findNavController
+import com.firebase.ui.auth.AuthUI
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
+import com.google.firebase.auth.TwitterAuthProvider
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.iid.FirebaseInstanceId
 import com.google.firebase.storage.FirebaseStorage
@@ -26,6 +27,7 @@ import com.joytan.rec.R
 import com.joytan.rec.data.QRecAnimator
 import com.joytan.rec.databinding.FragmentMainBinding
 import com.joytan.rec.handler.WarningHandler
+import com.joytan.rec.setting.ProjectActivity
 import com.joytan.util.BWU
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
@@ -40,6 +42,7 @@ import org.json.JSONArray
 import java.io.File
 import java.lang.Exception
 import kotlin.math.abs
+import kotlin.system.measureTimeMillis
 
 
 class MainFragment : Fragment(){
@@ -49,6 +52,7 @@ class MainFragment : Fragment(){
         var currentProject = mapOf<String, String>()
         val defaultUid = FirebaseInstanceId.getInstance().getToken()?.substring(0, 22)
         var clientUid = defaultUid
+        val PROJECT_STARTUP_CODE = 100
     }
 
     // Context of host activity
@@ -61,6 +65,7 @@ class MainFragment : Fragment(){
     // Handling custom animation for buttion, explosion etc
     private val animator = QRecAnimator()
 
+    private var entryIds = mutableListOf<String>()
     private var mainScripts = mutableListOf<String>()
     // List of upper note (e.g. transliteration, roma-ji)
     private var upperNotes = mutableListOf<String>()
@@ -71,33 +76,35 @@ class MainFragment : Fragment(){
 
     // Create a storage reference from our app
     private val fStorageRef = FirebaseStorage.getInstance().reference
-    // Create a RealTime database reference from our app
-    private val fDatabaseRef = FirebaseDatabase.getInstance().reference
     // Create a Firestore database reference from our app
     private val db = FirebaseFirestore.getInstance()
 
+    private var clientDisplayName = ""
+    private var clientMediaLink = ""
+    private var clientPhotoUrl = ""
     private var currentIndex = 0
-    private var currentProjectName = String()
+    private var projectName = String()
     private var lastProjectName = String()
     private val projectJsonRef = fStorageRef.child("project_json")
     private var entryArray = JSONArray()
 
-    // Map to save user progress record
-    private var myProgress = mutableMapOf<String, MutableList<Int>>()
-    private var adminProgress = mutableMapOf<String, MutableList<Int>>()
-
-    private val adminUid = "3fG1zIUGn1hAf8JkDGd500uNuIi1"
+    // Map to project name to a list of indices
+    private var clientProgressLookup = mutableMapOf<String, MutableList<Int>>()
+    private var adminProgressLookup = mutableMapOf<String, MutableList<Int>>()
 
     private val SWIPE_MIN_DISTANCE = 120
     private val SWIPE_MAX_OFF_PATH = 250
     private val SWIPE_THRESHOLD_VELOCITY = 200
+
+    private val COLOR_CLIENT_PROGRESS = Color.YELLOW
+    private val COLOR_ADMIN_PROGRESS = Color.GREEN
 
     // ViewModel for Main screen
     private lateinit var viewModel: MainViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.e(MainActivity.INFO_TAG, "onCreate")
+        Log.e(MainActivity.DEBUG_TAG, "onCreate")
 
         viewModel = MainViewModel(activity!!, object : MainViewModel.Listener {
             override fun onDeleteRecord() {
@@ -141,9 +148,9 @@ class MainFragment : Fragment(){
                         if (index > mainScripts.size - 1) index = 0
                     }
                     // Skip the finalized entries while swipe navigation
-                    // TODO: Change bahavior when all completed
+                    // TODO: Change behavior when all completed
                     //  (Likely to not happen because such projects will be archived by admin)
-                    if (adminProgress[currentProjectName]!!.indexOf(index) == -1) {
+                    if (adminProgressLookup[projectName]!!.indexOf(index) == -1) {
                         break
                     }
                 }
@@ -153,13 +160,25 @@ class MainFragment : Fragment(){
             }
 
             override fun onUpdateProgress(progress : MutableList<Int>, color : Int, initialIndex : Int, totalSize : Int) {
-                circular_progress.initProgress(progress, color, initialIndex, totalSize)
+                circular_progress.setProgress(progress, color, initialIndex, totalSize)
             }
 
-            override fun onGetAudioPath(): String {
-                return "projects/${currentProjectName}/" +
-                        (currentIndex + 1).toString().padStart(5, '0') +
-                        "/$clientUid/${currentProject["wanted"]}.wav"
+            override fun onGetVoiceProps(): HashMap<String, *> {
+                // Pass to the Share Handler when it submits voice recording to the storage
+                return hashMapOf(
+                        "client_id" to clientUid,
+                        "entry_id" to entryIds[currentIndex],
+                        "project" to projectName,
+                        "username" to clientDisplayName,
+                        "user_link" to clientMediaLink,
+                        "photo_url" to clientPhotoUrl,
+                        "created_at" to FieldValue.serverTimestamp(),
+                        "vote_like" to 0,
+                        "vote_dislike" to 0,
+                        "main_script" to mainScripts[currentIndex],
+                        "lon" to lowerNotes[currentIndex],
+                        "upn" to upperNotes[currentIndex]
+                )
             }
             override fun onUpdateVolume(volume: Float) {
                 //Update volume in the volume visualizer
@@ -169,7 +188,7 @@ class MainFragment : Fragment(){
                 wh.show(resId)
             }
             override fun onShowProgress(message: String) {
-                updateMyProgress()
+                updateClientProgress()
                 MainActivity.pd.setMessage(message)
                 MainActivity.pd.setCancelable(false)
                 MainActivity.pd.show()
@@ -188,8 +207,10 @@ class MainFragment : Fragment(){
         activity!!.volumeControlStream = AudioManager.STREAM_MUSIC
         this.audioManager = activity!!.getSystemService(Context.AUDIO_SERVICE) as AudioManager
 
-        if (currentProjectName.isEmpty()) {
-            lastProjectName = "ja_n4_vocab"// sharedPref.getString("pref_last_proj", "")!!
+        // TODO: Retrieve last project name from shared preference or Firestore
+        // and verify whether the project is still active, if not go to the projection startup
+        if (projectName.isEmpty()) {
+            lastProjectName = "ja_n5_vocab"// sharedPref.getString("pref_last_proj", "")!!
         }
     }
 
@@ -198,7 +219,7 @@ class MainFragment : Fragment(){
             container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View? {
-        Log.e(MainActivity.INFO_TAG, "onCreateView")
+        Log.e(MainActivity.DEBUG_TAG, "onCreateView")
 
         val binding = DataBindingUtil.inflate<FragmentMainBinding>(
                 inflater, R.layout.fragment_main, container, false
@@ -207,29 +228,49 @@ class MainFragment : Fragment(){
         return binding.root
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        Log.e(MainActivity.INFO_TAG, "onActivityCreated")
-        super.onActivityCreated(savedInstanceState)
-    }
-
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        Log.e(MainActivity.INFO_TAG, "onAttach")
+        Log.e(MainActivity.DEBUG_TAG, "onAttach")
         mContext = context
         mActivity = mContext as Activity
 
         mAuth.addAuthStateListener { auth ->
-            Log.e(MainActivity.INFO_TAG, "${auth.toString()}, ${auth.currentUser.toString()}")
             val user = auth.currentUser
             if (user != null) {
                 clientUid = user.uid
                 mActivity.nav_username.text = user.displayName
                 mActivity.nav_view.menu.findItem(R.id.nav_logout).isVisible = true
                 mActivity.nav_view.menu.findItem(R.id.nav_signup).isVisible = false
+
+                user.providerData.forEach {profile ->
+                    if (profile.providerId == TwitterAuthProvider.PROVIDER_ID) {
+                        clientMediaLink = "tw::" + profile.uid
+                        // Name, email address, and profile photo Url
+                        clientDisplayName = profile.displayName!!
+                        clientPhotoUrl = profile.photoUrl.toString()
+
+                    }
+                }
             } else {
                 mActivity.nav_username.text = ""
                 mActivity.nav_view.menu.findItem(R.id.nav_logout).isVisible = false
                 mActivity.nav_view.menu.findItem(R.id.nav_signup).isVisible = true
+            }
+            try {
+                user!!.providerData.forEach {profile ->
+                    if (profile.providerId == TwitterAuthProvider.PROVIDER_ID) {
+                        Log.e(MainActivity.DEBUG_TAG, "Profile ... " + profile.toString())
+                        val uid = profile.uid
+                        // Name, email address, and profile photo Url
+                        val name = profile.displayName
+                        val email = profile.email
+                        val photoUrl = profile.photoUrl
+                        Log.e(MainActivity.DEBUG_TAG, String.format("uid=%s name=%s email=%s url=%s", uid, name, email, photoUrl));
+
+                    }
+                }
+            } catch (e : Exception) {
+                Log.e(MainActivity.DEBUG_TAG, "Exception here ... $e")
             }
 
             db.collection("users").document(clientUid!!)
@@ -239,67 +280,63 @@ class MainFragment : Fragment(){
                             if (document.get("voice_add") != null) {
                                 mActivity.cnt_voice.text = document.get("voice_add").toString()
                             }
-
-                        } catch (e: Exception) { Log.e(MainActivity.INFO_TAG, e.toString()) }
+                        } catch (e: Exception) { Log.e(MainActivity.DEBUG_TAG, e.toString()) }
                     }
                     .addOnFailureListener { exception ->
-                        Log.e(MainActivity.INFO_TAG, "Error getting user counter ... ", exception)
+                        Log.e(MainActivity.DEBUG_TAG, "Error getting user counter ... ", exception)
                     }
         }
     }
 
-    override fun onViewStateRestored(savedInstanceState: Bundle?) {
-        super.onViewStateRestored(savedInstanceState)
-        Log.e(MainActivity.INFO_TAG, "onViewStateRestored")
-
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Log.e(MainActivity.INFO_TAG, "onViewCreated")
+        Log.e(MainActivity.DEBUG_TAG, "onViewCreated")
         // Cannot create warning handler in onCreate nor onAttach
         // because some views are not inflated? created? yet
         // and they return null and crash.
         wh.onCreate(activity!!)
         activity!!.drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
 
+        // FIXME This logic could be written smarter
+        ///////////////////////////////////////////
         if (currentProject.isEmpty()) {
             // When project information is not available, try to load the last project
-            try {
-                db.collection("project_info").document(lastProjectName)
-                        .get()
-                        .addOnSuccessListener {
-                            currentProject = it.data as Map<String, String>
-                            loadProgressData(myProgress, clientUid!!, lastProjectName)
-                            loadProgressData(adminProgress, adminUid, lastProjectName)
+            db.collection("projects").document(lastProjectName)
+                    .get()
+                    .addOnCompleteListener { task ->
+                        var result = task.result
+                        try {
+                            currentProject = result!!.data as Map<String, String>
                             setNewProject(lastProjectName)
-                            currentProjectName = lastProjectName
+                            projectName = lastProjectName
+                        } catch (exception : Exception) {
+                            currentProject = mapOf()
+                            Log.e(MainActivity.DEBUG_TAG, "Error getting documents ... ", exception)
+                            // If loading the last project fails, go to the project fragment
+                            MainActivity.pd.dismiss()
+                            val intent = Intent(mActivity, ProjectActivity::class.java)
+                            startActivityForResult(intent, PROJECT_STARTUP_CODE)
                         }
-                        .addOnFailureListener { exception ->
-                            Log.e(MainActivity.INFO_TAG, "Error getting documents ... ", exception)
-                        }
-            } catch (e : Exception) {
-                // If loading the last project fails, go to the project fragment
-                findNavController().navigate(R.id.action_nav_main_to_nav_project)
-                MainActivity.pd.dismiss()
-            }
+                    }
         } else {
-            if (currentProjectName != currentProject["dirname"]!!) {
+            if (projectName != currentProject["dirname"]!!) {
                 // New project selected from the Project fragment
-                currentProjectName = currentProject["dirname"]!!
-                loadProgressData(myProgress, clientUid!!, currentProjectName)
-                loadProgressData(adminProgress, adminUid, currentProjectName)
-                setNewProject(currentProjectName)
+                projectName = currentProject["dirname"]!!
+                setNewProject(projectName)
             } else {
                 updateIndex(currentIndex)
-                circular_progress.initProgress(adminProgress[currentProjectName]!!,
-                        Color.GREEN, currentIndex, currentProject["size"]!!.toInt())
+                circular_progress.setProgress(clientProgressLookup[projectName]!!,
+                        COLOR_CLIENT_PROGRESS, currentIndex, currentProject["size"]!!.toInt())
+                circular_progress.setProgress(adminProgressLookup[projectName]!!,
+                        COLOR_ADMIN_PROGRESS, currentIndex, currentProject["size"]!!.toInt())
                 updateToolbarTitle()
             }
         }
+        ///////////////////////////////////
         view.setOnTouchListener(object : OnMainTouchListener() {
             override fun onScriptNavigation(
                     e0: MotionEvent?, e1: MotionEvent?, vx: Float, vy: Float): Boolean {
+
                 try {
                     if (abs(e0!!.getY() - e1!!.getY()) > SWIPE_MAX_OFF_PATH) {
                         return false
@@ -321,73 +358,157 @@ class MainFragment : Fragment(){
 
     private fun setNewProject(projectName : String) {
         val tempProjectFile = File.createTempFile(projectName, "json")
+        Log.e(MainActivity.DEBUG_TAG, "Set new project for $projectName")
         MainActivity.pd.show ()
         projectJsonRef.child("$projectName.json")
                 .getFile(tempProjectFile).addOnSuccessListener {
                     val jsonString: String = tempProjectFile.readText(Charsets.UTF_8)
                     entryArray = JSONArray(jsonString)
-                    updateScript(entryArray)
+
+                    var indexLookupById = mutableMapOf<String, Int>()
+                    for (i in 0 until entryArray.length()) {
+                        val entryId = entryArray.getJSONObject(i).getString("id")
+                        indexLookupById[entryId] = i
+                    }
+
+                    // FIXME: Nesting (setNew -> getClient -> getAdmin) here is pretty nasty
+                    getClientProgress(projectName, indexLookupById)
                     updateToolbarTitle()
-                    MainActivity.pd.dismiss()
                 }.addOnFailureListener {
                     // FIXME
                     // If failed what can be done?
                     MainActivity.pd.dismiss()
                 }
     }
-    private fun loadProgressData (progressLookup : MutableMap<String, MutableList<Int>>,
-                                  uid : String,
-                                  projectName : String) {
-        val pathString = "users/$uid/audio/projects/$projectName"
+    private fun getClientProgress (projectName : String,
+                                   lookup : MutableMap<String, Int>) {
         try {
-            val entryRef = fDatabaseRef.child(pathString)
+            Log.e(MainActivity.DEBUG_TAG, "getClientProgress called")
             // Progress initialization for current project
-            progressLookup[projectName] = mutableListOf<Int>()
-            entryRef.addListenerForSingleValueEvent((object: ValueEventListener {
-                override fun onDataChange(p0: DataSnapshot) {
-                    if (p0.value is Map<*, *>) {
-                        val pData = p0.value as Map<String, Map<String, String>>
-                        var newData = pData.map { it.key.toInt() - 1 }.toMutableList()
-                        progressLookup[projectName] = newData
-                        circular_progress.initProgress(newData, Color.GREEN, currentIndex, currentProject["size"]!!.toInt())
+            clientProgressLookup[projectName] = mutableListOf<Int>()
+            db.collection("users").document(clientUid!!)
+                    .get()
+                    .addOnSuccessListener { result ->
+                        try {
+                            var sentIds = result.get(projectName) as MutableList<String>
+                            var newData = sentIds.map{ lookup[it]!! }.toMutableList()
+                            clientProgressLookup[projectName] = newData
+                            circular_progress.setProgress(newData, COLOR_CLIENT_PROGRESS,
+                                    currentIndex, currentProject["size"]!!.toInt())
+                        } catch (e : Exception) {
+                            Log.e(MainActivity.DEBUG_TAG, "client catch $e")
+                        }
+                        getAdminProgress(projectName, lookup)
+                    }.addOnFailureListener {
+                        // TODO: In what situation this part would be called
+                        Log.e(MainActivity.DEBUG_TAG, "client failure $it")
                     }
-                }
-                override fun onCancelled(p0: DatabaseError) {
-                }
-            }))
-        } catch (e: Exception) {
-        }
+        } catch (e: Exception) { }
     }
+
+    private fun getAdminProgress(projectName: String,
+                                 lookup : MutableMap<String, Int>) {
+        try {
+            Log.e(MainActivity.DEBUG_TAG, "getAdminProgress called")
+            // Progress initialization for current project
+            adminProgressLookup[projectName] = mutableListOf<Int>()
+            db.collection("projects").document(projectName)
+                    .get()
+                    .addOnSuccessListener { result ->
+                        try {
+                            //                                  Use ID instead of Index
+                            var finishedIds = result.get("done") as MutableList<String>
+                            var newData = finishedIds.map{ lookup[it]!! }.toMutableList()
+                            adminProgressLookup[projectName] = newData
+                            circular_progress.setProgress(newData, COLOR_ADMIN_PROGRESS,
+                                    currentIndex, currentProject["size"]!!.toInt())
+
+                            if (!isLoggedIn()) {
+                                popAuthDialog()
+                            }
+                        } catch (e : Exception) { }
+                        Log.e(MainActivity.DEBUG_TAG, "progress lookup ... " + adminProgressLookup.toString() + clientProgressLookup.toString())
+
+                        updateScript()
+
+                        // TODO: Try to do this logic in a more stable approach
+                        circular_progress.initialize(currentIndex, currentProject["size"]!!.toInt())
+                        MainActivity.pd.dismiss()
+                    }.addOnFailureListener {
+                        // TODO: In what situation this part would be called
+                    }
+        } catch (e: Exception) { }
+    }
+
+    private fun isLoggedIn() : Boolean {
+        return mAuth.currentUser != null
+    }
+
+    private fun popAuthDialog() {
+        // setup the alert builder
+        val builder = AlertDialog.Builder(mContext)
+        builder.setTitle("Please sign in first")
+        builder.setMessage("Sign-in is required in order to monetize your contributions " +
+                "and/or promote yourself on our YouTube channel.")
+        builder.setCancelable(false)
+        // add a button
+        builder.setPositiveButton("OK") { dialog, which ->
+            val providers = arrayListOf(
+                    AuthUI.IdpConfig.TwitterBuilder().build(),
+                    AuthUI.IdpConfig.FacebookBuilder().build(),
+                    AuthUI.IdpConfig.GoogleBuilder().build(),
+                    AuthUI.IdpConfig.EmailBuilder().build()
+//                            AuthUI.IdpConfig.GitHubBuilder().build()
+            )
+
+            // Create and launch sign-in intent
+            startActivityForResult(
+                    AuthUI.getInstance()
+                            .createSignInIntentBuilder()
+                            .setTheme(R.style.AppTheme_AppBarOverlay)
+                            .setAvailableProviders(providers)
+                            .setLogo(R.mipmap.ic_launcher_foreground)
+                            .build(), MainActivity.RC_SIGN_IN)
+        }
+        builder.setNegativeButton("Skip", null)
+        // create and show the alert dialog
+        val dialog = builder.create()
+        dialog.show()
+    }
+
     /**
      * Update the main script
      */
-    private fun updateScript(entriesJson: JSONArray) {
+    private fun updateScript() {
         val wantedKey = currentProject["wanted"]
         val upnKey = currentProject["upn"]
         val lonKey = currentProject["lon"]
+        val newEntryIds = mutableListOf<String>()
         val newMainScripts = mutableListOf<String>()
         val newUpperNotes = mutableListOf<String>()
         val newLowerNotes = mutableListOf<String>()
 
         var nextIndex: Int
 
-        for (i in 0 until entriesJson.length()) {
-            newMainScripts.add(entriesJson.getJSONObject(i).getString(wantedKey))
+        for (i in 0 until entryArray.length()) {
+            newMainScripts.add(entryArray.getJSONObject(i).getString(wantedKey))
+            newEntryIds.add(entryArray.getJSONObject(i).getString("id"))
             if (upnKey != "") {
-                newUpperNotes.add(entriesJson.getJSONObject(i).getString(upnKey))
+                newUpperNotes.add(entryArray.getJSONObject(i).getString(upnKey))
             }
             if (lonKey != "") {
-                newLowerNotes.add(entriesJson.getJSONObject(i).getString(lonKey))
+                newLowerNotes.add(entryArray.getJSONObject(i).getString(lonKey))
             }
         }
+        entryIds = newEntryIds
         mainScripts = newMainScripts
         upperNotes = newUpperNotes
         lowerNotes = newLowerNotes
 
         try {
             val unfinishedIndices =
-                    (0 .. newMainScripts.size - 1).filter { it !in myProgress[currentProjectName]!! &&
-                            it !in adminProgress[currentProjectName]!!}
+                    (0 .. currentProject["size"]!!.toInt() - 1).filter { it !in clientProgressLookup[projectName]!! &&
+                            it !in adminProgressLookup[projectName]!!}
             nextIndex = unfinishedIndices.shuffled().take(1)[0]
         } catch (e: Exception) {
             nextIndex = 0
@@ -406,12 +527,12 @@ class MainFragment : Fragment(){
 
         index_text!!.text = "${currentIndex + 1}/${mainScripts.size}"
 
-        if (newIndex in adminProgress[currentProjectName]!!) {
+        if (newIndex in adminProgressLookup[projectName]!!) {
             checkbox.visibility = View.VISIBLE
             checkbox.setImageResource(R.drawable.ic_done_24dp)
             checkbox_dummy.setImageResource(R.drawable.ic_done_24dp)
         }
-        else if (newIndex in myProgress[currentProjectName]!!) {
+        else if (newIndex in clientProgressLookup[projectName]!!) {
             checkbox.visibility = View.VISIBLE
             checkbox.setImageResource(R.drawable.ic_thanks_24dp)
             checkbox_dummy.setImageResource(R.drawable.ic_thanks_24dp)
@@ -422,13 +543,14 @@ class MainFragment : Fragment(){
         circular_progress.setCurrentIndex(currentIndex)
     }
 
-    private fun updateMyProgress(){
-        if (currentIndex !in myProgress[currentProjectName]!!)
-            myProgress[currentProjectName]?.add(currentIndex)
+    private fun updateClientProgress(){
+        if (currentIndex !in clientProgressLookup[projectName]!!)
+            clientProgressLookup[projectName]?.add(currentIndex)
         checkbox.visibility = View.VISIBLE
         // Explictly set bitmap source because initially not specified
         checkbox.setImageResource(R.drawable.ic_thanks_24dp)
         checkbox_dummy.setImageResource(R.drawable.ic_thanks_24dp)
+        circular_progress.addToArcList(currentIndex, COLOR_CLIENT_PROGRESS)
     }
 
     private fun updateToolbarTitle() {
@@ -437,16 +559,12 @@ class MainFragment : Fragment(){
 
     private fun showGrid() {
         val gridView = layoutInflater.inflate(R.layout.grid_view, null) as GridView
-        val builder = AlertDialog.Builder(mContext, R.style.GridDialog)
-        val mList = mutableListOf<Int>()
         val titleView = layoutInflater.inflate(R.layout.grid_title, null)
+        val builder = AlertDialog.Builder(mContext, R.style.GridDialog)
 
         try {
-            for (i in 1 until mainScripts.size + 1) {
-                mList.add(i)
-            }
             GridBaseAdapter(
-                    mContext, mList, mainScripts, myProgress[currentProjectName], adminProgress[currentProjectName]
+                    mContext, mainScripts, clientProgressLookup[projectName], adminProgressLookup[projectName]
             ).also { adapter ->
                 gridView.setAdapter(adapter)
             }

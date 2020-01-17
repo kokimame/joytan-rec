@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="@dimen/nav_header_height"
-    android:background="@drawable/bg_nav_bar"
+    android:background="@drawable/bg_navbar_img"
     android:gravity="bottom"
     android:orientation="vertical"
     android:paddingLeft="@dimen/activity_horizontal_margin"
@@ -29,6 +29,7 @@
             android:id="@+id/nav_audio"
             android:text="Contributions"
             android:textSize="10dp"
+            android:textColor="@color/white"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="@style/UserDescription"/>
@@ -42,9 +43,8 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="center"
-                android:text="VOICE"
-                android:textStyle="bold"
+                android:text="VOICE ....."
+                android:textColor="@color/white"
                 android:textAppearance="@style/UserDescription"/>
             <TextView
                 android:id="@+id/cnt_voice"
@@ -52,6 +52,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="0"
+                android:textColor="@color/white"
                 android:textAppearance="@style/UserDescription"/>
         </LinearLayout>
         <LinearLayout
@@ -63,9 +64,8 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="VOTE"
-                android:gravity="center"
-                android:textStyle="bold"
+                android:text="VOTE ......"
+                android:textColor="@color/white"
                 android:textAppearance="@style/UserDescription"/>
             <TextView
                 android:id="@+id/cnt_vote"
@@ -73,6 +73,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="0"
+                android:textColor="@color/white"
                 android:textAppearance="@style/UserDescription"/>
         </LinearLayout>
 
@@ -80,6 +81,7 @@
             android:id="@+id/nav_username"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textColor="@color/white"
             android:textSize="16dp"
             android:text="NAME"
             android:textStyle="bold"

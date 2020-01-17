@@ -27,7 +27,7 @@ interface MainServiceCallback {
 
     fun onUpdateProgress(progress : MutableList<Int>, color : Int, initialIndex : Int, totalSize : Int)
 
-    fun onGetAudioPath(): String
+    fun onGetVoiceProps(): HashMap<String, *>
 
     /**
      * Warning message

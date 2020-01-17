@@ -1,6 +1,7 @@
 package com.joytan.rec.main
 
 import android.content.Context
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
@@ -10,9 +11,8 @@ import androidx.core.content.ContextCompat
 import com.joytan.rec.R
 
 class GridBaseAdapter(private val context: Context,
-                      private val mList: List<Int>,
                       private val mainScripts: MutableList<String>,
-                      private val myProgress: MutableList<Int>?,
+                      private val clientProgress: MutableList<Int>?,
                       private val adminProgress: MutableList<Int>?) : BaseAdapter() {
 
 
@@ -26,19 +26,32 @@ class GridBaseAdapter(private val context: Context,
         val textView = gridItem.findViewById<TextView>(R.id.grid_text)
         val idView = gridItem.findViewById<TextView>(R.id.grid_id)
 
-        val currentIndex = mList[position] - 1
 
-        if (currentIndex in adminProgress!!) {
+//        Log.e(MainActivity.DEBUG_TAG, "$position in ${clientProgress!!} ${adminProgress} ?")
+//        Log.e(MainActivity.DEBUG_TAG, clientProgress.indexOf(position).toString())
+//        Log.e(MainActivity.DEBUG_TAG, "${position.javaClass} ${clientProgress[0].javaClass} ${clientProgress.javaClass}")
+//
+//        Log.e(MainActivity.DEBUG_TAG, "$position == ${clientProgress[0]} = " + (position == clientProgress[0]).toString())
+
+//        if (adminProgress!!.filter { it == position }.any()) {
+//            gridItem.setBackgroundColor(ContextCompat.getColor(context, R.color.bs_green))
+//        }
+//        else if (clientProgress!!.filter { it == position}.any()) {
+////            Log.e(MainActivity.DEBUG_TAG, "currentIndex in clientProgress")
+//            gridItem.setBackgroundColor(ContextCompat.getColor(context, R.color.bs_blue))
+//        }
+        if (position in adminProgress!!) {
             gridItem.setBackgroundColor(ContextCompat.getColor(context, R.color.bs_green))
         }
-        else if (currentIndex in myProgress!!) {
+        else if (position in clientProgress!!) {
             gridItem.setBackgroundColor(ContextCompat.getColor(context, R.color.bs_blue))
         }
         else {
             gridItem.setBackgroundColor(ContextCompat.getColor(context, R.color.bg_dark))
         }
-        textView.setText(mainScripts[currentIndex])
-        idView.setText((currentIndex + 1).toString())
+        textView.setText(mainScripts[position])
+        idView.setText((position + 1).toString())
+
         return gridItem
     }
 

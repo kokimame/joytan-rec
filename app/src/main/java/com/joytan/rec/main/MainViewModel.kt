@@ -52,7 +52,7 @@ class MainViewModel(private val context: Context, private val listener: Listener
 
         fun onUpdateProgress(progress : MutableList<Int>, color : Int,  initialIndex : Int, totalSize : Int)
 
-        fun onGetAudioPath(): String
+        fun onGetVoiceProps(): HashMap<String, *>
 
         fun onShowGrid()
     }
@@ -87,14 +87,8 @@ class MainViewModel(private val context: Context, private val listener: Listener
      */
     val shareVisibility = ObservableField<Int>()
 
-    /**
-     * 削除ボタン表示
-     */
     val deleteVisibility = ObservableField<Int>()
 
-    /**
-     * ステータス表示
-     */
     val statusImageSrc = ObservableField<Int>(R.drawable.microphone_48dp)
 
 //    val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
@@ -230,8 +224,8 @@ class MainViewModel(private val context: Context, private val listener: Listener
             listener.onDismissProgress()
         }
 
-        override fun onGetAudioPath(): String {
-            return listener.onGetAudioPath()
+        override fun onGetVoiceProps(): HashMap<String, *> {
+            return listener.onGetVoiceProps()
         }
 
         override fun onShowGrid() {

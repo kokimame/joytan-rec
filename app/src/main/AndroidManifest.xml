@@ -36,34 +36,18 @@
         <activity
             android:name=".start.PermissionActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-            android:label="@string/app_name" /> <!-- Main -->
+            android:label="@string/app_name" />
         <activity
             android:name=".main.MainActivity"
             android:label="@string/app_name"
-            android:screenOrientation="portrait" /> <!-- Setting -->
-        <activity
-            android:name=".setting.SettingActivity"
-            android:label="@string/title_setting"
-            android:screenOrientation="portrait" /> <!-- Authentication -->
-        <activity
-            android:name=".setting.SignupActivity"
-            android:label="@string/sign_up"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".setting.LoginActivity"
-            android:label="@string/log_in"
+            android:name=".setting.ProjectActivity"
+            android:label="@string/project_startup"
             android:screenOrientation="portrait" />
-        <activity
-            android:name=".setting.AccountActivity"
-            android:label="@string/your_account"
-            android:screenOrientation="portrait" /> <!-- HTML Viewer画面(OSSライセンス) -->
-        <activity
-            android:name=".setting.HtmlViewerActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-            android:label="@string/pref_oss" /> <!-- アプリについて画面 -->
         <activity
             android:name=".setting.AboutActivity"
-            android:label="@string/pref_information" /> <!-- メインサービス -->
+            android:label="@string/pref_information" />
         <service
             android:name=".main.MainService"
             android:exported="false" />

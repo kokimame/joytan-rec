@@ -1,33 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center_vertical"
-        android:orientation="vertical"
-        android:background="#304769">
+        android:orientation="vertical">
 
-        <ListView
-            android:id="@+id/project_list"
-            android:layout_width="match_parent"
-            android:layout_height="251dp"
-            android:layout_marginHorizontal="10dp"
-            android:background="@drawable/bg_dark_round"
-            android:stateListAnimator="@drawable/spinner_sla"
-            android:theme="@style/MatchSpinnerTheme" />
-
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="132dp" />
-
-        <Button
-            android:id="@+id/btn_new_project"
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar_project"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="40dp"
-            android:background="@drawable/bg_red_round"
-            android:text="Get started"
-            android:textColor="@android:color/white" />
+            android:background="@color/bg_darker"
+            app:popupTheme="@style/AppTheme.PopupOverlay"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:orientation="vertical"
+            android:background="#304769">
+            <ListView
+                android:id="@+id/project_list"
+                android:layout_width="match_parent"
+                android:layout_height="250dp"
+                android:layout_margin="10dp"
+                android:background="@drawable/bg_dark_round"
+                android:stateListAnimator="@drawable/spinner_sla"
+                android:theme="@style/MatchSpinnerTheme" />
+
+            <Button
+                android:id="@+id/btn_new_project"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="40dp"
+                android:background="@drawable/bg_red_round"
+                android:text="Get started"
+                android:textColor="@android:color/white" />
+        </LinearLayout>
     </LinearLayout>
 </layout>

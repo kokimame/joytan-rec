@@ -32,7 +32,7 @@ class AboutActivity : AppCompatActivity() {
         //データバインディング設定
         val binding = DataBindingUtil.setContentView<ActivityAboutBinding>(this, R.layout.activity_about)
         binding.viewModel = viewModel
-        setSupportActionBar(toolbar)
+        setSupportActionBar(toolbar_about)
         val lsab = supportActionBar
         lsab?.setHomeButtonEnabled(true)
         lsab?.setDisplayHomeAsUpEnabled(true)

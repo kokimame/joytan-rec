@@ -10,15 +10,12 @@ import android.util.Log
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.UploadTask
 import com.joytan.rec.data.QRecStorage
 import com.joytan.rec.main.MainActivity
-import com.joytan.rec.main.MainFragment
 import java.io.File
 import java.io.IOException
 
@@ -40,9 +37,8 @@ class ShareHandler(private val storage: QRecStorage) {
 
     fun onResume() {}
 
-    fun share(fileName: String, onEndListener: () -> Unit) {
+    fun share(voiceProps : HashMap<String, *>, onEndListener: () -> Unit) {
 
-        val audioRef = fStorageRef.child(fileName)
         stop()
 
         if (storage.length == 0) {
@@ -63,36 +59,34 @@ class ShareHandler(private val storage: QRecStorage) {
 
             try {
                 storage.save(outputFileName)
+                val dirname = voiceProps["project"] as String
+//                val index = voiceProps["index"] as Int
+                val clientUid = voiceProps["client_id"] as String
+                val entryId = voiceProps["entry_id"] as String
+                val userRef = db.collection("users").document(clientUid)
+                val voiceRef = db.collection("projects/$dirname/voice").document()
+                val projectRef = db.collection("projects").document(dirname)
 
+                val filePath = "voice/$dirname/${voiceRef.id}.wav"
+                val audioRef = fStorageRef.child(filePath)
                 audioRef.putFile(outputFile)
                         .addOnSuccessListener(object : OnSuccessListener<UploadTask.TaskSnapshot> {
                             override fun onSuccess(taskSnapshot: UploadTask.TaskSnapshot) {
-                                val fileItems = fileName.split('/')
-                                val dirname = fileItems[1]
-                                val index = fileItems[2]
-                                val clientUid = fileItems[3]
-                                val vRecord = hashMapOf(
-                                        "uid" to clientUid,
-                                        "admin_use" to "",
-                                        "created_at" to FieldValue.serverTimestamp()
-                                )
-                                db.collection("users/$clientUid/audio/$dirname/entries").document(index)
-                                        .set(vRecord)
-                                        .addOnSuccessListener { Log.e(MainActivity.INFO_TAG, "db success") }
-                                        .addOnFailureListener { exception ->
-                                            Log.e(MainActivity.INFO_TAG, "db failure $exception") }
-                                        .addOnCompleteListener { MainActivity.pd.dismiss() }
-                                db.collection("users").document(clientUid)
-                                        .update("voice_add", increment)
-                                        .addOnFailureListener { exception ->
-                                            // For now, don't use exception.javaClass since Exception class may be too
-                                            // broad to know whether the cause is NOT_FOUND or other causes.
-                                            if ("NOT_FOUND" in exception.toString()) {
-                                                // Initialize audio contribution counter
-                                                db.collection("users").document(clientUid)
-                                                        .set(hashMapOf("voice_add" to 1))
-                                            }
-                                        }
+                                MainActivity.pd.dismiss()
+                                db.runTransaction { trans ->
+                                    val snap = trans.get(userRef)
+                                    if (snap.exists()) {
+                                        trans.update(userRef, "voice_add", increment)
+                                    } else {
+                                        trans.set(userRef, hashMapOf("voice_add" to 1))
+                                    }
+                                    trans.update(projectRef, "available", FieldValue.arrayUnion(entryId))
+                                    trans.update(userRef, dirname, FieldValue.arrayUnion(entryId))
+                                    trans.update(userRef, "voice", FieldValue.arrayUnion(voiceRef.id))
+                                    trans.set(voiceRef, voiceProps)
+                                }.addOnCompleteListener {
+                                    Log.e(MainActivity.DEBUG_TAG, it.result!!.toString())
+                                }
                             }
                         })
                         .addOnFailureListener(object : OnFailureListener {
@@ -102,8 +96,9 @@ class ShareHandler(private val storage: QRecStorage) {
                         })
             } catch (e: IOException) {
                 e.printStackTrace()
+                // FIXME: Not clear. Should be better to handle exceptions carefully
+                MainActivity.pd.dismiss()
             }
-
             try {
                 Thread.sleep((storage.packetSize * 1000 / 44100).toLong())
             } catch (e: InterruptedException) {
@@ -114,7 +109,7 @@ class ShareHandler(private val storage: QRecStorage) {
     }
 
     /**
-     * 再生を終了する
+     * Stop playing
      */
     fun stop() {
         val lthread = thread

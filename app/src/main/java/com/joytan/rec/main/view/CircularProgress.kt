@@ -48,19 +48,19 @@ class CircularProgress : View {
 
     private var thickPaint = Paint()
 
+    private var indexPaint = Paint()
+
     private var baseRectF = RectF()
 
     private var sweepAngle = 0f
 
     override fun onDraw(canvas: Canvas) {
-        Log.e(MainActivity.INFO_TAG, "vWid, centerX, $viewWidth $centerX $totalSize $normalPaint")
-
         normalPaint.color = ContextCompat.getColor(context, R.color.bg_darkest)
         canvas.drawCircle(centerX, centerY, radius, normalPaint)
 
         val currentAngle = -90 + sweepAngle * currentIndex
         // To be overdrawn if the current index is in progress
-        canvas.drawArc(baseRectF, currentAngle + sweepAngle / 4, sweepAngle / 2, false, thickPaint)
+        canvas.drawArc(baseRectF, currentAngle + sweepAngle / 4, sweepAngle / 2, false, indexPaint)
 
         arcList.forEach {
             val (shape, startAngle) = it
@@ -80,38 +80,35 @@ class CircularProgress : View {
         this.viewHeight = h.toFloat()
     }
 
-    override fun onDetachedFromWindow() {
-        super.onDetachedFromWindow()
-        Log.e(MainActivity.INFO_TAG, "cp detached $totalSize $width")
-    }
+    fun addToArcList(index : Int, color : Int) {
+        sweepAngle = 360f / totalSize
+        val startAngle = -90 + sweepAngle * index
 
-    override fun onAttachedToWindow() {
-        super.onAttachedToWindow()
-        Log.e(MainActivity.INFO_TAG, "cp attached $totalSize $width")
+        arcList.add(Pair(Pair(baseRectF, color), startAngle))
+        invalidate()
     }
 
     fun setCurrentIndex(currentIndex : Int) {
         this.currentIndex = currentIndex
         val dp = context.resources.displayMetrics.density
 
-        thickPaint.isAntiAlias = true
-        thickPaint.style = Paint.Style.STROKE
-        thickPaint.strokeWidth = 25 * dp
-        thickPaint.color = ContextCompat.getColor(context, R.color.primary_dark)
-        thickPaint.isDither = true
+        indexPaint.isAntiAlias = true
+        indexPaint.style = Paint.Style.STROKE
+        indexPaint.strokeWidth = 25 * dp
+        indexPaint.color = ContextCompat.getColor(context, R.color.primary_dark)
+        indexPaint.isDither = true
 
         invalidate()
     }
 
-    fun initProgress(progress : MutableList<Int>, color : Int, index : Int, totalSize : Int) {
+    fun initialize(index : Int, totalSize: Int) {
         val dp = context.resources.displayMetrics.density
         this.currentIndex = index
         this.totalSize = totalSize
 
         radius = 150f * dp
-        centerX = this.viewWidth / 2f
-        centerY = this.viewHeight / 2f
-        Log.e(MainActivity.INFO_TAG, "center in initProgress ... $centerX $centerY")
+        centerX = width / 2f
+        centerY = height / 2f
 
         normalPaint.isAntiAlias = true
         normalPaint.style = Paint.Style.STROKE
@@ -124,14 +121,16 @@ class CircularProgress : View {
         thickPaint.color = ContextCompat.getColor(context, R.color.primary_dark)
         thickPaint.isDither = true
 
-        // To blur the progress bar
-//        normalPaint.maskFilter = BlurMaskFilter(5f * dp, BlurMaskFilter.Blur.NORMAL)
-//        setLayerType(LAYER_TYPE_SOFTWARE, null)
         baseRectF = RectF(centerX - radius, centerY - radius,
                 centerX + radius, centerY + radius)
 
-        arcList = mutableListOf()
         sweepAngle = 360f / totalSize
+    }
+
+    fun setProgress(progress : MutableList<Int>, color : Int, index : Int, totalSize : Int) {
+
+        initialize(index, totalSize)
+
         for (i in progress) {
             val startAngle = -90 + sweepAngle * i
             arcList.add(Pair(Pair(baseRectF, color), startAngle))

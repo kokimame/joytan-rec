@@ -100,7 +100,7 @@ class MainService : Service() {
      */
     private var status = QRecStatus.INIT
 
-    private lateinit var audioPath :String
+    private lateinit var voiceProps : HashMap<String, *>
 
 
     /**
@@ -243,11 +243,11 @@ class MainService : Service() {
      * When Share is requested
      */
     fun onShare() {
-        val maybeNullPath = cb?.onGetAudioPath()
-        if(maybeNullPath == null) {
+        val maybeNullMap = cb?.onGetVoiceProps()
+        if(maybeNullMap == null) {
             return
         } else {
-            audioPath = maybeNullPath
+            voiceProps = maybeNullMap
         }
         status = QRecStatus.SHARE
         cb?.onShowProgress("Sending...")
@@ -384,7 +384,7 @@ class MainService : Service() {
             //Analytics
             ah.sendAction("play", (storage.length / 44100).toLong())
         } else if (status == QRecStatus.SHARE) {
-            share.share (fileName = audioPath) {}
+            share.share (voiceProps = voiceProps) {}
             status = QRecStatus.DELETE_PLAYING
             update()
             ah.sendAction("share")
