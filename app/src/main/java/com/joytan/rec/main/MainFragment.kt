@@ -1,9 +1,7 @@
 package com.joytan.rec.main
 
 import android.app.Activity
-import android.app.ProgressDialog
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Color
 import android.media.AudioManager
@@ -17,6 +15,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import com.firebase.ui.auth.AuthUI
+import com.google.firebase.auth.FacebookAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.TwitterAuthProvider
 import com.google.firebase.firestore.FieldValue
@@ -42,8 +41,6 @@ import org.json.JSONArray
 import java.io.File
 import java.lang.Exception
 import kotlin.math.abs
-import kotlin.system.measureTimeMillis
-
 
 class MainFragment : Fragment(){
 
@@ -210,8 +207,11 @@ class MainFragment : Fragment(){
         // TODO: Retrieve last project name from shared preference or Firestore
         // and verify whether the project is still active, if not go to the projection startup
         if (projectName.isEmpty()) {
-            lastProjectName = "ja_n5_vocab"// sharedPref.getString("pref_last_proj", "")!!
+            val sharedPref = activity?.getSharedPreferences(
+                    getString(R.string.saved_user_data), Context.MODE_PRIVATE)
+            lastProjectName = sharedPref!!.getString(getString(R.string.last_project_name),"default_project")!!
         }
+        Log.e(MainActivity.DEBUG_TAG, "got from sharedPref $lastProjectName")
     }
 
     override fun onCreateView(
@@ -249,6 +249,11 @@ class MainFragment : Fragment(){
                         clientDisplayName = profile.displayName!!
                         clientPhotoUrl = profile.photoUrl.toString()
 
+                    } else if (profile.providerId == FacebookAuthProvider.PROVIDER_ID) {
+                        clientMediaLink = "fb::" + profile.uid
+                        // Name, email address, and profile photo Url
+                        clientDisplayName = profile.displayName!!
+                        clientPhotoUrl = profile.photoUrl.toString()
                     }
                 }
             } else {
@@ -259,7 +264,6 @@ class MainFragment : Fragment(){
             try {
                 user!!.providerData.forEach {profile ->
                     if (profile.providerId == TwitterAuthProvider.PROVIDER_ID) {
-                        Log.e(MainActivity.DEBUG_TAG, "Profile ... " + profile.toString())
                         val uid = profile.uid
                         // Name, email address, and profile photo Url
                         val name = profile.displayName
@@ -356,6 +360,13 @@ class MainFragment : Fragment(){
         })
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == resultCode || requestCode == MainActivity.RC_SIGN_IN) {
+            mActivity.recreate()
+        }
+        super.onActivityResult(requestCode, resultCode, data)
+    }
+
     private fun setNewProject(projectName : String) {
         val tempProjectFile = File.createTempFile(projectName, "json")
         Log.e(MainActivity.DEBUG_TAG, "Set new project for $projectName")
@@ -371,7 +382,7 @@ class MainFragment : Fragment(){
                         indexLookupById[entryId] = i
                     }
 
-                    // FIXME: Nesting (setNew -> getClient -> getAdmin) here is pretty nasty
+                    // FIXME: Nesting (setNew -> getClient -> getAdmin) here is pretty dumb
                     getClientProgress(projectName, indexLookupById)
                     updateToolbarTitle()
                 }.addOnFailureListener {
@@ -380,10 +391,10 @@ class MainFragment : Fragment(){
                     MainActivity.pd.dismiss()
                 }
     }
+
     private fun getClientProgress (projectName : String,
                                    lookup : MutableMap<String, Int>) {
         try {
-            Log.e(MainActivity.DEBUG_TAG, "getClientProgress called")
             // Progress initialization for current project
             clientProgressLookup[projectName] = mutableListOf<Int>()
             db.collection("users").document(clientUid!!)
@@ -409,7 +420,6 @@ class MainFragment : Fragment(){
     private fun getAdminProgress(projectName: String,
                                  lookup : MutableMap<String, Int>) {
         try {
-            Log.e(MainActivity.DEBUG_TAG, "getAdminProgress called")
             // Progress initialization for current project
             adminProgressLookup[projectName] = mutableListOf<Int>()
             db.collection("projects").document(projectName)
@@ -427,7 +437,6 @@ class MainFragment : Fragment(){
                                 popAuthDialog()
                             }
                         } catch (e : Exception) { }
-                        Log.e(MainActivity.DEBUG_TAG, "progress lookup ... " + adminProgressLookup.toString() + clientProgressLookup.toString())
 
                         updateScript()
 

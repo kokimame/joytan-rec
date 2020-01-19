@@ -76,5 +76,8 @@
         <item name="android:textColor">@color/bg_darkest</item>
     </style>
 
+    <style name="NavigationView">
+        <item name="android:textColorSecondary">@color/nav_text</item>
+    </style>
 
 </resources>

@@ -187,7 +187,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == resultCode) {
+        if (requestCode == resultCode || requestCode == RC_SIGN_IN) {
+            Log.e(DEBUG_TAG, "<< onActivityResult >>")
             this.recreate()
         }
         super.onActivityResult(requestCode, resultCode, data)

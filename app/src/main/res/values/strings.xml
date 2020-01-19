@@ -81,6 +81,9 @@
     <string name="title_activity_start" translatable="false">StartActivity</string>
     <string name="title_activity_setting" translatable="false">SettingActivity</string>
 
+    <string name="saved_user_data" translatable="false">SAVED_USER_DATA</string>
+    <string name="last_project_name" translatable="false">LAST_PROJECT_NAME</string>
+
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment" translatable="false">Hello blank fragment</string>
     <string name="title_activity_about" translatable="false">AboutActivity</string>
@@ -106,8 +109,8 @@
     <string name="pref_last_proj">pref_last_proj</string>
 
     <!-- Facebook application ID and custom URL scheme (app ID prefixed by 'fb'). -->
-    <string name="facebook_application_id" translatable="false">YOUR_APP_ID</string>
-    <string name="facebook_login_protocol_scheme" translatable="false">fbYOUR_APP_ID</string>
+    <string name="facebook_application_id" translatable="false">496799707638295</string>
+    <string name="facebook_login_protocol_scheme" translatable="false">fb496799707638295</string>
     <!-- Twitter consumer key and secret -->
     <string name="twitter_consumer_key" translatable="false">sKaOFUrhiIrYAM7iuPNi3Mcl5</string>
     <string name="twitter_consumer_secret" translatable="false">rMFClytgcgBjYzQz6uJPjNmo9ZQJBt77aVQ03V1HM89uQ6IGwP</string>

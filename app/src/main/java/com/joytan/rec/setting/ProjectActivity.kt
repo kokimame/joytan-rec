@@ -1,10 +1,12 @@
 package com.joytan.rec.setting
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.widget.AdapterView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -13,6 +15,11 @@ import com.joytan.rec.handler.AnalyticsHandler
 import com.joytan.rec.main.MainActivity
 import com.joytan.rec.main.MainFragment
 import kotlinx.android.synthetic.main.activity_project.*
+import android.R.id.edit
+import androidx.core.content.ContextCompat.getSystemService
+import android.icu.lang.UCharacter.GraphemeClusterBreak.T
+
+
 
 class ProjectActivity : AppCompatActivity() {
 
@@ -56,6 +63,17 @@ class ProjectActivity : AppCompatActivity() {
         btn_new_project.setOnClickListener {
             val newProject = projectLookup[padapter.currentProjectIndex] as Map<String, String>
             MainFragment.currentProject = newProject
+            val sharedPref = applicationContext.getSharedPreferences(
+                    getString(R.string.saved_user_data), 0)
+//            val editor = sharedPref.edit()
+//            editor.putString(getString(R.string.last_project_name), newProject["dirname"])
+//            editor.apply()
+            with (sharedPref.edit()) {
+                Log.e(MainActivity.DEBUG_TAG, "put string to sharedPref ${newProject["dirname"]}")
+                putString(getString(R.string.last_project_name), newProject["dirname"])
+                commit()
+            }
+
             setResult(MainFragment.PROJECT_STARTUP_CODE)
             finish()
         }
@@ -86,6 +104,10 @@ class ProjectActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val id = item.itemId
+        if (MainFragment.currentProject.isEmpty()) {
+            Toast.makeText(this, "Choose a project", Toast.LENGTH_SHORT).show()
+            return false
+        }
         if (id == android.R.id.home) {
             finish()
             return true
