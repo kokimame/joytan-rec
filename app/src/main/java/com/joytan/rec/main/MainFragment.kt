@@ -173,8 +173,8 @@ class MainFragment : Fragment(){
                         "vote_like" to 0,
                         "vote_dislike" to 0,
                         "main_script" to mainScripts[currentIndex],
-                        "lon" to lowerNotes[currentIndex],
-                        "upn" to upperNotes[currentIndex]
+                        "lon" to if (lowerNotes.size == 0) "" else lowerNotes[currentIndex],
+                        "upn" to if (upperNotes.size == 0) "" else upperNotes[currentIndex]
                 )
             }
             override fun onUpdateVolume(volume: Float) {
@@ -560,6 +560,8 @@ class MainFragment : Fragment(){
         checkbox.setImageResource(R.drawable.ic_thanks_24dp)
         checkbox_dummy.setImageResource(R.drawable.ic_thanks_24dp)
         circular_progress.addToArcList(currentIndex, COLOR_CLIENT_PROGRESS)
+        mActivity.cnt_voice.text = (Integer.parseInt(
+                mActivity.cnt_voice.text.toString()) + 1).toString()
     }
 
     private fun updateToolbarTitle() {
