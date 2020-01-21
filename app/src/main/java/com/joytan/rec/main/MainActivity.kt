@@ -154,8 +154,8 @@ class MainActivity : AppCompatActivity() {
                 }
                 R.id.nav_share -> {
                     val intent = AppInviteInvitation.IntentBuilder(getString(R.string.invite_title))
-                            .setDeepLink(Uri.parse("https://cp999.app.goo.gl/cffF"))
-                            .build();
+                            .setDeepLink(Uri.parse("https://play.google.com/store/apps/details?id=com.joytan.rec"))
+                            .build()
                     intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
                     startActivityForResult(intent,1);
                 }
