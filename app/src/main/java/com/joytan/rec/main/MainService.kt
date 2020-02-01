@@ -254,6 +254,12 @@ class MainService : Service() {
         update()
     }
 
+    fun onComment() {
+        status = QRecStatus.COMMENTING
+        cb?.onStartComment()
+        update()
+    }
+
     /**
      * When Delete is requested
      */
@@ -269,9 +275,6 @@ class MainService : Service() {
         }
     }
 
-    fun onUpdateProgress(progress : MutableList<Int>, color : Int, initialIndex : Int, totalSize : Int) {
-        cb?.onUpdateProgress(progress, color, initialIndex, totalSize)
-    }
 
     fun onLeft() {
         onScriptNavigation("left")
@@ -392,6 +395,9 @@ class MainService : Service() {
             vvh.reset()
             play.stop()
             status = QRecStatus.STOP
+            update()
+        } else if (status == QRecStatus.COMMENTING) {
+            status = QRecStatus.READY
             update()
         }
         //状態更新をActivityに通知

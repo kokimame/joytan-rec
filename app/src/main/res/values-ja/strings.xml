@@ -13,7 +13,7 @@
     <string name="warning_volume">音楽ボリュームがミュートになっています。</string>
     <string name="pref_oss">オープンソースライセンス</string>
     <string name="pref_sound">効果音</string>
-    <string name="pref_information">アプリについて</string>
+    <string name="about_app">アプリについて</string>
     <string name="title_setting">設定</string>
     <string name="app_name">ジョイ単REC</string>
     <string name="app_name_long">ジョイ単 Record</string>
@@ -47,4 +47,13 @@
     <string name="login_tip">ログイン</string>
     <string name="project_tip">他の言語プロジェクトはこちら</string>
     <string name="roll_notice">静かな環境で明快な発音をお願いしています．送信された音声はYouTubeで利用させて頂きます．</string>
+    <string name="action_settings" translatable="false">設定</string>
+    <string name="menu_about">アプリについて</string>
+    <string name="menu_logout">ログアウト</string>
+    <string name="menu_project">新しいプロジェクト</string>
+    <string name="menu_share">アプリへ招待</string>
+    <string name="menu_slack">Slackに参加</string>
+    <string name="menu_tools">設定</string>
+    <string name="project_startup">新しいプロジェクト🚀</string>
+    <string name="invite_title">知り合いを招待する</string>
 </resources>

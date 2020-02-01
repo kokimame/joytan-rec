@@ -39,5 +39,7 @@ interface MainServiceCallback {
 
     fun onDismissProgress()
 
+    fun onStartComment()
+
     fun onShowGrid()
 }

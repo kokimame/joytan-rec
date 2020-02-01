@@ -52,6 +52,11 @@ enum class QRecStatus {
     STOPPING_PLAYING,
 
     /**
+     * Start commenting
+     */
+    COMMENTING,
+
+    /**
      * While sharing to the server
      */
     SHARE

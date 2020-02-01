@@ -1,19 +1,18 @@
 <resources>
+    <style name="CommentDialog" parent="Theme.AppCompat.Dialog">
+        <item name="android:windowCloseOnTouchOutside">true</item>
+        <item name="android:windowMinWidthMajor">80%</item>
+        <item name="android:windowMinWidthMinor">80%</item>
+    </style>
 
     <style name="GridDialog" parent="Theme.AppCompat.Dialog">
         <item name="android:windowBackground">@null</item>
         <item name="android:windowCloseOnTouchOutside">true</item>
     </style>
 
-    <style name="MatchSpinnerStyle" parent="android:style/Widget.ListView.DropDown">
-        <item name="android:divider">@color/bg_darker</item>
-        <item name="android:dividerHeight">1dp</item>
-        <item name="android:background">@color/bg_dark</item>
-    </style>
-
-    <style name="MatchSpinnerTheme" parent="AppTheme">
-        <item name="android:overlapAnchor">true</item>
-        <item name="android:dropDownListViewStyle">@style/MatchSpinnerStyle</item>
+    <!-- Button -->
+    <style name="AlertDialog" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="colorAccent">@color/primary</item>
     </style>
 
     <!-- Base application theme. -->
@@ -31,6 +30,18 @@
         <item name="colorControlNormal">@color/toolbar_title</item>
         <!-- Style for button-->
         <item name="android:alertDialogStyle">@style/AlertDialog</item>
+    </style>
+
+
+    <style name="MatchSpinnerStyle" parent="android:style/Widget.ListView.DropDown">
+        <item name="android:divider">@color/bg_darker</item>
+        <item name="android:dividerHeight">1dp</item>
+        <item name="android:background">@color/bg_dark</item>
+    </style>
+
+    <style name="MatchSpinnerTheme" parent="AppTheme">
+        <item name="android:overlapAnchor">true</item>
+        <item name="android:dropDownListViewStyle">@style/MatchSpinnerStyle</item>
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
@@ -53,12 +64,6 @@
     <style name="Toolbar.Title" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
         <item name="android:textColor">@color/toolbar_title</item>
     </style>
-
-    <!-- Button -->
-    <style name="AlertDialog" parent="Theme.AppCompat.Light.Dialog.Alert">
-        <item name="colorAccent">@color/primary</item>
-    </style>
-
 
     <!-- For screenshot -->
     <style name="ScreenShotCardView">

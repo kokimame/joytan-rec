@@ -70,18 +70,18 @@
             app:myFabSize="mini" />
 
         <!-- Setting button -->
-<!--        <com.joytan.rec.main.view.MyFAB-->
-<!--            android:id="@+id/fab_setting"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_gravity="center_horizontal"-->
-<!--            android:layout_marginLeft="130dp"-->
-<!--            android:layout_marginBottom="44dp"-->
-<!--            android:visibility="visible"-->
-<!--            android:onClick="@{viewModel::onSettingClicked}"-->
-<!--            app:myFabColor="@android:color/darker_gray"-->
-<!--            app:myFabIcon="@drawable/ic_no_user_24dp"-->
-<!--            app:myFabSize="mini" />-->
+        <com.joytan.rec.main.view.MyFAB
+            android:id="@+id/fab_comment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginLeft="130dp"
+            android:layout_marginBottom="44dp"
+            android:onClick="@{viewModel::onCommentClicked}"
+            android:visibility="visible"
+            app:myFabColor="@android:color/darker_gray"
+            app:myFabIcon="@drawable/ic_comment_bubble_24dp"
+            app:myFabSize="mini" />
     </FrameLayout>
 
     <data>

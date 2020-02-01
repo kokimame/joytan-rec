@@ -65,9 +65,7 @@ class ProjectActivity : AppCompatActivity() {
             MainFragment.currentProject = newProject
             val sharedPref = applicationContext.getSharedPreferences(
                     getString(R.string.saved_user_data), 0)
-//            val editor = sharedPref.edit()
-//            editor.putString(getString(R.string.last_project_name), newProject["dirname"])
-//            editor.apply()
+
             with (sharedPref.edit()) {
                 Log.e(MainActivity.DEBUG_TAG, "put string to sharedPref ${newProject["dirname"]}")
                 putString(getString(R.string.last_project_name), newProject["dirname"])

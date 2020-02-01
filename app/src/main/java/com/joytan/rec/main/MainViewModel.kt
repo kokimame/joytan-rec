@@ -54,6 +54,8 @@ class MainViewModel(private val context: Context, private val listener: Listener
 
         fun onGetVoiceProps(): HashMap<String, *>
 
+        fun onStartComment()
+
         fun onShowGrid()
     }
 
@@ -228,6 +230,10 @@ class MainViewModel(private val context: Context, private val listener: Listener
             return listener.onGetVoiceProps()
         }
 
+        override fun onStartComment() {
+            return listener.onStartComment()
+        }
+
         override fun onShowGrid() {
             return listener.onShowGrid()
         }
@@ -318,10 +324,9 @@ class MainViewModel(private val context: Context, private val listener: Listener
         service?.onGrid()
     }
 
-    fun onUpdateProgress(progress : MutableList<Int>, color : Int, initialIndex : Int, totalSize : Int) {
-        service?.onUpdateProgress(progress, color, initialIndex, totalSize)
+    fun onCommentClicked(view : View) {
+        service?.onComment()
     }
-
 
     /**
      * On Delete button clicked

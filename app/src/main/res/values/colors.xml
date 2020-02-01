@@ -5,6 +5,9 @@
     <color name="bg_dark">#5F5F5F</color>
     <color name="bg_darker">#2C2C2C</color>
     <color name="bg_darkest">#141414</color>
+
+    <color name="bg_comment">#E4E4E4</color>
+
     <color name="nav_text">#757575</color>
     <color name="nav_bg">#242424</color>
 

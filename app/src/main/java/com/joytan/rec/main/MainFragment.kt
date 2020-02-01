@@ -2,14 +2,16 @@ package com.joytan.rec.main
 
 import android.app.Activity
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.media.AudioManager
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.*
-import android.widget.AdapterView
-import android.widget.GridView
+import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
@@ -40,6 +42,9 @@ import kotlinx.android.synthetic.main.nav_header_main.*
 import org.json.JSONArray
 import java.io.File
 import java.lang.Exception
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.HashMap
 import kotlin.math.abs
 
 class MainFragment : Fragment(){
@@ -185,6 +190,7 @@ class MainFragment : Fragment(){
                 wh.show(resId)
             }
             override fun onShowProgress(message: String) {
+                // FIXME: Logic could be simpler
                 updateClientProgress()
                 MainActivity.pd.setMessage(message)
                 MainActivity.pd.setCancelable(false)
@@ -195,8 +201,12 @@ class MainFragment : Fragment(){
                     MainActivity.pd.dismiss()
                 }
             }
+            override fun onStartComment() {
+                buildCommentDialog()
+
+            }
             override fun onShowGrid() {
-                showGrid()
+                buildToCGrid()
             }
         })
 
@@ -299,6 +309,7 @@ class MainFragment : Fragment(){
         // because some views are not inflated? created? yet
         // and they return null and crash.
         wh.onCreate(activity!!)
+
         activity!!.drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
 
         // FIXME This logic could be written smarter
@@ -434,7 +445,7 @@ class MainFragment : Fragment(){
                                     currentIndex, currentProject["size"]!!.toInt())
 
                             if (!isLoggedIn()) {
-                                popAuthDialog()
+                                buildAuthDialog()
                             }
                         } catch (e : Exception) { }
 
@@ -453,7 +464,7 @@ class MainFragment : Fragment(){
         return mAuth.currentUser != null
     }
 
-    private fun popAuthDialog() {
+    private fun buildAuthDialog() {
         // setup the alert builder
         val builder = AlertDialog.Builder(mContext)
         builder.setTitle("Please sign in first")
@@ -568,7 +579,8 @@ class MainFragment : Fragment(){
         activity!!.toolbar_main.title = currentProject["flags"] + currentProject["title"]
     }
 
-    private fun showGrid() {
+    // Build Table of Contents in a grid
+    private fun buildToCGrid() {
         val gridView = layoutInflater.inflate(R.layout.grid_view, null) as GridView
         val titleView = layoutInflater.inflate(R.layout.grid_title, null)
         val builder = AlertDialog.Builder(mContext, R.style.GridDialog)
@@ -595,6 +607,80 @@ class MainFragment : Fragment(){
         } catch (e: Exception) {
         }
     }
+
+
+    private fun buildCommentDialog() {
+        val commentView = layoutInflater.inflate(R.layout.comment_view, null)
+        val titleView = layoutInflater.inflate(R.layout.comment_title, null)
+        val builder = AlertDialog.Builder(mContext, R.style.CommentDialog)
+        val editText = commentView.findViewById<EditText>(R.id.comment_edittext)
+        val forumLink = commentView.findViewById<TextView>(R.id.forum_link)
+        val postBtn = commentView.findViewById<Button>(R.id.do_post)
+        val cancelBtn = commentView.findViewById<Button>(R.id.cancel_post)
+        val commentArrayRef = db.collection("forum/${entryIds[currentIndex]}/comment")
+
+        try {
+            commentArrayRef.get().addOnCompleteListener { commentArray ->
+                builder.setView(commentView)
+                builder.setCustomTitle(titleView)
+
+                val commentSize = commentArray.result!!.size()
+
+                val ad = builder.show()
+                postBtn.setOnClickListener {
+                    if (!editText.text.isEmpty()) {
+                        val df = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'") // Quoted "Z" to indicate UTC, no timezone offset
+                        df.timeZone = TimeZone.getTimeZone("UTC")
+                        val nowAsISO = df.format(Date())
+                        var fullname = "Anonymous"
+                        if (isLoggedIn()) {
+                            fullname = mAuth.currentUser!!.displayName!!
+                        }
+
+                        val newComment = commentArrayRef.document()
+                        // commentJSON for jquery-comment
+                        val commentJSON = hashMapOf(
+                                "id" to "c${commentSize + 1}",
+                                "uid" to newComment.id,
+                                "client_id" to clientUid,
+                                "parent" to null,
+                                "content" to editText.text.toString(),
+                                "fullname" to fullname,
+                                "created" to nowAsISO,
+                                "modified" to nowAsISO,
+                                "upvote_count" to 0,
+                                "pings" to mutableMapOf<String, String>(),
+                                "profile_picture_url" to "",
+                                "user_has_upvoted" to false,
+                                "created_by_current_user" to false,
+                                "from_app" to true
+                        )
+                        newComment.set(commentJSON).addOnSuccessListener {
+                            Toast.makeText(mContext,"Comment successfully posted.", Toast.LENGTH_SHORT).show()
+                            ad.dismiss()
+                        }.addOnFailureListener {
+                            Toast.makeText(mContext,"Failed to post. Try again.", Toast.LENGTH_SHORT).show()
+                        }
+                    } else {
+                        Toast.makeText(mContext,"Write your comment in the text area", Toast.LENGTH_SHORT).show()
+                    }
+                }
+                cancelBtn.setOnClickListener {
+                    ad.cancel()
+                }
+                editText.hint = "Your comment on \"${main_text.text}\" (e.g. errors and tips for learners)"
+                forumLink.setOnClickListener {
+                    val intent = Intent(Intent.ACTION_VIEW)
+                    intent.data = Uri.parse("https://joytan.pub/forum/?p=${currentProject["dirname"]}&eid=${entryIds[currentIndex]}")
+                    startActivity(intent)
+                }
+
+            }
+        } catch (e: Exception) {
+            Log.e(MainActivity.DEBUG_TAG, e.toString())
+        }
+    }
+
 
     override fun onStart() {
         super.onStart()
