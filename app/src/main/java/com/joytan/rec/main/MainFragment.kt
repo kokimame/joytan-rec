@@ -249,6 +249,7 @@ class MainFragment : Fragment(){
             if (user != null) {
                 clientUid = user.uid
                 mActivity.nav_username.text = user.displayName
+                mActivity.nav_client_id.text = user.uid.substring(0, 8) + ".."
                 mActivity.nav_view.menu.findItem(R.id.nav_logout).isVisible = true
                 mActivity.nav_view.menu.findItem(R.id.nav_signup).isVisible = false
 
@@ -268,6 +269,7 @@ class MainFragment : Fragment(){
                 }
             } else {
                 mActivity.nav_username.text = ""
+                mActivity.nav_client_id.text = "-"
                 mActivity.nav_view.menu.findItem(R.id.nav_logout).isVisible = false
                 mActivity.nav_view.menu.findItem(R.id.nav_signup).isVisible = true
             }
