@@ -122,7 +122,7 @@ class MainActivity : AppCompatActivity() {
                     // Choose authentication providers
                     val providers = arrayListOf(
                             AuthUI.IdpConfig.TwitterBuilder().build(),
-                            AuthUI.IdpConfig.FacebookBuilder().build(),
+//                            AuthUI.IdpConfig.FacebookBuilder().build(),
                             AuthUI.IdpConfig.GoogleBuilder().build(),
                             AuthUI.IdpConfig.EmailBuilder().build()
 //                            AuthUI.IdpConfig.GitHubBuilder().build()
