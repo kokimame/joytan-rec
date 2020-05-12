@@ -8,3 +8,4 @@
 *.iml
 app/release/
 google-services.json
+/assets/misc
